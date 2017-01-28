@@ -1,0 +1,14 @@
+Dependencies for Project 'ADCSWTrigger', Target 'ADCSWTrigger': (DO NOT MODIFY !)
+F (.\startup.s)(0x5885213B)(--cpu Cortex-M4 --pd "__EVAL SETA 1" -g --apcs=interwork -I C:\Keil_v5\ARM\RV31\INC-I C:\Keil_v5\ARM\CMSIS\Include-I C:\Keil_v5\ARM\Inc\Luminary--pd "__UVISION_VERSION SETA 516"--list .\startup.lst --xref -o .\startup.o --depend .\startup.d)
+F (.\ADCSWTrigger.c)(0x5885213B)(-c --cpu Cortex-M4 -D__EVAL -g -O0 --apcs=interwork --split_sections --signed_chars -I.. -I..\..\.. --c99-I C:\Keil_v5\ARM\RV31\INC-I C:\Keil_v5\ARM\CMSIS\Include-I C:\Keil_v5\ARM\Inc\Luminary-D__UVISION_VERSION="516" -Drvmdk -DPART_LM4F120H5QR-o .\adcswtrigger.o --omf_browse .\adcswtrigger.crf --depend .\adcswtrigger.d)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x55AF9EB2)
+I (../inc/tm4c123gh6pm.h)(0x5885215E)
+F (.\ADCTestMain.c)(0x5885213B)(-c --cpu Cortex-M4 -D__EVAL -g -O0 --apcs=interwork --split_sections --signed_chars -I.. -I..\..\.. --c99-I C:\Keil_v5\ARM\RV31\INC-I C:\Keil_v5\ARM\CMSIS\Include-I C:\Keil_v5\ARM\Inc\Luminary-D__UVISION_VERSION="516" -Drvmdk -DPART_LM4F120H5QR-o .\adctestmain.o --omf_browse .\adctestmain.crf --depend .\adctestmain.d)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x55AF9EB2)
+I (ADCSWTrigger.h)(0x5885213B)
+I (../inc/tm4c123gh6pm.h)(0x5885215E)
+I (PLL.h)(0x5885213B)
+F (.\PLL.c)(0x5885213B)(-c --cpu Cortex-M4 -D__EVAL -g -O0 --apcs=interwork --split_sections --signed_chars -I.. -I..\..\.. --c99-I C:\Keil_v5\ARM\RV31\INC-I C:\Keil_v5\ARM\CMSIS\Include-I C:\Keil_v5\ARM\Inc\Luminary-D__UVISION_VERSION="516" -Drvmdk -DPART_LM4F120H5QR-o .\pll.o --omf_browse .\pll.crf --depend .\pll.d)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x55AF9EB2)
+I (PLL.h)(0x5885213B)
+I (../inc/tm4c123gh6pm.h)(0x5885215E)
