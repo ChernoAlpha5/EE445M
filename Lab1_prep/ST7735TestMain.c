@@ -73,6 +73,7 @@
 #include "ST7735.h"
 #include "PLL.h"
 #include "../inc/tm4c123gh6pm.h"
+#include "ADC.h"
 
 void DelayWait10ms(uint32_t n);
 
@@ -89,14 +90,14 @@ const uint16_t Test[] = {
 // [red]   [yellow]  [green]   [blue]    [white]
 // [red]   [yellow]  [green]   [blue]    [black]
 // [black] [75%grey] [50%grey] [25%grey] [white]
-const uint16_t Test2[] = {
+/*const uint16_t Test2[] = {
   0x0000, 0x4208, 0x8410, 0xC618, 0xFFFF,
   0x001F, 0x07FF, 0x07E0, 0xF800, 0x0000,
   0x001F, 0x07FF, 0x07E0, 0xF800, 0xFFFF,
   0x001F, 0x07FF, 0x07E0, 0xF800, 0x0000,
   0x001F, 0x07FF, 0x07E0, 0xF800, 0xFFFF,
   0x001F, 0x07FF, 0x07E0, 0xF800, 0x0000
-};
+}; */
 // 40x160 Longhorn logo
 /*const uint16_t Logo[] = {
  0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF,
@@ -568,16 +569,27 @@ int main6(void){ int32_t i,n; // main 6
 }
 
 int main(void){  // main 2
+	int buffer[15];
   PLL_Init(Bus80MHz);                  // set system clock to 80 MHz
+	
   ST7735_InitR(INITR_REDTAB);
-  ST7735_FillScreen(0x0);            // set screen to white
-	//while(1){
-		ST7735_Message (0, 0, "Test1", 5);
-		ST7735_Message (0, 7, "Test2", -69);
-		ST7735_Message (1, 0, "Test3", 7);
-		ST7735_Message (1, 7, "Test4", 6);
-		
-	//}
+  ST7735_FillScreen(0x0);            		// set screen to white
+	ADC_Collect(9, 799999, buffer, 10);  	//100 hz sampling rate. FIX SAMPLING RATE
+	while (ADC_Status() != 0){}						//wait for collect to finish before printing to screen
+	
+	//DisableInterrupts();	//REMOVE LATER!!!
+	
+	ST7735_Message (0, 0, "Reading1", buffer[0]);
+	ST7735_Message (0, 1, "Reading2", buffer[1]);
+	ST7735_Message (0, 2, "Reading3", buffer[2]);
+	ST7735_Message (0, 3, "Reading4", buffer[3]);
+	
+	ADC_Open(9);	//set ADC to channel 9. ch 9 corresponds to PE4. REFER TO TABLE 2.4 FOR CHANNEL MAPPINGS
+	uint16_t ADCval = ADC_In();
+	ST7735_Message (1, 7, "ADC val", ADCval);
+	
+	while(1){
+	}
 }
 
 

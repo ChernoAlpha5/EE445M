@@ -4,3 +4,4 @@
 .\st7735testmain.o: ST7735.h
 .\st7735testmain.o: PLL.h
 .\st7735testmain.o: ../inc/tm4c123gh6pm.h
+.\st7735testmain.o: ADC.h
