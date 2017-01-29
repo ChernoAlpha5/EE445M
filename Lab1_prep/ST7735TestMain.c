@@ -630,10 +630,10 @@ int main(void){  // main 2
 				break;
 			}
 			else{
-				UART_OutString("it's fucked -- ");
-				UART_OutString(string);
+				UART_OutString("Invalid command");
+				/*UART_OutString(string);
 				UART_OutUDec(strcmp(string, inpCommands[i].cmdString));
-				OutCRLF();
+				OutCRLF();*/
 				break;
 			}
 		}

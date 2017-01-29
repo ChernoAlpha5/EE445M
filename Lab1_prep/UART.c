@@ -191,7 +191,7 @@ char character;
     }
 // If the input is a backspace, then the return number is
 // changed and a backspace is outputted to the screen
-    else if((character==BS) && length){
+    else if((character==BS || character == DEL) && length){
       number /= 10;
       length--;
       UART_OutChar(character);
@@ -248,7 +248,7 @@ char character;
       UART_OutChar(character);
     }
 // Backspace outputted and return value changed if a backspace is inputted
-    else if((character==BS) && length){
+    else if(((character==BS) || character == DEL) && length){
       number /= 0x10;
       length--;
       UART_OutChar(character);
@@ -297,12 +297,11 @@ int length=0;
 char character;
   character = UART_InChar();
   while(character != CR){
-    if(character == BS){
+    if(character == BS || character == DEL){
       if(length){
-				
         bufPt--;
         length--;
-        UART_OutChar(BS);
+        UART_OutChar(character);
 				/*length--;
 				char *bufPt2;
 				for(int k = 0; k < length; k++){
