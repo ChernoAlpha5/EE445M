@@ -74,6 +74,23 @@
 #include "PLL.h"
 #include "../inc/tm4c123gh6pm.h"
 #include "ADC.h"
+#include "UART.h"
+#include <string.h>		//is this bad???
+#define NUMCOMMANDS 15
+
+void test1(void);
+
+void UserTask(void){
+	test1();
+}
+void UserTask2(void){
+	//test1();
+}
+
+inpCommand inpCommands[NUMCOMMANDS] = {
+	{"ADC read", &UserTask},
+	{"Screen print", &UserTask2}
+};
 
 void DelayWait10ms(uint32_t n);
 
@@ -570,11 +587,12 @@ int main6(void){ int32_t i,n; // main 6
 
 int main(void){  // main 2
 	int buffer[15];
+	char string[20];  // global to assist in debugging
   PLL_Init(Bus80MHz);                  // set system clock to 80 MHz
-	
+	UART_Init();              // initialize UART
   ST7735_InitR(INITR_REDTAB);
   ST7735_FillScreen(0x0);            		// set screen to white
-	ADC_Collect(9, 799999, buffer, 10);  	//100 hz sampling rate. FIX SAMPLING RATE
+	ADC_Collect(9, 799999, buffer, 7);  	//100 hz sampling rate. FIX SAMPLING RATE
 	while (ADC_Status() != 0){}						//wait for collect to finish before printing to screen
 	
 	//DisableInterrupts();	//REMOVE LATER!!!
@@ -583,16 +601,44 @@ int main(void){  // main 2
 	ST7735_Message (0, 1, "Reading2", buffer[1]);
 	ST7735_Message (0, 2, "Reading3", buffer[2]);
 	ST7735_Message (0, 3, "Reading4", buffer[3]);
+	ST7735_Message (0, 4, "Reading5", buffer[4]);
+	ST7735_Message (0, 5, "Reading6", buffer[5]);
+	ST7735_Message (0, 6, "Reading7", buffer[6]);
+	ST7735_Message (0, 7, "Reading8", buffer[7]);
+	ST7735_Message (1, 0, "Reading9", buffer[8]);
+	ST7735_Message (1, 1, "Reading10", buffer[9]);
 	
 	ADC_Open(9);	//set ADC to channel 9. ch 9 corresponds to PE4. REFER TO TABLE 2.4 FOR CHANNEL MAPPINGS
 	uint16_t ADCval = ADC_In();
 	ST7735_Message (1, 7, "ADC val", ADCval);
 	
 	while(1){
-	}
+    UART_OutString("$ ");  //prompt
+    UART_InString(string,19);
+    /*UART_OutString(" OutString="); UART_OutString(string); OutCRLF();
+
+    UART_OutString("InUDec: ");  n=UART_InUDec();
+    UART_OutString(" OutUDec="); UART_OutUDec(n); OutCRLF();
+
+    UART_OutString("InUHex: ");  n=UART_InUHex();
+    UART_OutString(" OutUHex="); UART_OutUHex(n); OutCRLF(); */
+		
+	  for (int i = 0; i < NUMCOMMANDS; i++){
+			UART_OutUDec(i);
+			if (strcmp(string, inpCommands[i].cmdString) == 0){
+				inpCommands[i].cmdPtr();  // run function specified by pointer
+				break;
+			}
+			else{
+				UART_OutString("it's fucked -- ");
+				UART_OutString(string);
+				UART_OutUDec(strcmp(string, inpCommands[i].cmdString));
+				OutCRLF();
+				break;
+			}
+		}
+  }
 }
-
-
 
 // private function draws a color band on the screen
 void static drawthecolors(uint8_t red, uint8_t green, uint8_t blue){
@@ -686,3 +732,11 @@ void DelayWait10ms(uint32_t n){uint32_t volatile time;
     n--;
   }
 }
+
+void test1(void){
+	OutCRLF();
+	UART_OutString("ADC reading: ");
+	UART_OutUDec(ADC_In());
+	OutCRLF();
+}
+	
