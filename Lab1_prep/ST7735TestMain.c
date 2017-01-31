@@ -614,7 +614,7 @@ int main(void){  // main 2
 	
 	while(1){
     UART_OutString("$ ");  //prompt
-    UART_InString(string,19);
+    UART_InString(string,19); OutCRLF();
     /*UART_OutString(" OutString="); UART_OutString(string); OutCRLF();
 
     UART_OutString("InUDec: ");  n=UART_InUDec();
@@ -624,7 +624,7 @@ int main(void){  // main 2
     UART_OutString(" OutUHex="); UART_OutUHex(n); OutCRLF(); */
 		
 	  for (int i = 0; i < NUMCOMMANDS; i++){
-			UART_OutUDec(i);
+			//UART_OutUDec(i);
 			if (strcmp(string, inpCommands[i].cmdString) == 0){
 				inpCommands[i].cmdPtr();  // run function specified by pointer
 				break;
@@ -632,8 +632,8 @@ int main(void){  // main 2
 			else{
 				UART_OutString("Invalid command");
 				/*UART_OutString(string);
-				UART_OutUDec(strcmp(string, inpCommands[i].cmdString));
-				OutCRLF();*/
+				UART_OutUDec(strcmp(string, inpCommands[i].cmdString));*/
+				OutCRLF();
 				break;
 			}
 		}
@@ -734,7 +734,7 @@ void DelayWait10ms(uint32_t n){uint32_t volatile time;
 }
 
 void test1(void){
-	OutCRLF();
+	//OutCRLF();
 	UART_OutString("ADC reading: ");
 	UART_OutUDec(ADC_In());
 	OutCRLF();
