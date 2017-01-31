@@ -6,4 +6,5 @@
 .\st7735testmain.o: ../inc/tm4c123gh6pm.h
 .\st7735testmain.o: ADC.h
 .\st7735testmain.o: UART.h
+.\st7735testmain.o: OS.h
 .\st7735testmain.o: C:\Keil\ARM\ARMCC\bin\..\include\string.h

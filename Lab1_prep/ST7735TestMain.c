@@ -75,11 +75,15 @@
 #include "../inc/tm4c123gh6pm.h"
 #include "ADC.h"
 #include "UART.h"
+#include "OS.h"
 #include <string.h>		//is this bad???
 #define NUMCOMMANDS 15
 
+#define PF1             (*((volatile uint32_t *)0x40025008))
+#define PF2   (*((volatile uint32_t *)0x40025010))
+	
 void test1(void);
-
+void dummy(void);
 void UserTask(void){
 	test1();
 }
@@ -592,7 +596,10 @@ int main(void){  // main 2
 	UART_Init();              // initialize UART
   ST7735_InitR(INITR_REDTAB);
   ST7735_FillScreen(0x0);            		// set screen to white
-	ADC_Collect(9, 799999, buffer, 7);  	//100 hz sampling rate. FIX SAMPLING RATE
+	ADC_Collect(9, 100, buffer, 7);  	//100 hz sampling rate. FIX SAMPLING RATE
+	
+	OS_AddPeriodicThread(&dummy, 70, 2);
+		 
 	while (ADC_Status() != 0){}						//wait for collect to finish before printing to screen
 	
 	//DisableInterrupts();	//REMOVE LATER!!!
@@ -688,7 +695,6 @@ int main3(void){ // main3
   }
 }
 
-#define PF2   (*((volatile uint32_t *)0x40025010))
 
 // Make PF2 an output, enable digital I/O, ensure alt. functions off
 void SSR_Init(void){
@@ -739,4 +745,6 @@ void test1(void){
 	UART_OutUDec(ADC_In());
 	OutCRLF();
 }
-	
+void dummy(void) {
+	PF1 ^= 0x2;
+};
