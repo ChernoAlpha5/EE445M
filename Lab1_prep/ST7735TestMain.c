@@ -746,5 +746,5 @@ void test1(void){
 	OutCRLF();
 }
 void dummy(void) {
-	PF1 ^= 0x2;
+	
 };

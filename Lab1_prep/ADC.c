@@ -158,7 +158,7 @@ void Timer2_Init(/*void(*task)(void),*/ unsigned long period){
 }*/
 void Timer2A_Handler(void){
   TIMER2_ICR_R = TIMER_ICR_TATOCINT;    // acknowledge timer2A timeout
-  PF2 ^= 0x04;         	// profile
+  //PF2 ^= 0x04;         	// profile
 	if (counter < numSamples){
 		*(buffer + counter) = ADC_In();
 	  counter++;
@@ -170,7 +170,6 @@ void Timer2A_Handler(void){
 		TIMER2_CTL_R = 0x00000000;		// disable timer2
 	}
   //PF2 ^= 0x04;                   // profile
-  PF2 ^= 0x04;                   // profile
 }
 
 // ***************** ADC_Open ****************

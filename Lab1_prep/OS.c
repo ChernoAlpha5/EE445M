@@ -6,6 +6,9 @@
 #include <stdint.h>
 #include "../inc/tm4c123gh6pm.h"
 
+#define PF2   			(*((volatile uint32_t *)0x40025010))
+#define PF1         (*((volatile uint32_t *)0x40025008))
+	
 void (*PeriodicTask)(void);   // user function
 uint32_t osCounter = 0;
 
@@ -33,9 +36,11 @@ int OS_AddPeriodicThread(void(*task)(void), uint32_t period, uint32_t priority){
 }
 
 void Timer5A_Handler(void){
+	PF1 = 0x2;							// used for measuring ISR time
   TIMER5_ICR_R = TIMER_ICR_TATOCINT;// acknowledge timer0A timeout
 	osCounter++; 												//increment global counter
   (*PeriodicTask)();                // execute user task
+	PF1 = 0x0;
 }
 
 void OS_ClearPeriodicTime(void){
