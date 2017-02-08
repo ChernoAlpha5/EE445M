@@ -30,11 +30,13 @@
 // PD3 Ain3 sampled at 2k, sequencer 3, by DAS software start in ISR
 // PD2 Ain5 sampled at 250Hz, sequencer 0, by Producer, timer tigger
 
+#include "../inc/tm4c123gh6pm.h"
+#include <stdio.h>
+#include <stdint.h>
 #include "OS.h"
-#include "inc/tm4c123gh6pm.h"
 #include "ST7735.h"
 #include "ADC.h"
-#include "UART2.h"
+#include "UART.h"
 #include <string.h> 
 
 //*********Prototype for FFT in cr4_fft_64_stm32.s, STMicroelectronics
@@ -213,7 +215,7 @@ void Consumer(void){
 unsigned long data,DCcomponent;   // 12-bit raw ADC sample, 0 to 4095
 unsigned long t;                  // time in 2.5 ms
 unsigned long myId = OS_Id(); 
-  ADC_Collect(5, FS, &Producer); // start ADC sampling, channel 5, PD2, 400 Hz
+  //ADC_Collect(5, FS, &Producer); // start ADC sampling, channel 5, PD2, 400 Hz
   NumCreated += OS_AddThread(&Display,128,0); 
   while(NumSamples < RUNLENGTH) { 
     PB4 = 0x10;
@@ -317,7 +319,7 @@ int main(void){
 //*******attach background tasks***********
   OS_AddSW1Task(&SW1Push,2);
 //  OS_AddSW2Task(&SW2Push,2);  // add this line in Lab 3
-  ADC_Init(4);  // sequencer 3, channel 4, PD3, sampling in DAS()
+  ADC_Open(4);  // sequencer 3, channel 4, PD3, sampling in DAS()
   OS_AddPeriodicThread(&DAS,PERIOD,1); // 2 kHz real time sampling of PD3
 
   NumCreated = 0 ;
@@ -583,7 +585,8 @@ void Thread6(void){  // foreground thread
     PB2 ^= 0x04;        // debugging toggle bit 0  
   }
 }
-extern void Jitter(void);   // prints jitter information (write this)
+extern void Jitter(void){	// prints jitter information (write this)
+}
 void Thread7(void){  // foreground thread
   UART_OutString("\n\rEE345M/EE380L, Lab 3 Preparation 2\n\r");
   OS_Sleep(5000);   // 10 seconds        
