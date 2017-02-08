@@ -1,0 +1,70 @@
+
+
+
+ARM Macro Assembler    Page 1 
+
+
+    1 00000000         
+    2 00000000                 AREA             |.text|, CODE, READONLY, ALIGN=
+2
+    3 00000000                 THUMB
+    4 00000000                 EXPORT           SysTick_Handler
+    5 00000000                 EXTERN           RunPt
+    6 00000000         
+    7 00000000         SysTick_Handler
+    8 00000000 B672            CPSID            I
+    9 00000002 E92D 0FF0       PUSH             {R4 - R11}
+   10 00000006 4806            LDR              R0, =RunPt
+   11 00000008 6801            LDR              R1, [R0]
+   12 0000000A F8C1 D000       STR              SP, [R1]
+   13 0000000E 6849            LDR              R1, [R1, #4]
+   14 00000010 6001            STR              R1, [R0]
+   15 00000012 F8D1 D000       LDR              SP, [R1]
+   16 00000016 E8BD 0FF0       POP              {R4 - R11}
+   17 0000001A B662            CPSIE            I
+   18 0000001C 4770            BX               LR
+   19 0000001E                 END
+              00 00 00000000 
+Command Line: --debug --xref --cpu=Cortex-M4 --apcs=interwork --depend=.\thread
+switch.d -o.\threadswitch.o -IC:\Keil\ARM\RV31\INC -IC:\Keil\ARM\CMSIS\Include 
+-IC:\Keil\ARM\Inc\Luminary --predefine="__EVAL SETA 1" --list=.\threadswitch.ls
+t ThreadSwitch.s
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+.text 00000000
+
+Symbol: .text
+   Definitions
+      At line 2 in file ThreadSwitch.s
+   Uses
+      None
+Comment: .text unused
+SysTick_Handler 00000000
+
+Symbol: SysTick_Handler
+   Definitions
+      At line 7 in file ThreadSwitch.s
+   Uses
+      At line 4 in file ThreadSwitch.s
+Comment: SysTick_Handler used once
+2 symbols
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+External symbols
+
+RunPt 00000000
+
+Symbol: RunPt
+   Definitions
+      At line 5 in file ThreadSwitch.s
+   Uses
+      At line 10 in file ThreadSwitch.s
+Comment: RunPt used once
+1 symbol
+336 symbols in table
