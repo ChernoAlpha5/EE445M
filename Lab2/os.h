@@ -263,4 +263,6 @@ void OS_KillTask(void);
 void OS_ClearPeriodicTime(void);
 uint32_t OS_ReadPeriodicTime(void);
 
+void OS_SelectNextThread(void);
+
 #endif

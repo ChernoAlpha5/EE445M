@@ -4,27 +4,45 @@
 ARM Macro Assembler    Page 1 
 
 
-    1 00000000         
-    2 00000000                 AREA             |.text|, CODE, READONLY, ALIGN=
+    1 00000000                 AREA             |.text|, CODE, READONLY, ALIGN=
 2
-    3 00000000                 THUMB
-    4 00000000                 EXPORT           SysTick_Handler
-    5 00000000                 EXTERN           RunPt
+    2 00000000                 THUMB
+    3 00000000                 EXPORT           PendSV_Handler
+    4 00000000                 EXTERN           RunPt
+    5 00000000                 EXTERN           NextPt
     6 00000000         
-    7 00000000         SysTick_Handler
-    8 00000000 B672            CPSID            I
-    9 00000002 E92D 0FF0       PUSH             {R4 - R11}
-   10 00000006 4806            LDR              R0, =RunPt
-   11 00000008 6801            LDR              R1, [R0]
-   12 0000000A F8C1 D000       STR              SP, [R1]
-   13 0000000E 6849            LDR              R1, [R1, #4]
-   14 00000010 6001            STR              R1, [R0]
-   15 00000012 F8D1 D000       LDR              SP, [R1]
-   16 00000016 E8BD 0FF0       POP              {R4 - R11}
-   17 0000001A B662            CPSIE            I
-   18 0000001C 4770            BX               LR
-   19 0000001E                 END
-              00 00 00000000 
+    7 00000000         ;Round-Robin Switching   
+    8 00000000         ;PendSV_Handler 
+    9 00000000         ; CPSID I
+   10 00000000         ; PUSH {R4 - R11}
+   11 00000000         ; LDR R0, =RunPt
+   12 00000000         ; LDR R1, [R0]
+   13 00000000         ; STR SP, [R1]
+   14 00000000         ; LDR R1, [R1, #4]
+   15 00000000         ; STR R1, [R0]
+   16 00000000         ; LDR SP, [R1]
+   17 00000000         ; POP {R4 - R11}
+   18 00000000         ; CPSIE I
+   19 00000000         ; BX LR
+   20 00000000         ; END
+   21 00000000         
+   22 00000000         ;switch using chosen NextPt
+   23 00000000         PendSV_Handler
+   24 00000000 B672            CPSID            I
+   25 00000002 E92D 0FF0       PUSH             {R4 - R11}
+   26 00000006 4806            LDR              R0, =RunPt
+   27 00000008 6801            LDR              R1, [R0]
+   28 0000000A F8C1 D000       STR              SP, [R1]
+   29 0000000E 4905            LDR              R1, =NextPt
+   30 00000010 680A            LDR              R2, [R1]
+   31 00000012 6002            STR              R2, [R0]
+   32 00000014 F8D2 D000       LDR              SP, [R2]
+   33 00000018 E8BD 0FF0       POP              {R4 - R11}
+   34 0000001C B662            CPSIE            I
+   35 0000001E 4770            BX               LR
+   36 00000020                 END
+              00000000 
+              00000000 
 Command Line: --debug --xref --cpu=Cortex-M4 --apcs=interwork --depend=.\thread
 switch.d -o.\threadswitch.o -IC:\Keil\ARM\RV31\INC -IC:\Keil\ARM\CMSIS\Include 
 -IC:\Keil\ARM\Inc\Luminary --predefine="__EVAL SETA 1" --list=.\threadswitch.ls
@@ -39,18 +57,18 @@ Relocatable symbols
 
 Symbol: .text
    Definitions
-      At line 2 in file ThreadSwitch.s
+      At line 1 in file ThreadSwitch.s
    Uses
       None
 Comment: .text unused
-SysTick_Handler 00000000
+PendSV_Handler 00000000
 
-Symbol: SysTick_Handler
+Symbol: PendSV_Handler
    Definitions
-      At line 7 in file ThreadSwitch.s
+      At line 23 in file ThreadSwitch.s
    Uses
-      At line 4 in file ThreadSwitch.s
-Comment: SysTick_Handler used once
+      At line 3 in file ThreadSwitch.s
+Comment: PendSV_Handler used once
 2 symbols
 
 
@@ -58,13 +76,21 @@ Comment: SysTick_Handler used once
 ARM Macro Assembler    Page 1 Alphabetic symbol ordering
 External symbols
 
+NextPt 00000000
+
+Symbol: NextPt
+   Definitions
+      At line 5 in file ThreadSwitch.s
+   Uses
+      At line 29 in file ThreadSwitch.s
+Comment: NextPt used once
 RunPt 00000000
 
 Symbol: RunPt
    Definitions
-      At line 5 in file ThreadSwitch.s
+      At line 4 in file ThreadSwitch.s
    Uses
-      At line 10 in file ThreadSwitch.s
+      At line 26 in file ThreadSwitch.s
 Comment: RunPt used once
-1 symbol
-336 symbols in table
+2 symbols
+337 symbols in table

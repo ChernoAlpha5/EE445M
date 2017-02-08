@@ -416,11 +416,6 @@
               <FilePath>.\PLL.c</FilePath>
             </File>
             <File>
-              <FileName>UARTIntsTestMain.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\UARTIntsTestMain.c</FilePath>
-            </File>
-            <File>
               <FileName>UART.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\UART.c</FilePath>
@@ -434,6 +429,36 @@
               <FileName>ADC.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\ADC.c</FilePath>
+            </File>
+            <File>
+              <FileName>OS.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\OS.c</FilePath>
+            </File>
+            <File>
+              <FileName>Lab2.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Lab2.c</FilePath>
+            </File>
+            <File>
+              <FileName>PID_stm32.s</FileName>
+              <FileType>2</FileType>
+              <FilePath>.\PID_stm32.s</FilePath>
+            </File>
+            <File>
+              <FileName>cr4_fft_64_stm32.s</FileName>
+              <FileType>2</FileType>
+              <FilePath>.\cr4_fft_64_stm32.s</FilePath>
+            </File>
+            <File>
+              <FileName>Interpreter.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Interpreter.c</FilePath>
+            </File>
+            <File>
+              <FileName>ThreadSwitch.s</FileName>
+              <FileType>2</FileType>
+              <FilePath>.\ThreadSwitch.s</FilePath>
             </File>
           </Files>
         </Group>

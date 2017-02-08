@@ -3,3 +3,4 @@
 .\os.o: ../inc/tm4c123gh6pm.h
 .\os.o: UART.H
 .\os.o: OS.h
+.\os.o: SysTick.h

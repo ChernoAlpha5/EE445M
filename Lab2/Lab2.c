@@ -37,6 +37,7 @@
 #include "ST7735.h"
 #include "ADC.h"
 #include "UART.h"
+#include "SysTick.h"
 #include <string.h> 
 
 //*********Prototype for FFT in cr4_fft_64_stm32.s, STMicroelectronics
@@ -306,6 +307,7 @@ void Interpreter(void);    // just a prototype, link to your interpreter
 
 //*******************final user main DEMONTRATE THIS TO TA**********
 int main(void){ 
+	SysTick_Handler();
   OS_Init();           // initialize, disable interrupts
   PortB_Init();
   DataLost = 0;        // lost data between producer and consumer

@@ -6,4 +6,5 @@
 .\lab2.o: ST7735.h
 .\lab2.o: ADC.h
 .\lab2.o: UART.h
+.\lab2.o: SysTick.h
 .\lab2.o: C:\Keil\ARM\ARMCC\bin\..\include\string.h

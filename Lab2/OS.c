@@ -2,6 +2,7 @@
 #include "../inc/tm4c123gh6pm.h"
 #include "UART.H"
 #include "OS.h"
+#include "SysTick.h"
 
 #define TIMER_CFG_16_BIT        0x00000004  // 16-bit timer configuration,
                                             // function is controlled by bits
@@ -41,6 +42,7 @@ struct tcb{
 typedef struct tcb tcbType;
 tcbType tcbs[NUMTHREADS];
 tcbType *RunPt;
+tcbType *NextPt;
 int32_t Stacks[NUMTHREADS][STACKSIZE];
 
 uint32_t Counter;
@@ -223,7 +225,7 @@ int OS_AddSW2Task(void(*task)(void), unsigned long priority){
 // You are free to select the time resolution for this function
 // OS_Sleep(0) implements cooperative multitasking
 void OS_Sleep(unsigned long sleepTime){
-	
+	OS_Suspend();
 }
 
 // ******** OS_Kill ************
@@ -242,7 +244,8 @@ void OS_Kill(void){
 // input:  none
 // output: none
 void OS_Suspend(void){
-	
+	NVIC_ST_CURRENT_R = 0;
+	NVIC_INT_CTRL_R = 0x04000000; //Trigger SysTick
 }
 
 // ******** OS_Fifo_Init ************
@@ -369,4 +372,8 @@ unsigned long OS_MsTime(void){
 // It is ok to limit the range of theTimeSlice to match the 24-bit SysTick
 void OS_Launch(unsigned long theTimeSlice){
 	
+}
+
+void OS_SelectNextThread(void){
+	NextPt = RunPt->next;	//switch threads using round-robin
 }
