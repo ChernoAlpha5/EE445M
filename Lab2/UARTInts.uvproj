@@ -448,6 +448,11 @@
               <FileType>1</FileType>
               <FilePath>.\Interpreter.c</FilePath>
             </File>
+            <File>
+              <FileName>ThreadSwitch.s</FileName>
+              <FileType>2</FileType>
+              <FilePath>.\ThreadSwitch.s</FilePath>
+            </File>
           </Files>
         </Group>
       </Groups>
