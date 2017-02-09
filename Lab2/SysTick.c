@@ -65,7 +65,7 @@ void SysTick_Wait10ms(uint32_t delay){
   }
 }
 
-/*void SysTick_Handler(void){
+void SysTick_Handler(void){
 	OS_SelectNextThread();
 	NVIC_INT_CTRL_R = 0x10000000; //Trigger PendSV
-}*/
+}
