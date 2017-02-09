@@ -27,7 +27,6 @@
 // U0Tx (VCP transmit) connected to PA1
 
 #include <stdint.h>
-#include "PLL.h"
 #include "UART.h"
 #include "ADC.h"
 #include "ST7735.h"
@@ -64,8 +63,6 @@ void toggleLed(void){
 //debug code
 void Interpreter(void){
   char string[20];  // global to assist in debugging
-
-  PLL_Init(Bus50MHz);       // set system clock to 50 MHz
 	heartBeatInit();
   UART_Init();              // initialize UART
 	Output_Init();

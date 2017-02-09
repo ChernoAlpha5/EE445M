@@ -306,8 +306,7 @@ void Interpreter(void);    // just a prototype, link to your interpreter
 
 
 //*******************final user main DEMONTRATE THIS TO TA**********
-int main(void){ 
-	SysTick_Handler();
+int Testmain(void){ 
   OS_Init();           // initialize, disable interrupts
   PortB_Init();
   DataLost = 0;        // lost data between producer and consumer
@@ -376,7 +375,7 @@ void Thread3(void){
   }
 }
 
-int Testmain1(void){  // Testmain1
+int main(void){  // Testmain1
   OS_Init();          // initialize, disable interrupts
   PortB_Init();       // profile user threads
   NumCreated = 0 ;

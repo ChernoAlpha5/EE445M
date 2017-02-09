@@ -4,3 +4,4 @@
 .\os.o: UART.H
 .\os.o: OS.h
 .\os.o: SysTick.h
+.\os.o: PLL.h
