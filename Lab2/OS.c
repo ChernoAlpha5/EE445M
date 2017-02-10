@@ -3,6 +3,7 @@
 #include "UART.H"
 #include "OS.h"
 #include "SysTick.h"
+#include "PLL.h"
 
 #define TIMER_CFG_16_BIT        0x00000004  // 16-bit timer configuration,
                                             // function is controlled by bits
@@ -27,23 +28,26 @@ void EnableInterrupts(void);  // Enable interrupts
 long StartCritical (void);    // previous I bit, disable interrupts
 void EndCritical(long sr);    // restore I bit to previous value
 void WaitForInterrupt(void);  // low power mode
+long StartCritical(void);
+void EndCritical(long primask);
+void StartOS(void);
 
-#define NUMTHREADS 3
+#define MAXNUMTHREADS 10
 #define STACKSIZE 100
 struct tcb{
-	uint32_t *sp;
+	int32_t *sp;
 	struct tcb *next;
-	struct txb *prev;
-	uint8_t id;
+	int16_t id;
 	uint8_t sleep;
 	uint8_t priority;
 	uint8_t blocked;
 };
 typedef struct tcb tcbType;
-tcbType tcbs[NUMTHREADS];
+tcbType tcbs[MAXNUMTHREADS];
 tcbType *RunPt;
 tcbType *NextPt;
-int32_t Stacks[NUMTHREADS][STACKSIZE];
+int32_t Stacks[MAXNUMTHREADS][STACKSIZE];
+int16_t CurrentID;
 
 uint32_t Counter;
 void(*PeriodicTask)(void);
@@ -87,13 +91,33 @@ void OS_KillTask(void){
 	TIMER4_CTL_R &= ~0x00000001;
 }
 
+// ******** OS_Init ValvanoWare ************
+// initialize operating system, disable interrupts until OS_Launch
+// initialize OS controlled I/O: systick, 50 MHz PLL
+// input:  none
+// output: none
+/*void OS_Init(void){
+  OS_DisableInterrupts();
+  PLL_Init(Bus50MHz);         // set processor clock to 50 MHz
+  NVIC_ST_CTRL_R = 0;         // disable SysTick during setup
+  NVIC_ST_CURRENT_R = 0;      // any write to current clears it
+  NVIC_SYS_PRI3_R =(NVIC_SYS_PRI3_R&0x00FFFFFF)|0xE0000000; // priority 7
+}*/
+
 // ******** OS_Init ************
 // initialize operating system, disable interrupts until OS_Launch
 // initialize OS controlled I/O: serial, ADC, systick, LaunchPad I/O and timers 
 // input:  none
 // output: none
 void OS_Init(void){
-	
+	DisableInterrupts();
+  PLL_Init(Bus50MHz);         // set processor clock to 50 MHz
+  NVIC_ST_CTRL_R = 0;         // disable SysTick during setup
+  NVIC_ST_CURRENT_R = 0;      // any write to current clears it
+  NVIC_SYS_PRI3_R =(NVIC_SYS_PRI3_R&0x00FFFFFF)|0xC0000000; // priority 6 SysTick
+	NVIC_SYS_PRI3_R =(NVIC_SYS_PRI3_R&0xFF00FFFF)|0x00E00000; // priority 7 PendSV
+	CurrentID = 1;
+	RunPt = 0;
 }
 
 // ******** OS_InitSemaphore ************
@@ -142,6 +166,47 @@ void OS_bSignal(Sema4Type *semaPt){
 	
 }
 
+
+//******** OS_AddThread ValvanoWare ***************
+// add three foregound threads to the scheduler
+// Inputs: three pointers to a void/void foreground tasks
+// Outputs: 1 if successful, 0 if this thread can not be added
+/*int OS_AddThreads(void(*task0)(void),
+                 void(*task1)(void),
+                 void(*task2)(void)){ int32_t status;
+  status = StartCritical();
+  tcbs[0].next = &tcbs[1]; // 0 points to 1
+  tcbs[1].next = &tcbs[2]; // 1 points to 2
+  tcbs[2].next = &tcbs[0]; // 2 points to 0
+  SetInitialStack(0); Stacks[0][STACKSIZE-2] = (int32_t)(task0); // PC
+  SetInitialStack(1); Stacks[1][STACKSIZE-2] = (int32_t)(task1); // PC
+  SetInitialStack(2); Stacks[2][STACKSIZE-2] = (int32_t)(task2); // PC
+  RunPt = &tcbs[0];       // thread 0 will run first
+  EndCritical(status);
+  return 1;               // successful
+}*/
+		
+
+void SetInitialStack(int i){
+  tcbs[i].sp = &Stacks[i][STACKSIZE-16]; // thread stack pointer
+  Stacks[i][STACKSIZE-1] = 0x01000000;   // thumb bit
+  Stacks[i][STACKSIZE-3] = 0xFFFFFFF9;   // R14
+  Stacks[i][STACKSIZE-4] = 0x12121212;   // R12
+  Stacks[i][STACKSIZE-5] = 0x03030303;   // R3
+  Stacks[i][STACKSIZE-6] = 0x02020202;   // R2
+  Stacks[i][STACKSIZE-7] = 0x01010101;   // R1
+  Stacks[i][STACKSIZE-8] = 0x00000000;   // R0
+  Stacks[i][STACKSIZE-9] = 0x11111111;   // R11
+  Stacks[i][STACKSIZE-10] = 0x10101010;  // R10
+  Stacks[i][STACKSIZE-11] = 0x09090909;  // R9
+  Stacks[i][STACKSIZE-12] = 0x08080808;  // R8
+  Stacks[i][STACKSIZE-13] = 0x07070707;  // R7
+  Stacks[i][STACKSIZE-14] = 0x06060606;  // R6
+  Stacks[i][STACKSIZE-15] = 0x05050505;  // R5
+  Stacks[i][STACKSIZE-16] = 0x04040404;  // R4
+}
+
+
 //******** OS_AddThread *************** 
 // add a foregound thread to the scheduler
 // Inputs: pointer to a void/void foreground task
@@ -152,7 +217,34 @@ void OS_bSignal(Sema4Type *semaPt){
 // In Lab 2, you can ignore both the stackSize and priority fields
 // In Lab 3, you can ignore the stackSize fields
 int OS_AddThread(void(*task)(void), unsigned long stackSize, unsigned long priority){
-		 return 0;
+	long status = StartCritical();
+	tcbType *unusedThread;
+	int numThread;
+	for(numThread = 0; numThread < MAXNUMTHREADS; numThread++){
+		if(tcbs[numThread].id <= 0){
+			break;
+		}
+	}
+	if(numThread == MAXNUMTHREADS){
+		return 0;
+	}
+	
+	unusedThread = &tcbs[numThread];
+	if(unusedThread->id == 0){ //id = -1 means dead, 0 means uninitialized
+		tcbs[numThread].next = &tcbs[0]; // new uninitialized thread points to first thread
+		if(numThread != 0){
+			tcbs[numThread - 1].next = &tcbs[numThread]; // previous thread points to this
+		}
+		else{
+			RunPt = &tcbs[0];
+		}
+	}
+	unusedThread->id = CurrentID;	//Current ID is incremented forever for different IDs
+	SetInitialStack(numThread);		//initialize stack
+	Stacks[numThread][STACKSIZE-2] = (int32_t)(task); //  set PC for Task
+	CurrentID+=1;
+	EndCritical(status);
+  return 1;
 }
 
 //******** OS_Id *************** 
@@ -362,6 +454,18 @@ unsigned long OS_MsTime(void){
 	return 0;
 }
 
+///******** OS_Launch ValvanoWare ***************
+// start the scheduler, enable interrupts
+// Inputs: number of 20ns clock cycles for each time slice
+//         (maximum of 24 bits)
+// Outputs: none (does not return)
+/*void OS_Launch(uint32_t theTimeSlice){
+  NVIC_ST_RELOAD_R = theTimeSlice - 1; // reload value
+  NVIC_ST_CTRL_R = 0x00000007; // enable, core clock and interrupt arm
+  StartOS();                   // start on the first task
+}*/
+
+
 //******** OS_Launch *************** 
 // start the scheduler, enable interrupts
 // Inputs: number of 12.5ns clock cycles for each time slice
@@ -371,7 +475,9 @@ unsigned long OS_MsTime(void){
 // In Lab 3, you should implement the user-defined TimeSlice field
 // It is ok to limit the range of theTimeSlice to match the 24-bit SysTick
 void OS_Launch(unsigned long theTimeSlice){
-	
+	NVIC_ST_RELOAD_R = theTimeSlice - 1; // reload value
+  NVIC_ST_CTRL_R = 0x00000007; // enable, core clock and interrupt arm
+	StartOS();                   // start on the first task
 }
 
 void OS_SelectNextThread(void){
