@@ -23,7 +23,7 @@ int OS_AddPeriodicThread(void(*task)(void), uint32_t period, uint32_t priority){
   TIMER5_CTL_R &= ~0x00000001;     // 1) disable timer5A during setup
   TIMER5_CFG_R = 0x00000004;       // 2) configure for 16-bit timer mode
   TIMER5_TAMR_R = 0x00000002;      // 3) configure for periodic mode, default down-count settings
-  TIMER5_TAILR_R = 80000000/period-1;       // 4) reload value
+  TIMER5_TAILR_R = ((80000000/period)-1);       // 4) reload value
   TIMER5_TAPR_R = 49;              // 5) 1us timer5A
   TIMER5_ICR_R = 0x00000001;       // 6) clear timer5A timeout flag
   TIMER5_IMR_R |= 0x00000001;      // 7) arm timeout interrupt

@@ -111,7 +111,7 @@ const uint16_t Test[] = {
 };
 
 
-int main(void){  // main 2
+int main1(void){  // main 2
 
 	char string[20];  // global to assist in debugging
   PLL_Init(Bus80MHz);                  // set system clock to 80 MHz
@@ -168,6 +168,14 @@ int main(void){  // main 2
 		}
 		cmdFound = 0;
   }
+}
+
+int main(){
+	ADC_Open(9);
+	OS_AddPeriodicThread(&dummy, 500000, 2);
+	while (1){
+		PF2 ^= 0x4;
+	}
 }
 
 // private function draws a color band on the screen

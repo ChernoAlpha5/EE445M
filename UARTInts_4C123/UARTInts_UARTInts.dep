@@ -1,0 +1,16 @@
+Dependencies for Project 'UARTInts', Target 'UARTInts': (DO NOT MODIFY !)
+F (.\startup.s)(0x5885217B)(--cpu Cortex-M4 --pd "__EVAL SETA 1" -g --apcs=interwork -I C:\Keil_v5\ARM\RV31\INC-I C:\Keil_v5\ARM\CMSIS\Include-I C:\Keil_v5\ARM\Inc\Luminary--pd "__UVISION_VERSION SETA 516"--list .\startup.lst --xref -o .\startup.o --depend .\startup.d)
+F (.\PLL.c)(0x5885217B)(-c --cpu Cortex-M4 -D__EVAL -g -O0 --apcs=interwork --split_sections --signed_chars -I.. -I..\..\.. --C99-I C:\Keil_v5\ARM\RV31\INC-I C:\Keil_v5\ARM\CMSIS\Include-I C:\Keil_v5\ARM\Inc\Luminary-D__UVISION_VERSION="516" -Drvmdk -DPART_LM4F120H5QR-o .\pll.o --omf_browse .\pll.crf --depend .\pll.d)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x55AF9EB2)
+I (PLL.h)(0x5885217B)
+I (../inc/tm4c123gh6pm.h)(0x5885215E)
+F (.\UARTIntsTestMain.c)(0x588D237E)(-c --cpu Cortex-M4 -D__EVAL -g -O0 --apcs=interwork --split_sections --signed_chars -I.. -I..\..\.. --C99-I C:\Keil_v5\ARM\RV31\INC-I C:\Keil_v5\ARM\CMSIS\Include-I C:\Keil_v5\ARM\Inc\Luminary-D__UVISION_VERSION="516" -Drvmdk -DPART_LM4F120H5QR-o .\uartintstestmain.o --omf_browse .\uartintstestmain.crf --depend .\uartintstestmain.d)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x55AF9EB2)
+I (PLL.h)(0x5885217B)
+I (UART.h)(0x588D1AC1)
+I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x55AF9EB2)
+F (.\UART.c)(0x588D02C0)(-c --cpu Cortex-M4 -D__EVAL -g -O0 --apcs=interwork --split_sections --signed_chars -I.. -I..\..\.. --C99-I C:\Keil_v5\ARM\RV31\INC-I C:\Keil_v5\ARM\CMSIS\Include-I C:\Keil_v5\ARM\Inc\Luminary-D__UVISION_VERSION="516" -Drvmdk -DPART_LM4F120H5QR-o .\uart.o --omf_browse .\uart.crf --depend .\uart.d)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x55AF9EB2)
+I (../inc/tm4c123gh6pm.h)(0x5885215E)
+I (FIFO.h)(0x5885217B)
+I (UART.h)(0x588D1AC1)
