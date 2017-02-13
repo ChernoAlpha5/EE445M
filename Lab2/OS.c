@@ -38,7 +38,7 @@ struct tcb{
 	int32_t *sp;
 	struct tcb *next;
 	int16_t id;
-	uint8_t sleep;
+	uint16_t sleep;
 	uint8_t priority;
 	uint8_t blocked;
 };
@@ -190,7 +190,7 @@ void OS_bSignal(Sema4Type *semaPt){
 void SetInitialStack(int i){
   tcbs[i].sp = &Stacks[i][STACKSIZE-16]; // thread stack pointer
   Stacks[i][STACKSIZE-1] = 0x01000000;   // thumb bit
-  Stacks[i][STACKSIZE-3] = 0xFFFFFFF9;   // R14
+  Stacks[i][STACKSIZE-3] = 0x14141414;   // R14
   Stacks[i][STACKSIZE-4] = 0x12121212;   // R12
   Stacks[i][STACKSIZE-5] = 0x03030303;   // R3
   Stacks[i][STACKSIZE-6] = 0x02020202;   // R2
@@ -481,5 +481,8 @@ void OS_Launch(unsigned long theTimeSlice){
 }
 
 void OS_SelectNextThread(void){
-	NextPt = RunPt->next;	//switch threads using round-robin
+	NextPt = RunPt->next;	//switch threads using round-robin, avoid dead/uninitialized threads
+	while(NextPt->id <= 0){
+		NextPt = RunPt->next;
+	}
 }
