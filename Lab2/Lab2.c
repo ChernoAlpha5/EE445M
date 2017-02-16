@@ -396,27 +396,30 @@ int Testmain1(void){  // Testmain1
 // no ADC serial port or LCD output
 // no calls to semaphores
 void Thread1b(void){
-  Count1 = 0;          
+  Count1 = 0;   
+OS_Kill();	
   for(;;){
     PB2 ^= 0x04;       // heartbeat
     Count1++;
   }
 }
 void Thread2b(void){
-  Count2 = 0;          
+  Count2 = 0;  
+OS_Kill();	
   for(;;){
     PB3 ^= 0x08;       // heartbeat
     Count2++;
   }
 }
 void Thread3b(void){
-  Count3 = 0;          
+  Count3 = 0;    
+OS_Kill();	
   for(;;){
     PB4 ^= 0x10;       // heartbeat
     Count3++;
   }
 }
-int Testmain2(void){  // Testmain2
+int main(void){  // Testmain2
   OS_Init();           // initialize, disable interrupts
   PortB_Init();       // profile user threads
   NumCreated = 0 ;
@@ -482,7 +485,7 @@ void BackgroundThread5c(void){   // called when Select button pushed
   NumCreated += OS_AddThread(&Thread4c,128,3); 
 }
       
-int main(void){   // Testmain3
+int Testmain3(void){   // Testmain3
   Count4 = 0;          
   OS_Init();           // initialize, disable interrupts
 // Count2 + Count5 should equal Count1

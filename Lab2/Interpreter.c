@@ -69,7 +69,6 @@ void Interpreter(void){
 	uint16_t DataBuffer[200];
 	
   while(1){
-	
     UART_OutString("> ");
     UART_InToken(string,19);
 		switch(string[0]){
@@ -107,15 +106,8 @@ void Interpreter(void){
 				if(string[2] == 'a' || string[2] == 'A'){
 					OS_AddPeriodicThread(toggleLed, 1000, 2);
 				}
-				else if(string[2] == 'c' || string[2] == 'C'){
-					OS_ClearPeriodicTime();
-				}
 				else if(string[2] == 'k' || string[2] == 'K'){
 					OS_KillTask();
-				}
-				else{
-					UART_OutString(" ");
-					UART_OutUDec(OS_ReadPeriodicTime());
 				}
 				break;
 			default:
