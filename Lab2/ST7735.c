@@ -92,6 +92,7 @@
 #include <stdint.h>
 #include "ST7735.h"
 #include "../inc/tm4c123gh6pm.h"
+#include "os.h"
 
 // 16 rows (0 to 15) and 21 characters (0 to 20)
 // Requires (11 + size*size*6*8) bytes of transmission for each character
@@ -1581,12 +1582,15 @@ int ferror(FILE *f){
 // Abstraction of general output device
 // Volume 2 section 3.4.5
 
+Sema4Type Semi;
+
 // *************** Output_Init ********************
 // Standard device driver initialization function for printf
 // Initialize ST7735 LCD
 // Inputs: none
 // Outputs: none
 void Output_Init(void){
+	OS_InitSemaphore(&Semi, 1);
   ST7735_InitR(INITR_REDTAB);
   ST7735_FillScreen(0);                 // set screen to black
 }
@@ -1612,10 +1616,12 @@ void Output_Color(uint32_t newColor){ // Set color of future output
 }
 
 void ST7735_Message (int device, int line, char *string, int32_t value){
+	OS_bWait(&Semi);
 	ST7735_FillRect(device*8, device*8, _width, _height/2, ST7735_BLACK);
 	ST7735_SetCursor(0, line + device*8);
 	ST7735_OutString(string);
 	ST7735_OutString(" ");
 	//ST7735_DrawString(0, line + device*8, string, ST7735_YELLOW);
 	ST7735_OutUDec(value);
+	OS_bSignal(&Semi);
 }

@@ -37,6 +37,7 @@ void StartOS(void);
 struct tcb{
 	int32_t *sp;
 	struct tcb *next;
+	struct tcb *prev;
 	int16_t id;
 	uint16_t sleep;
 	uint8_t priority;
@@ -52,36 +53,26 @@ int16_t CurrentID;
 uint32_t Counter;
 void(*PeriodicTask)(void);
 
-int OS_AddPeriodicThread(void(*task)(void),unsigned long periodMs, unsigned long priority){
-	DisableInterrupts();
-	Counter = 0;
-	SYSCTL_RCGCTIMER_R |= 0x10;   //  activate TIMER4
-	PeriodicTask = task;          // user function
-	TIMER4_CTL_R = 0x00000000;    // disable timer2A during setup
-  TIMER4_CFG_R = 0x00000000;             // configure for 32-bit timer mode
-  TIMER4_TAMR_R = 0x00000002;   // configure for periodic mode, default down-count settings
-  TIMER4_TAPR_R = 0;            // prescale value for trigger
-  TIMER4_TAILR_R = (periodMs*(BUSCLK/1000))-1;    // start value for trigger
-	TIMER4_ICR_R = 0x00000001;    // 6) clear TIMER4A timeout flag
-  TIMER4_IMR_R = 0x00000001;    // enable timeout interrupts
-	NVIC_PRI17_R = (NVIC_PRI17_R&0xFF00FFFF)| (priority << 21); //set pririty
-  NVIC_EN2_R = 1<<6;              // enable interrupt 70 in NVIC
-	TIMER4_CTL_R |= 0x00000001;   // enable timer2A 32-b, periodic, no interrupts
-	EnableInterrupts();
-	return 0; 
-}
-
 void Timer4A_Handler(){
-	PF1 ^= 0x02;
-	PF1 ^= 0x02;
+	//PF1 ^= 0x02;
+	//PF1 ^= 0x02;
 	TIMER4_ICR_R |= 0x01;
 	Counter += 1;
 	PeriodicTask();
-	PF1 ^= 0x02;
+	//PF1 ^= 0x02;
+}
+uint32_t osCounter = 0;
+void Timer5A_Handler(void){
+	//PF1 = 0x2;							// used for measuring ISR time
+  TIMER5_ICR_R = TIMER_ICR_TATOCINT;// acknowledge timer0A timeout
+	osCounter++; 												//increment global counter
+  (*PeriodicTask)();                // execute user task
+	//PF1 = 0x0;
 }
 void OS_ClearPeriodicTime(void){
 	//TIMER4_TAV_R = TIMER4_TAILR_R;
-	TIMER4_TAV_R = 0;
+	//TIMER4_TAV_R = 0;
+	Counter = 0;
 }
 uint32_t OS_ReadPeriodicTime(void){
 	return Counter;
@@ -104,6 +95,10 @@ void OS_KillTask(void){
   NVIC_SYS_PRI3_R =(NVIC_SYS_PRI3_R&0x00FFFFFF)|0xE0000000; // priority 7
 }*/
 
+void Andrew(void){
+	while(1);
+}
+
 // ******** OS_Init ************
 // initialize operating system, disable interrupts until OS_Launch
 // initialize OS controlled I/O: serial, ADC, systick, LaunchPad I/O and timers 
@@ -116,8 +111,11 @@ void OS_Init(void){
   NVIC_ST_CURRENT_R = 0;      // any write to current clears it
   NVIC_SYS_PRI3_R =(NVIC_SYS_PRI3_R&0x00FFFFFF)|0xC0000000; // priority 6 SysTick
 	NVIC_SYS_PRI3_R =(NVIC_SYS_PRI3_R&0xFF00FFFF)|0x00E00000; // priority 7 PendSV
-	CurrentID = 1;
-	RunPt = 0;
+	CurrentID = 0;
+	RunPt = &tcbs[0];
+	RunPt->next = RunPt;
+	OS_AddThread(Andrew, 128, 0);
+	RunPt->id = -1; 
 }
 
 // ******** OS_InitSemaphore ************
@@ -125,7 +123,7 @@ void OS_Init(void){
 // input:  pointer to a semaphore
 // output: none
 void OS_InitSemaphore(Sema4Type *semaPt, long value){
-	
+	semaPt->Value = value;
 }
 
 // ******** OS_Wait ************
@@ -134,9 +132,16 @@ void OS_InitSemaphore(Sema4Type *semaPt, long value){
 // Lab3 block if less than zero
 // input:  pointer to a counting semaphore
 // output: none
-void OS_Wait(Sema4Type *semaPt){
-	
+void OS_Wait(Sema4Type *semaPt) {
+  DisableInterrupts();
+  while((semaPt->Value) <= 0){
+    EnableInterrupts();
+    DisableInterrupts();
+  }
+  (semaPt->Value) = (semaPt->Value) - 1;
+  EnableInterrupts();
 }
+
 
 // ******** OS_Signal ************
 // increment semaphore 
@@ -144,17 +149,27 @@ void OS_Wait(Sema4Type *semaPt){
 // Lab3 wakeup blocked thread if appropriate 
 // input:  pointer to a counting semaphore
 // output: none
-void OS_Signal(Sema4Type *semaPt){
-	
+void OS_Signal(Sema4Type *semaPt) {
+  long status;
+  status = StartCritical();
+  (semaPt->Value) = (semaPt->Value) + 1;
+  EndCritical(status);
 }
+
 
 // ******** OS_bWait ************
 // Lab2 spinlock, set to 0
 // Lab3 block if less than zero
 // input:  pointer to a binary semaphore
 // output: none
-void OS_bWait(Sema4Type *semaPt){
-	
+void OS_bWait(Sema4Type *semaPt) {
+  DisableInterrupts();
+  while((semaPt->Value) == 0){
+    EnableInterrupts();
+    DisableInterrupts();
+  }
+  (semaPt->Value) = 0;
+  EnableInterrupts();
 }
 
 // ******** OS_bSignal ************
@@ -163,28 +178,11 @@ void OS_bWait(Sema4Type *semaPt){
 // input:  pointer to a binary semaphore
 // output: none
 void OS_bSignal(Sema4Type *semaPt){
-	
-}
-
-
-//******** OS_AddThread ValvanoWare ***************
-// add three foregound threads to the scheduler
-// Inputs: three pointers to a void/void foreground tasks
-// Outputs: 1 if successful, 0 if this thread can not be added
-/*int OS_AddThreads(void(*task0)(void),
-                 void(*task1)(void),
-                 void(*task2)(void)){ int32_t status;
+	long status;
   status = StartCritical();
-  tcbs[0].next = &tcbs[1]; // 0 points to 1
-  tcbs[1].next = &tcbs[2]; // 1 points to 2
-  tcbs[2].next = &tcbs[0]; // 2 points to 0
-  SetInitialStack(0); Stacks[0][STACKSIZE-2] = (int32_t)(task0); // PC
-  SetInitialStack(1); Stacks[1][STACKSIZE-2] = (int32_t)(task1); // PC
-  SetInitialStack(2); Stacks[2][STACKSIZE-2] = (int32_t)(task2); // PC
-  RunPt = &tcbs[0];       // thread 0 will run first
+  (semaPt->Value) = 1;
   EndCritical(status);
-  return 1;               // successful
-}*/
+}
 		
 
 void SetInitialStack(int i){
@@ -221,24 +219,20 @@ int OS_AddThread(void(*task)(void), unsigned long stackSize, unsigned long prior
 	tcbType *unusedThread;
 	int numThread;
 	for(numThread = 0; numThread < MAXNUMTHREADS; numThread++){
-		if(tcbs[numThread].id <= 0){
+		if(tcbs[numThread].id == 0){
 			break;
 		}
 	}
 	if(numThread == MAXNUMTHREADS){
 		return 0;
 	}
-	
 	unusedThread = &tcbs[numThread];
-	if(unusedThread->id == 0){ //id = -1 means dead, 0 means uninitialized
-		tcbs[numThread].next = &tcbs[0]; // new uninitialized thread points to first thread
-		if(numThread != 0){
-			tcbs[numThread - 1].next = &tcbs[numThread]; // previous thread points to this
-		}
-		else{
-			RunPt = &tcbs[0];
-		}
-	}
+	
+	unusedThread->next = RunPt->next; // Insert thread into linked list
+	RunPt->next = unusedThread;
+	unusedThread->prev = RunPt;
+	unusedThread->next->prev = unusedThread; //set prev for thread after current to current
+	
 	unusedThread->id = CurrentID;	//Current ID is incremented forever for different IDs
 	SetInitialStack(numThread);		//initialize stack
 	Stacks[numThread][STACKSIZE-2] = (int32_t)(task); //  set PC for Task
@@ -252,7 +246,7 @@ int OS_AddThread(void(*task)(void), unsigned long stackSize, unsigned long prior
 // Inputs: none
 // Outputs: Thread ID, number greater than zero 
 unsigned long OS_Id(void){
-	return 0;
+	return RunPt->id;
 }
 
 //******** OS_AddPeriodicThread *************** 
@@ -272,9 +266,47 @@ unsigned long OS_Id(void){
 // In lab 3, this command will be called 0 1 or 2 times
 // In lab 3, there will be up to four background threads, and this priority field 
 //           determines the relative priority of these four threads
-/*int OS_AddPeriodicThread(void(*task)(void), unsigned long period, unsigned long priority){
+int OS_AddPeriodicThread(void(*task)(void),unsigned long periodMs, unsigned long priority){
+	DisableInterrupts();
+	Counter = 0;
+	SYSCTL_RCGCTIMER_R |= 0x10;   //  activate TIMER4
+	PeriodicTask = task;          // user function
+	TIMER4_CTL_R = 0x00000000;    // disable timer2A during setup
+  TIMER4_CFG_R = 0x00000000;             // configure for 32-bit timer mode
+  TIMER4_TAMR_R = 0x00000002;   // configure for periodic mode, default down-count settings
+  TIMER4_TAPR_R = 0;            // prescale value for trigger
+  TIMER4_TAILR_R = (periodMs*(BUSCLK/1000))-1;    // start value for trigger
+	TIMER4_ICR_R = 0x00000001;    // 6) clear TIMER4A timeout flag
+  TIMER4_IMR_R = 0x00000001;    // enable timeout interrupts
+	NVIC_PRI17_R = (NVIC_PRI17_R&0xFF00FFFF)| (priority << 21); //set pririty
+  NVIC_EN2_R = 1<<6;              // enable interrupt 70 in NVIC
+	TIMER4_CTL_R |= 0x00000001;   // enable timer2A 32-b, periodic, no interrupts
+	EnableInterrupts();
+	return 0; 
+}
+
+// ***************** Timer5_Init ****************
+// Activate Timer4 interrupts to run user task periodically
+// Inputs:  task is a pointer to a user function
+//          period in units (1/clockfreq)
+// Outputs: none
+int OS_AddPeriodicThread2(void(*task)(void), unsigned long period,unsigned long priority){
+  SYSCTL_RCGCTIMER_R |= 0x20;      // 0) activate timer5                    // wait for completion
+	PeriodicTask = task;          // user function
+  TIMER5_CTL_R &= ~0x00000001;     // 1) disable timer5A during setup
+  TIMER5_CFG_R = 0x00000004;       // 2) configure for 16-bit timer mode
+  TIMER5_TAMR_R = 0x00000002;      // 3) configure for periodic mode, default down-count settings
+  TIMER5_TAILR_R = ((80000000/period)-1);       // 4) reload value
+  TIMER5_TAPR_R = 49;              // 5) 1us timer5A
+  TIMER5_ICR_R = 0x00000001;       // 6) clear timer5A timeout flag
+  TIMER5_IMR_R |= 0x00000001;      // 7) arm timeout interrupt
+  NVIC_PRI23_R = (NVIC_PRI23_R&0xFFFFFF00)|(0x20 << priority); // 8) priority 2
+  NVIC_EN2_R |= 0x10000000;        // 9) enable interrupt 19 in NVIC
+  // vector number 108, interrupt number 92
+  TIMER5_CTL_R |= 0x00000001;      // 10) enable timer5A
+// interrupts enabled in the main program after all devices initialized
 	return 0;
-}*/
+}
 
 //******** OS_AddSW1Task *************** 
 // add a background task to run whenever the SW1 (PF4) button is pushed
@@ -290,6 +322,7 @@ unsigned long OS_Id(void){
 // In lab 3, there will be up to four background threads, and this priority field 
 //           determines the relative priority of these four threads
 int OS_AddSW1Task(void(*task)(void), unsigned long priority){
+	
 	return 0;
 }
 
@@ -317,6 +350,7 @@ int OS_AddSW2Task(void(*task)(void), unsigned long priority){
 // You are free to select the time resolution for this function
 // OS_Sleep(0) implements cooperative multitasking
 void OS_Sleep(unsigned long sleepTime){
+	RunPt->sleep = sleepTime;
 	OS_Suspend();
 }
 
@@ -325,7 +359,10 @@ void OS_Sleep(unsigned long sleepTime){
 // input:  none
 // output: none
 void OS_Kill(void){
-	
+	RunPt->id = 0; //set id to dead
+	RunPt->prev->next = RunPt->next;
+	RunPt->next->prev = RunPt->prev;
+	OS_Suspend();		//send to graveyard
 }
 
 // ******** OS_Suspend ************
@@ -454,16 +491,6 @@ unsigned long OS_MsTime(void){
 	return 0;
 }
 
-///******** OS_Launch ValvanoWare ***************
-// start the scheduler, enable interrupts
-// Inputs: number of 20ns clock cycles for each time slice
-//         (maximum of 24 bits)
-// Outputs: none (does not return)
-/*void OS_Launch(uint32_t theTimeSlice){
-  NVIC_ST_RELOAD_R = theTimeSlice - 1; // reload value
-  NVIC_ST_CTRL_R = 0x00000007; // enable, core clock and interrupt arm
-  StartOS();                   // start on the first task
-}*/
 
 
 //******** OS_Launch *************** 
@@ -481,8 +508,8 @@ void OS_Launch(unsigned long theTimeSlice){
 }
 
 void OS_SelectNextThread(void){
-	NextPt = RunPt->next;	//switch threads using round-robin, avoid dead/uninitialized threads
-	while(NextPt->id <= 0){
-		NextPt = RunPt->next;
+	NextPt = RunPt->next;	//switch threads using round-robin, avoid dead/uninitialized threads and sleeping threads
+	while(NextPt->id <= 0 || NextPt->sleep){
+		NextPt = NextPt->next;
 	}
 }
