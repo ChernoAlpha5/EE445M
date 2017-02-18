@@ -547,8 +547,12 @@ void Thread4d(void){ int i;
 extern long AndrewTriggered;
 void BackgroundThread5d(void){   // called when Select button pushed
   NumCreated += OS_AddThread(&Thread4d,128,3); 
-	ST7735_ColoredMessage(0, AndrewTriggered%8, "Smash that like button", 0, NVIC_ST_CURRENT_R%(1<<16));
-	ST7735_ColoredMessage(1, AndrewTriggered%8, "Smash that like button", 0, NVIC_ST_CURRENT_R%(1<<16));
+	if(AndrewTriggered%2){
+		ST7735_ColoredMessage(0, AndrewTriggered%8, "Smash that like button", 0, NVIC_ST_CURRENT_R%(1<<16));
+	}
+	else{
+		ST7735_ColoredMessage(1, AndrewTriggered%8, "Smash that like button", 0, NVIC_ST_CURRENT_R%(1<<16));
+	}
 }
 int main(void){   // Testmain4
   Count4 = 0;          
