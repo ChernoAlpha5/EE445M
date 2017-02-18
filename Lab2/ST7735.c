@@ -1615,9 +1615,20 @@ void Output_Color(uint32_t newColor){ // Set color of future output
   ST7735_SetTextColor(newColor);
 }
 
+void ST7735_ColoredMessage (int device, int line, char *string, int32_t value, int32_t color){
+	OS_bWait(&Semi);
+	ST7735_FillRect(0, (device*_height)/2, _width, _height/2, color);
+	ST7735_SetCursor(0, line + device*8);
+	ST7735_OutString(string);
+	ST7735_OutString(" ");
+	//ST7735_DrawString(0, line + device*8, string, ST7735_YELLOW);
+	ST7735_OutUDec(value);
+	OS_bSignal(&Semi);
+}
+
 void ST7735_Message (int device, int line, char *string, int32_t value){
 	OS_bWait(&Semi);
-	ST7735_FillRect(device*8, device*8, _width, _height/2, ST7735_BLACK);
+	ST7735_FillRect(0, (device*_height)/2, _width, _height/2, ST7735_BLACK);
 	ST7735_SetCursor(0, line + device*8);
 	ST7735_OutString(string);
 	ST7735_OutString(" ");

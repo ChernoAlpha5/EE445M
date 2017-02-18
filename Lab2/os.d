@@ -5,3 +5,4 @@
 .\os.o: OS.h
 .\os.o: SysTick.h
 .\os.o: PLL.h
+.\os.o: ST7735.h

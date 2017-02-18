@@ -419,7 +419,7 @@ OS_Kill();
     Count3++;
   }
 }
-int main(void){  // Testmain2
+int Testmain2(void){  // Testmain2
   OS_Init();           // initialize, disable interrupts
   PortB_Init();       // profile user threads
   NumCreated = 0 ;
@@ -543,10 +543,14 @@ void Thread4d(void){ int i;
   }
   OS_Kill();
 }
+
+extern long AndrewTriggered;
 void BackgroundThread5d(void){   // called when Select button pushed
   NumCreated += OS_AddThread(&Thread4d,128,3); 
+	ST7735_ColoredMessage(0, AndrewTriggered%8, "Smash that like button", 0, NVIC_ST_CURRENT_R%(1<<16));
+	ST7735_ColoredMessage(1, AndrewTriggered%8, "Smash that like button", 0, NVIC_ST_CURRENT_R%(1<<16));
 }
-int Testmain4(void){   // Testmain4
+int main(void){   // Testmain4
   Count4 = 0;          
   OS_Init();           // initialize, disable interrupts
   NumCreated = 0 ;

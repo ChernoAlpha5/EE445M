@@ -459,5 +459,6 @@ void Output_On(void);
 void Output_Color(uint32_t newColor);
 
 void ST7735_Message (int device, int line, char *string, int32_t value);
+void ST7735_ColoredMessage (int device, int line, char *string, int32_t value, int32_t color);
 
 #endif

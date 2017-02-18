@@ -4,6 +4,7 @@
 #include "OS.h"
 #include "SysTick.h"
 #include "PLL.h"
+#include "ST7735.h"
 
 #define TIMER_CFG_16_BIT        0x00000004  // 16-bit timer configuration,
                                             // function is controlled by bits
@@ -53,15 +54,10 @@ int16_t CurrentID;
 
 uint32_t PeriodicTaskCounter;
 void(*PeriodicTask)(void);
+void(*SW1Task)(void);
+void(*SW2Task)(void);
 
-void Timer4A_Handler(){
-	//PF1 ^= 0x02;
-	//PF1 ^= 0x02;
-	TIMER4_ICR_R |= 0x01;
-	PeriodicTaskCounter += 1;
-	PeriodicTask();
-	//PF1 ^= 0x02;
-}
+
 
 void OS_ClearPeriodicTime(void){
 	//TIMER4_TAV_R = TIMER4_TAILR_R;
@@ -76,6 +72,85 @@ void OS_KillTask(void){
 	TIMER4_CTL_R &= ~0x00000001;
 }
 
+long AndrewTriggered;
+void PortF_Init(void){
+	SYSCTL_RCGC2_R |= 0x00000020; // (a) activate clock for port F
+	AndrewTriggered = 0;
+  GPIO_PORTF_DIR_R &= ~0x10;    // (c) make PF4 in (built-in button)
+  GPIO_PORTF_AFSEL_R &= ~0x10;  //     disable alt funct on PF4
+  GPIO_PORTF_DEN_R |= 0x10;     //     enable digital I/O on PF4
+  GPIO_PORTF_PCTL_R &= ~0x000F0000; //  configure PF4 as GPIO
+  GPIO_PORTF_AMSEL_R &= ~0x10;  //    disable analog functionality on PF4
+  GPIO_PORTF_PUR_R |= 0x10;     //     enable weak pull-up on PF4
+  GPIO_PORTF_IS_R &= ~0x10;     // (d) PF4 is edge-sensitive
+  GPIO_PORTF_IBE_R &= ~0x10;    //     PF4 is not both edges
+  GPIO_PORTF_IEV_R &= ~0x10;    //     PF4 falling edge event
+  GPIO_PORTF_ICR_R = 0x10;      // (e) clear flag4
+  NVIC_PRI7_R = (NVIC_PRI7_R&0xFF00FFFF)|0x00A00000; // (g) priority 5
+  NVIC_EN0_R = 0x40000000;      // (h) enable interrupt 30 in NVIC
+}
+
+void GPIOPortF_Handler(void){
+  GPIO_PORTF_ICR_R = 0x10;      // acknowledge flag4
+	SW1Task();
+	AndrewTriggered+=1;
+}
+
+void Timer4A_Init(void){ //Periodic Task 1
+	SYSCTL_RCGCTIMER_R |= 0x10;   //  activate TIMER4
+	long Andrew = 0;
+	TIMER4_CTL_R = 0x00000000;    // disable timer4A during setup
+  TIMER4_CFG_R = 0x00000000;             // configure for 32-bit timer mode
+  TIMER4_TAMR_R = 0x00000002;   // configure for periodic mode, default down-count settings
+  TIMER4_TAPR_R = 0;            // prescale value for trigger
+	TIMER4_ICR_R = 0x00000001;    // 6) clear TIMER4A timeout flag
+  TIMER4_IMR_R = 0x00000001;    // enable timeout interrupts
+}
+
+void Timer4A_Handler(){
+	//PF1 ^= 0x02;
+	//PF1 ^= 0x02;
+	TIMER4_ICR_R |= 0x01;
+	PeriodicTaskCounter += 1;
+	PeriodicTask();
+	//PF1 ^= 0x02;
+}
+
+void Timer5A_Init(void){ //Sleep
+	SYSCTL_RCGCTIMER_R |= 0x20;   //  activate TIMER5
+	long Andrew = 0;
+	TIMER5_CTL_R = 0x00000000;    // disable timer5A during setup
+  TIMER5_CFG_R = 0x00000000;             // configure for 32-bit timer mode
+  TIMER5_TAMR_R = 0x00000002;   // configure for periodic mode, default down-count settings
+  TIMER5_TAPR_R = 0;            // prescale value for trigger
+	TIMER5_ICR_R = 0x00000001;    // 6) clear TIMER4A timeout flag
+	TIMER5_TAILR_R = (1*(BUSCLK/1000))-1;    // start value for trigger
+	NVIC_PRI23_R = (NVIC_PRI23_R&0xFFFFFF00)|0x000000A0; // 8) priority 5
+  NVIC_EN2_R |= 0x10000000;        // 9) enable interrupt 19 in NVIC
+  TIMER5_IMR_R = 0x00000001;    // enable timeout interrupts
+	TIMER5_CTL_R |= 0x00000001;   // enable timer5A 32-b, periodic, no interrupts
+}
+
+void Timer5A_Handler(){
+	//PF1 ^= 0x02;
+	//PF1 ^= 0x02;
+	TIMER5_ICR_R |= 0x01;
+	if(NumThreads){
+		tcbType *firstPt = RunPt;
+		tcbType *currentPt = RunPt;
+		for(int i=0; i<MAXNUMTHREADS; i++){
+			if(currentPt->sleep){
+				currentPt->sleep--;
+			}
+			currentPt = currentPt->next;
+			if(currentPt == firstPt){
+				break;
+			}
+		}
+	}
+	//PF1 ^= 0x02;
+}
+
 
 // ******** OS_Init ************
 // initialize operating system, disable interrupts until OS_Launch
@@ -85,6 +160,10 @@ void OS_KillTask(void){
 void OS_Init(void){
 	DisableInterrupts();
   PLL_Init(Bus50MHz);         // set processor clock to 50 MHz
+	Timer4A_Init();
+	Timer5A_Init();
+	PortF_Init();
+	Output_Init();
   NVIC_ST_CTRL_R = 0;         // disable SysTick during setup
   NVIC_ST_CURRENT_R = 0;      // any write to current clears it
   NVIC_SYS_PRI3_R =(NVIC_SYS_PRI3_R&0x00FFFFFF)|0xC0000000; // priority 6 SysTick
@@ -252,16 +331,9 @@ unsigned long OS_Id(void){
 int OS_AddPeriodicThread(void(*task)(void),unsigned long periodMs, unsigned long priority){
 	DisableInterrupts();
 	PeriodicTaskCounter = 0;
-	SYSCTL_RCGCTIMER_R |= 0x10;   //  activate TIMER4
 	PeriodicTask = task;          // user function
-	TIMER4_CTL_R = 0x00000000;    // disable timer2A during setup
-  TIMER4_CFG_R = 0x00000000;             // configure for 32-bit timer mode
-  TIMER4_TAMR_R = 0x00000002;   // configure for periodic mode, default down-count settings
-  TIMER4_TAPR_R = 0;            // prescale value for trigger
-  TIMER4_TAILR_R = (periodMs*(BUSCLK/1000))-1;    // start value for trigger
-	TIMER4_ICR_R = 0x00000001;    // 6) clear TIMER4A timeout flag
-  TIMER4_IMR_R = 0x00000001;    // enable timeout interrupts
-	NVIC_PRI17_R = (NVIC_PRI17_R&0xFF00FFFF)| (priority << 21); //set pririty
+	TIMER4_TAILR_R = (periodMs*(BUSCLK/1000))-1;    // start value for trigger
+	NVIC_PRI17_R = (NVIC_PRI17_R&0xFF00FFFF)| (priority << 21); //set priority
   NVIC_EN2_R = 1<<6;              // enable interrupt 70 in NVIC
 	TIMER4_CTL_R |= 0x00000001;   // enable timer2A 32-b, periodic, no interrupts
 	EnableInterrupts();
@@ -282,7 +354,8 @@ int OS_AddPeriodicThread(void(*task)(void),unsigned long periodMs, unsigned long
 // In lab 3, there will be up to four background threads, and this priority field 
 //           determines the relative priority of these four threads
 int OS_AddSW1Task(void(*task)(void), unsigned long priority){
-	
+	SW1Task = task;
+	GPIO_PORTF_IM_R |= 0x10;      // (f) arm interrupt on PF4
 	return 0;
 }
 
@@ -300,6 +373,7 @@ int OS_AddSW1Task(void(*task)(void), unsigned long priority){
 // In lab 3, there will be up to four background threads, and this priority field 
 //           determines the relative priority of these four threads
 int OS_AddSW2Task(void(*task)(void), unsigned long priority){
+	SW2Task = task;
 	return 0;
 }
 
@@ -344,6 +418,8 @@ void OS_Suspend(void){
 	NVIC_INT_CTRL_R = 0x04000000; //Trigger SysTick
 }
 
+
+
 // ******** OS_Fifo_Init ************
 // Initialize the Fifo to be empty
 // Inputs: size
@@ -354,6 +430,8 @@ void OS_Suspend(void){
 //    e.g., 4 to 64 elements
 //    e.g., must be a power of 2,4,8,16,32,64,128
 void OS_Fifo_Init(unsigned long size){
+	
+	
 	
 }
 
