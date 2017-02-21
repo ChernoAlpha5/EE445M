@@ -36,8 +36,8 @@ void EndCritical(long primask);
 void StartOS(void);
 
 uint8_t NumThreads;
-#define MAXNUMTHREADS 50
-#define STACKSIZE 100
+#define MAXNUMTHREADS 30
+#define STACKSIZE 200
 struct tcb{
 	int32_t *sp;
 	struct tcb *next;
@@ -164,7 +164,7 @@ void WTimer5A_Init(void){ //Sleep
   WTIMER5_TAPR_R = 0;            // prescale value for trigger
 	WTIMER5_ICR_R = 0x00000001;    // 6) clear WTIMER5A timeout flag
 	WTIMER5_TAILR_R = 0xFFFFFFFF;    // start value for trigger
-	NVIC_PRI26_R = (NVIC_PRI26_R&0xFFFFFF00)|0x000000A0; // 8) priority 5
+	NVIC_PRI26_R = (NVIC_PRI26_R&0xFFFFFF00)|0x00000080; // 8) priority 4
   NVIC_EN3_R |= 0x00000100;        // 9) enable interrupt 19 in NVIC
   WTIMER5_IMR_R = 0x00000001;    // enable timeout interrupts
 	WTIMER5_CTL_R |= 0x00000001;   // enable Wtimer5A 64-b, periodic, no interrupts
@@ -304,6 +304,7 @@ int OS_AddThread(void(*task)(void), unsigned long stackSize, unsigned long prior
 		}
 	}
 	if(numThread == MAXNUMTHREADS){
+		EndCritical(status);
 		return 0;
 	}
 	unusedThread = &tcbs[numThread];
@@ -428,8 +429,9 @@ void OS_Kill(void){
 		RunPt->prev->next = RunPt->next;	//if no threads left there is no need to change pointers
 		RunPt->next->prev = RunPt->prev;
 	}
-	EndCritical(status);
+	
 	OS_Suspend();		//send to graveyard
+	EndCritical(status);
 }
 
 // ******** OS_Suspend ************
@@ -446,7 +448,6 @@ void OS_Suspend(void){
 
 
 static int Fifo[MAXFIFOSIZE];
-unsigned long FifoSize;
 int PutPt;
 int GetPt;
 Sema4Type DataRoomLeft;
@@ -463,7 +464,6 @@ Sema4Type FifoMutex;
 //    e.g., must be a power of 2,4,8,16,32,64,128
 void OS_Fifo_Init(unsigned long size){
 	long sr = StartCritical();      // make atomic
-	FifoSize = size;
 	OS_InitSemaphore(&DataRoomLeft, size);
 	OS_InitSemaphore(&DataAvailable, 0);
 	OS_InitSemaphore(&FifoMutex, 1);

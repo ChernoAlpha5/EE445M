@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\UARTInts.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\UARTInts.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5.03 [Build 76]: Last Updated: Mon Feb 20 20:26:57 2017
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5.03 [Build 76]: Last Updated: Mon Feb 20 21:19:54 2017
 <BR><P>
 <H3>Maximum Stack Usage =        608 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -16,7 +16,7 @@ Functions with no stack information
  <LI><a href="#[9c]">DisableInterrupts</a>
  <LI><a href="#[9d]">EnableInterrupts</a>
  <LI><a href="#[b7]">StartCritical</a>
- <LI><a href="#[b9]">EndCritical</a>
+ <LI><a href="#[b8]">EndCritical</a>
  <LI><a href="#[110]">WaitForInterrupt</a>
  <LI><a href="#[99]">__user_initial_stackheap</a>
  <LI><a href="#[ce]">PID_stm32</a>
@@ -722,7 +722,7 @@ Global Symbols
 <LI><a href="#[a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_AddThread
 </UL>
 
-<P><STRONG><a name="[b9]"></a>EndCritical</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, startup.o(.text))
+<P><STRONG><a name="[b8]"></a>EndCritical</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, startup.o(.text))
 <BR><BR>[Called By]<UL><LI><a href="#[bc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_bSignal
 <LI><a href="#[e2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TxFifo_Init
 <LI><a href="#[cf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RxFifo_Init
@@ -927,13 +927,13 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[92]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[a3]"></a>OS_AddThread</STRONG> (Thumb, 168 bytes, Stack size 32 bytes, os.o(i.OS_AddThread))
+<P><STRONG><a name="[a3]"></a>OS_AddThread</STRONG> (Thumb, 174 bytes, Stack size 32 bytes, os.o(i.OS_AddThread))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32 + Unknown Stack Size
 <LI>Call Chain = OS_AddThread
 </UL>
-<BR>[Calls]<UL><LI><a href="#[b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EndCritical
+<BR>[Calls]<UL><LI><a href="#[b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EndCritical
 <LI><a href="#[b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StartCritical
-<LI><a href="#[b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SetInitialStack
+<LI><a href="#[b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SetInitialStack
 </UL>
 <BR>[Called By]<UL><LI><a href="#[92]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 <LI><a href="#[82]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SW1Push
@@ -956,12 +956,12 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[85]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Consumer
 </UL>
 
-<P><STRONG><a name="[be]"></a>OS_Fifo_Init</STRONG> (Thumb, 56 bytes, Stack size 16 bytes, os.o(i.OS_Fifo_Init))
+<P><STRONG><a name="[be]"></a>OS_Fifo_Init</STRONG> (Thumb, 52 bytes, Stack size 16 bytes, os.o(i.OS_Fifo_Init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16 + Unknown Stack Size
 <LI>Call Chain = OS_Fifo_Init
 </UL>
 <BR>[Calls]<UL><LI><a href="#[bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_InitSemaphore
-<LI><a href="#[b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EndCritical
+<LI><a href="#[b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EndCritical
 <LI><a href="#[b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StartCritical
 </UL>
 <BR>[Called By]<UL><LI><a href="#[92]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
@@ -998,7 +998,7 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 8 + Unknown Stack Size
 <LI>Call Chain = OS_Kill
 </UL>
-<BR>[Calls]<UL><LI><a href="#[b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EndCritical
+<BR>[Calls]<UL><LI><a href="#[b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EndCritical
 <LI><a href="#[b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StartCritical
 <LI><a href="#[c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Suspend
 </UL>
@@ -1025,7 +1025,7 @@ Global Symbols
 <LI>Call Chain = OS_MailBox_Init
 </UL>
 <BR>[Calls]<UL><LI><a href="#[bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_InitSemaphore
-<LI><a href="#[b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EndCritical
+<LI><a href="#[b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EndCritical
 <LI><a href="#[b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StartCritical
 </UL>
 <BR>[Called By]<UL><LI><a href="#[92]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
@@ -1063,7 +1063,7 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 16 + Unknown Stack Size
 <LI>Call Chain = OS_Signal
 </UL>
-<BR>[Calls]<UL><LI><a href="#[b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EndCritical
+<BR>[Calls]<UL><LI><a href="#[b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EndCritical
 <LI><a href="#[b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StartCritical
 </UL>
 <BR>[Called By]<UL><LI><a href="#[a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_MailBox_Send
@@ -1075,7 +1075,7 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 16 + Unknown Stack Size
 <LI>Call Chain = OS_Sleep
 </UL>
-<BR>[Calls]<UL><LI><a href="#[b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EndCritical
+<BR>[Calls]<UL><LI><a href="#[b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EndCritical
 <LI><a href="#[b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StartCritical
 <LI><a href="#[c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Suspend
 </UL>
@@ -1109,7 +1109,7 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 16 + Unknown Stack Size
 <LI>Call Chain = OS_bSignal
 </UL>
-<BR>[Calls]<UL><LI><a href="#[b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EndCritical
+<BR>[Calls]<UL><LI><a href="#[b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EndCritical
 <LI><a href="#[b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StartCritical
 </UL>
 <BR>[Called By]<UL><LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ST7735_Message
@@ -1175,7 +1175,7 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 8 + Unknown Stack Size
 <LI>Call Chain = RxFifo_Init
 </UL>
-<BR>[Calls]<UL><LI><a href="#[b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EndCritical
+<BR>[Calls]<UL><LI><a href="#[b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EndCritical
 <LI><a href="#[b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StartCritical
 </UL>
 <BR>[Called By]<UL><LI><a href="#[ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_Init
@@ -1307,7 +1307,7 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> lab2.o(i.main)
 </UL>
-<P><STRONG><a name="[b8]"></a>SetInitialStack</STRONG> (Thumb, 328 bytes, Stack size 0 bytes, os.o(i.SetInitialStack))
+<P><STRONG><a name="[b9]"></a>SetInitialStack</STRONG> (Thumb, 328 bytes, Stack size 0 bytes, os.o(i.SetInitialStack))
 <BR><BR>[Called By]<UL><LI><a href="#[a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_AddThread
 </UL>
 
@@ -1342,7 +1342,7 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 8 + Unknown Stack Size
 <LI>Call Chain = TxFifo_Init
 </UL>
-<BR>[Calls]<UL><LI><a href="#[b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EndCritical
+<BR>[Calls]<UL><LI><a href="#[b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EndCritical
 <LI><a href="#[b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StartCritical
 </UL>
 <BR>[Called By]<UL><LI><a href="#[ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_Init

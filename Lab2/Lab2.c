@@ -315,7 +315,7 @@ int main(void){
 
 //********initialize communication channels
   OS_MailBox_Init();
-  OS_Fifo_Init(4);    // ***note*** 4 is not big enough*****
+  OS_Fifo_Init(128);    // ***note*** 4 is not big enough*****
 
 //*******attach background tasks***********
   OS_AddSW1Task(&SW1Push,2);
