@@ -306,7 +306,7 @@ void Interpreter(void);    // just a prototype, link to your interpreter
 
 
 //*******************final user main DEMONTRATE THIS TO TA**********
-int Testmain(void){ 
+int main(void){ 
   OS_Init();           // initialize, disable interrupts
   PortB_Init();
   DataLost = 0;        // lost data between producer and consumer
@@ -315,7 +315,7 @@ int Testmain(void){
 
 //********initialize communication channels
   OS_MailBox_Init();
-  OS_Fifo_Init(128);    // ***note*** 4 is not big enough*****
+  OS_Fifo_Init(4);    // ***note*** 4 is not big enough*****
 
 //*******attach background tasks***********
   OS_AddSW1Task(&SW1Push,2);
@@ -545,16 +545,17 @@ void Thread4d(void){ int i;
 }
 
 extern long AndrewTriggered;
+extern int NumThreads;
 void BackgroundThread5d(void){   // called when Select button pushed
   NumCreated += OS_AddThread(&Thread4d,128,3); 
 	if(AndrewTriggered%2){
-		ST7735_ColoredMessage(0, AndrewTriggered%8, "Smash that like button", 0, NVIC_ST_CURRENT_R%(1<<16));
+		ST7735_ColoredMessage(0, AndrewTriggered%8, "Smash that like ", NumThreads, NVIC_ST_CURRENT_R%(1<<16));
 	}
 	else{
-		ST7735_ColoredMessage(1, AndrewTriggered%8, "Smash that like button", 0, NVIC_ST_CURRENT_R%(1<<16));
+		ST7735_ColoredMessage(1, AndrewTriggered%8, "Smash that like ", NumThreads, NVIC_ST_CURRENT_R%(1<<16));
 	}
 }
-int main(void){   // Testmain4
+int Testmain4(void){   // Testmain4
   Count4 = 0;          
   OS_Init();           // initialize, disable interrupts
   NumCreated = 0 ;

@@ -1628,7 +1628,7 @@ void ST7735_ColoredMessage (int device, int line, char *string, int32_t value, i
 
 void ST7735_Message (int device, int line, char *string, int32_t value){
 	OS_bWait(&Semi);
-	ST7735_FillRect(0, (device*_height)/2, _width, _height/2, ST7735_BLACK);
+	//ST7735_FillRect(0, (device*_height)/2, _width, _height/2, ST7735_BLACK);
 	ST7735_SetCursor(0, line + device*8);
 	ST7735_OutString(string);
 	ST7735_OutString(" ");

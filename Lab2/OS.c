@@ -23,6 +23,8 @@
 #define PF2             (*((volatile uint32_t *)0x40025010))
 #define PF1             (*((volatile uint32_t *)0x40025008))																						
 #define BUSCLK 50000000
+
+#define MAXFIFOSIZE 128
 																						
 void DisableInterrupts(void); // Disable interrupts
 void EnableInterrupts(void);  // Enable interrupts
@@ -34,7 +36,7 @@ void EndCritical(long primask);
 void StartOS(void);
 
 uint8_t NumThreads;
-#define MAXNUMTHREADS 10
+#define MAXNUMTHREADS 50
 #define STACKSIZE 100
 struct tcb{
 	int32_t *sp;
@@ -51,6 +53,7 @@ tcbType *RunPt;
 tcbType *NextPt;
 int32_t Stacks[MAXNUMTHREADS][STACKSIZE];
 int16_t CurrentID;
+uint32_t OSMsCount;
 
 uint32_t PeriodicTaskCounter;
 void(*PeriodicTask)(void);
@@ -118,7 +121,7 @@ void Timer4A_Handler(){
 
 void Timer5A_Init(void){ //Sleep
 	SYSCTL_RCGCTIMER_R |= 0x20;   //  activate TIMER5
-	long Andrew = 0;
+	OSMsCount = 0;
 	TIMER5_CTL_R = 0x00000000;    // disable timer5A during setup
   TIMER5_CFG_R = 0x00000000;             // configure for 32-bit timer mode
   TIMER5_TAMR_R = 0x00000002;   // configure for periodic mode, default down-count settings
@@ -135,6 +138,7 @@ void Timer5A_Handler(){
 	//PF1 ^= 0x02;
 	//PF1 ^= 0x02;
 	TIMER5_ICR_R |= 0x01;
+	OSMsCount += 1;
 	if(NumThreads){
 		tcbType *firstPt = RunPt;
 		tcbType *currentPt = RunPt;
@@ -151,6 +155,27 @@ void Timer5A_Handler(){
 	//PF1 ^= 0x02;
 }
 
+void WTimer5A_Init(void){ //Sleep
+	SYSCTL_RCGCWTIMER_R |= 0x20;   //  activate WTIMER5
+	long Andrew = 0;
+	WTIMER5_CTL_R = 0x00000000;    // disable Wtimer5A during setup
+  WTIMER5_CFG_R = 0x00000000;             // configure for 64-bit timer mode
+  WTIMER5_TAMR_R = 0x00000002;   // configure for periodic mode, default down-count settings
+  WTIMER5_TAPR_R = 0;            // prescale value for trigger
+	WTIMER5_ICR_R = 0x00000001;    // 6) clear WTIMER5A timeout flag
+	WTIMER5_TAILR_R = 0xFFFFFFFF;    // start value for trigger
+	NVIC_PRI26_R = (NVIC_PRI26_R&0xFFFFFF00)|0x000000A0; // 8) priority 5
+  NVIC_EN3_R |= 0x00000100;        // 9) enable interrupt 19 in NVIC
+  WTIMER5_IMR_R = 0x00000001;    // enable timeout interrupts
+	WTIMER5_CTL_R |= 0x00000001;   // enable Wtimer5A 64-b, periodic, no interrupts
+}
+
+int WideTimer5Count = 0;
+void WideTimer5A_Handler(void){
+	WTIMER5_ICR_R |= 0x01;
+	WideTimer5Count+=1; 
+}
+
 
 // ******** OS_Init ************
 // initialize operating system, disable interrupts until OS_Launch
@@ -162,6 +187,7 @@ void OS_Init(void){
   PLL_Init(Bus50MHz);         // set processor clock to 50 MHz
 	Timer4A_Init();
 	Timer5A_Init();
+	WTimer5A_Init();
 	PortF_Init();
 	Output_Init();
   NVIC_ST_CTRL_R = 0;         // disable SysTick during setup
@@ -419,7 +445,13 @@ void OS_Suspend(void){
 }
 
 
-
+static int Fifo[MAXFIFOSIZE];
+unsigned long FifoSize;
+int PutPt;
+int GetPt;
+Sema4Type DataRoomLeft;
+Sema4Type DataAvailable;
+Sema4Type FifoMutex;
 // ******** OS_Fifo_Init ************
 // Initialize the Fifo to be empty
 // Inputs: size
@@ -430,9 +462,13 @@ void OS_Suspend(void){
 //    e.g., 4 to 64 elements
 //    e.g., must be a power of 2,4,8,16,32,64,128
 void OS_Fifo_Init(unsigned long size){
-	
-	
-	
+	long sr = StartCritical();      // make atomic
+	FifoSize = size;
+	OS_InitSemaphore(&DataRoomLeft, size);
+	OS_InitSemaphore(&DataAvailable, 0);
+	OS_InitSemaphore(&FifoMutex, 1);
+  PutPt = GetPt = 0; // Empty
+  EndCritical(sr);
 }
 
 // ******** OS_Fifo_Put ************
@@ -444,6 +480,12 @@ void OS_Fifo_Init(unsigned long size){
 // Since this is called by interrupt handlers 
 //  this function can not disable or enable interrupts
 int OS_Fifo_Put(unsigned long data){
+	OS_Wait(&DataRoomLeft);
+	OS_bWait(&FifoMutex);
+	Fifo[PutPt] = data;
+	PutPt = (PutPt + 1) % MAXFIFOSIZE;
+	OS_bSignal(&FifoMutex);
+	OS_Signal(&DataAvailable);
 	return 0;
 }
 
@@ -453,7 +495,13 @@ int OS_Fifo_Put(unsigned long data){
 // Inputs:  none
 // Outputs: data 
 unsigned long OS_Fifo_Get(void){
-	return 0;
+	OS_Wait(&DataAvailable);
+	OS_bWait(&FifoMutex);
+	unsigned long data = Fifo[GetPt];
+	GetPt = (GetPt + 1) % MAXFIFOSIZE;
+	OS_bSignal(&FifoMutex);
+	OS_Signal(&DataRoomLeft);
+	return data;
 }
 
 // ******** OS_Fifo_Size ************
@@ -464,15 +512,22 @@ unsigned long OS_Fifo_Get(void){
 //          zero or less than zero if the Fifo is empty 
 //          zero or less than zero if a call to OS_Fifo_Get will spin or block
 long OS_Fifo_Size(void){
-	return 0;
+	return DataAvailable.Value;
 }
+
+Sema4Type BoxFree;
+Sema4Type DataValid;
+unsigned long MailBox;
 
 // ******** OS_MailBox_Init ************
 // Initialize communication channel
 // Inputs:  none
 // Outputs: none
 void OS_MailBox_Init(void){
-	
+	long sr = StartCritical();      // make atomic
+	OS_InitSemaphore(&BoxFree, 1);
+	OS_InitSemaphore(&DataValid, 0);
+  EndCritical(sr);
 }
 
 // ******** OS_MailBox_Send ************
@@ -482,7 +537,9 @@ void OS_MailBox_Init(void){
 // This function will be called from a foreground thread
 // It will spin/block if the MailBox contains data not yet received 
 void OS_MailBox_Send(unsigned long data){
-	
+	OS_bWait(&BoxFree);
+	MailBox = data;
+	OS_Signal(&DataValid);
 }
 
 // ******** OS_MailBox_Recv ************
@@ -492,7 +549,10 @@ void OS_MailBox_Send(unsigned long data){
 // This function will be called from a foreground thread
 // It will spin/block if the MailBox is empty 
 unsigned long OS_MailBox_Recv(void){
-	return 0;
+	OS_bWait(&DataValid);
+	unsigned long data = MailBox;
+	OS_Signal(&BoxFree);
+	return data;
 }
 
 // ******** OS_Time ************
@@ -503,7 +563,7 @@ unsigned long OS_MailBox_Recv(void){
 // It is ok to change the resolution and precision of this function as long as 
 //   this function and OS_TimeDifference have the same resolution and precision 
 unsigned long OS_Time(void){
-	return 0;
+	return WTIMER5_TAILR_R;
 }
 
 // ******** OS_TimeDifference ************
@@ -514,7 +574,11 @@ unsigned long OS_Time(void){
 // It is ok to change the resolution and precision of this function as long as 
 //   this function and OS_Time have the same resolution and precision 
 unsigned long OS_TimeDifference(unsigned long start, unsigned long stop){
-	return 0;
+	long difference = start - stop;
+	if(difference < 0){
+		difference += 0x0FFFFFFFF;
+	}
+	return difference;
 }
 
 // ******** OS_ClearMsTime ************
@@ -523,6 +587,7 @@ unsigned long OS_TimeDifference(unsigned long start, unsigned long stop){
 // Outputs: none
 // You are free to change how this works
 void OS_ClearMsTime(void){
+	OSMsCount = 0;
 }
 
 // ******** OS_MsTime ************
@@ -532,7 +597,7 @@ void OS_ClearMsTime(void){
 // You are free to select the time resolution for this function
 // It is ok to make the resolution to match the first call to OS_AddPeriodicThread
 unsigned long OS_MsTime(void){
-	return 0;
+	return OSMsCount;
 }
 
 

@@ -65,7 +65,7 @@ void Interpreter(void){
   char string[20];  // global to assist in debugging
 	heartBeatInit();
   UART_Init();              // initialize UART
-	Output_Init();
+	//Output_Init();
 	uint16_t DataBuffer[200];
 	
   while(1){
