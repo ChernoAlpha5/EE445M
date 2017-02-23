@@ -26,6 +26,4 @@ int ADC_Open(uint32_t channelNum);
 
 uint16_t ADC_In(void);
 
-int ADC_Collect(uint32_t channelNum, uint32_t fs, uint16_t buffer[],uint32_t numberOfSamples);
-
-int ADC_Status(void);
+int ADC_Collect(uint32_t channelNum, uint32_t fs, void (*task)(unsigned long));

@@ -69,9 +69,8 @@ unsigned long JitterHistogram[JITTERSIZE]={0,};
 #define PB5  (*((volatile unsigned long *)0x40005080))
 
 void PortB_Init(void){ unsigned long volatile delay;
-  SYSCTL_RCGC2_R |= 0x02;       // activate port B
-  delay = SYSCTL_RCGC2_R;        
-  delay = SYSCTL_RCGC2_R;         
+  SYSCTL_RCGCGPIO_R |= 0x02; // activate port B
+  while((SYSCTL_PRGPIO_R&0x02)==0){}; // allow time for clock to start         
   GPIO_PORTB_DIR_R |= 0x3C;    // make PB5-2 output heartbeats
   GPIO_PORTB_AFSEL_R &= ~0x3C;   // disable alt funct on PB5-2
   GPIO_PORTB_DEN_R |= 0x3C;     // enable digital I/O on PB5-2
@@ -104,10 +103,10 @@ static unsigned long n=3;   // 3, 4, or 5
 // outputs: none
 unsigned long DASoutput;
 void DAS(void){ 
-unsigned long input;  
-unsigned static long LastTime;  // time at previous ADC sample
-unsigned long thisTime;         // time at current ADC sample
-long jitter;                    // time between measured and expected, in us
+	unsigned long input;  
+	unsigned static long LastTime;  // time at previous ADC sample
+	unsigned long thisTime;         // time at current ADC sample
+	long jitter;                    // time between measured and expected, in us
   if(NumSamples < RUNLENGTH){   // finite time run
     PB2 ^= 0x04;
     input = ADC_In();           // channel set when calling ADC_Init
@@ -216,7 +215,7 @@ void Consumer(void){
 unsigned long data,DCcomponent;   // 12-bit raw ADC sample, 0 to 4095
 unsigned long t;                  // time in 2.5 ms
 unsigned long myId = OS_Id(); 
-  //ADC_Collect(5, FS, &Producer); // start ADC sampling, channel 5, PD2, 400 Hz
+  ADC_Collect(5, FS, &Producer); // start ADC sampling, channel 5, PD2, 400 Hz
   NumCreated += OS_AddThread(&Display,128,0); 
   while(NumSamples < RUNLENGTH) { 
     PB4 = 0x10;

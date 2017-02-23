@@ -66,7 +66,6 @@ void Interpreter(void){
 	heartBeatInit();
   UART_Init();              // initialize UART
 	//Output_Init();
-	uint16_t DataBuffer[200];
 	
   while(1){
     UART_OutString("> ");
@@ -75,15 +74,6 @@ void Interpreter(void){
 			case 'A':
 			case 'a':
 				if(string[3] =='t' || string[3] == 'T'){
-					UART_OutString(" ");
-					int fs = UART_InUDec();
-					UART_OutString(" ");
-					int numSamples = UART_InUDec();
-					ADC_Collect(0, fs, DataBuffer, numSamples);
-					while(ADC_Status()==-1);
-					UART_OutString(" Done");
-				}
-				else{
 					ADC_Open(0);
 					UART_OutString(" ");
 					UART_OutUDec(ADC_In());
@@ -114,6 +104,5 @@ void Interpreter(void){
 				UART_OutString("Error");
 		}
 		OutCRLF();
-		
   }
 }

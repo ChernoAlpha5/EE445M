@@ -72,6 +72,8 @@ long StartCritical (void);    // previous I bit, disable interrupts
 void EndCritical(long sr);    // restore I bit to previous value
 void WaitForInterrupt(void);  // low power mode
 
+void(*DataConsumer)(unsigned long);
+
 
 int ADC_Open(uint8_t channelNum){
   volatile uint32_t delay;
@@ -195,25 +197,15 @@ uint16_t ADC_In(void){
 }
 
 
-uint32_t numSamples;
-uint32_t curSample;
-uint16_t *outputBuffer;
 
 void ADC0Seq2_Handler(void){
   ADC0_ISC_R = 0x04;          // acknowledge ADC sequence 2 completion
-  outputBuffer[curSample] = ADC0_SSFIFO2_R;  // 12-bit result
-	curSample++;
-	if(curSample == numSamples){
-		TIMER2_CTL_R &= ~0x00000001; //turn off timer2
-	}
+  DataConsumer(ADC0_SSFIFO2_R & 0x0FFF);  // 12-bit result
 }
 
 
-int ADC_Collect(uint32_t channelNum, uint32_t fs, uint16_t buffer[], uint32_t numberOfSamples){
-	numSamples = numberOfSamples;
-	outputBuffer = buffer;
-	curSample = 0;
-	
+int ADC_Collect(uint32_t channelNum, uint32_t fs, void(*task)(unsigned long)){
+	DataConsumer = task;
 	volatile uint32_t delay;
   // **** GPIO pin initialization ****
   switch(channelNum){             // 1) activate clock
@@ -330,17 +322,10 @@ int ADC_Collect(uint32_t channelNum, uint32_t fs, uint16_t buffer[], uint32_t nu
   ADC0_SSCTL2_R = 0x06;          // set flag and end for a single sample                      
   ADC0_IM_R |= 0x04;             // enable SS2 interrupts
   ADC0_ACTSS_R |= 0x04;          // enable sample sequencer 2
-  NVIC_PRI4_R = (NVIC_PRI4_R&0xFFFFFF00)|0x00000040; //priority 2
-  NVIC_EN0_R = 1<<16;              // enable interrupt 17 in NVIC
+  NVIC_PRI4_R = (NVIC_PRI4_R&0xFFFFFF00)|0x00000080; //priority 4
+  NVIC_EN0_R = 1<<16;              // enable interrupt 16 in NVIC
 	EnableInterrupts();
 	return 0;
-}
-
-int ADC_Status(void){
-	if(numSamples == curSample){
-		return 0;
-	}
-	return -1;
 }
 
 
