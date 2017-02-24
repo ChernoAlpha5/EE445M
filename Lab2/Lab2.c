@@ -63,6 +63,7 @@ long MaxJitter;             // largest time jitter between interrupts in usec
 unsigned long const JitterSize=JITTERSIZE;
 unsigned long JitterHistogram[JITTERSIZE]={0,};
 
+#define PB1  (*((volatile unsigned long *)0x40005008))
 #define PB2  (*((volatile unsigned long *)0x40005010))
 #define PB3  (*((volatile unsigned long *)0x40005020))
 #define PB4  (*((volatile unsigned long *)0x40005040))
@@ -71,11 +72,11 @@ unsigned long JitterHistogram[JITTERSIZE]={0,};
 void PortB_Init(void){ unsigned long volatile delay;
   SYSCTL_RCGCGPIO_R |= 0x02; // activate port B
   while((SYSCTL_PRGPIO_R&0x02)==0){}; // allow time for clock to start         
-  GPIO_PORTB_DIR_R |= 0x3C;    // make PB5-2 output heartbeats
-  GPIO_PORTB_AFSEL_R &= ~0x3C;   // disable alt funct on PB5-2
-  GPIO_PORTB_DEN_R |= 0x3C;     // enable digital I/O on PB5-2
-  GPIO_PORTB_PCTL_R = ~0x00FFFF00;
-  GPIO_PORTB_AMSEL_R &= ~0x3C;      // disable analog functionality on PB
+  GPIO_PORTB_DIR_R |= 0x3E;    // make PB5-2 output heartbeats
+  GPIO_PORTB_AFSEL_R &= ~0x3E;   // disable alt funct on PB5-2
+  GPIO_PORTB_DEN_R |= 0x3E;     // enable digital I/O on PB5-2
+  GPIO_PORTB_PCTL_R = ~0x00FFFFF0;
+  GPIO_PORTB_AMSEL_R &= ~0x3E;      // disable analog functionality on PB
 }
 
 //------------------Task 1--------------------------------
@@ -158,12 +159,15 @@ unsigned long myId = OS_Id();
 // Adds another foreground task
 // background threads execute once and return
 void SW1Push(void){
+	PB1 ^= 0x02;
+	PB1 ^= 0x02;
   if(OS_MsTime() > 20){ // debounce
     if(OS_AddThread(&ButtonWork,100,4)){
       NumCreated++; 
     }
     OS_ClearMsTime();  // at least 20ms between touches
   }
+	PB1 ^= 0x02;
 }
 //************SW2Push*************
 // Called when SW2 Button pushed, Lab 3 only
@@ -244,7 +248,7 @@ unsigned long data,voltage;
     PB5 = 0x20;
     ST7735_Message(0,2,"v(mV) =",voltage);  
     PB5 = 0x20;
-  } 
+  }
   OS_Kill();  // done
 } 
 
@@ -314,7 +318,7 @@ int main(void){
 
 //********initialize communication channels
   OS_MailBox_Init();
-  OS_Fifo_Init(128);    // ***note*** 4 is not big enough*****
+  OS_Fifo_Init(1);    // ***note*** 4 is not big enough*****
 
 //*******attach background tasks***********
   OS_AddSW1Task(&SW1Push,2);
@@ -328,7 +332,7 @@ int main(void){
   NumCreated += OS_AddThread(&Consumer,128,1); 
   NumCreated += OS_AddThread(&PID,128,3);  // Lab 3, make this lowest priority
  
-  OS_Launch(TIME_2MS); // doesn't return, interrupts enabled in here
+  OS_Launch(TIME_2MS*5); // doesn't return, interrupts enabled in here
   return 0;            // this never executes
 }
 
@@ -396,15 +400,13 @@ int Testmain1(void){  // Testmain1
 // no calls to semaphores
 void Thread1b(void){
   Count1 = 0;   
-OS_Kill();	
   for(;;){
     PB2 ^= 0x04;       // heartbeat
     Count1++;
   }
 }
 void Thread2b(void){
-  Count2 = 0;  
-OS_Kill();	
+  Count2 = 0;  	
   for(;;){
     PB3 ^= 0x08;       // heartbeat
     Count2++;
@@ -412,7 +414,6 @@ OS_Kill();
 }
 void Thread3b(void){
   Count3 = 0;    
-OS_Kill();	
   for(;;){
     PB4 ^= 0x10;       // heartbeat
     Count3++;

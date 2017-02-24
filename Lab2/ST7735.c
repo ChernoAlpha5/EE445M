@@ -224,6 +224,8 @@ uint16_t StTextColor = ST7735_YELLOW;
 #define ST7735_GMCTRP1 0xE0
 #define ST7735_GMCTRN1 0xE1
 
+
+#define _charHeight 10
 // standard ascii 5x7 font
 // originally from glcdfont.c from Adafruit project
 static const uint8_t Font[] = {
@@ -1628,11 +1630,11 @@ void ST7735_ColoredMessage (int device, int line, char *string, int32_t value, i
 
 void ST7735_Message (int device, int line, char *string, int32_t value){
 	OS_bWait(&Semi);
-	//ST7735_FillRect(0, (device*_height)/2, _width, _height/2, ST7735_BLACK);
 	ST7735_SetCursor(0, line + device*8);
 	ST7735_OutString(string);
 	ST7735_OutString(" ");
 	//ST7735_DrawString(0, line + device*8, string, ST7735_YELLOW);
 	ST7735_OutUDec(value);
+	ST7735_FillRect(StX*6+1, (device*_height)/2 + (line)*_charHeight, _width - StX*6+1, _charHeight, ST7735_BLACK);
 	OS_bSignal(&Semi);
 }

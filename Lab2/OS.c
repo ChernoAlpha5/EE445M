@@ -24,7 +24,7 @@
 #define PF1             (*((volatile uint32_t *)0x40025008))																						
 #define BUSCLK 50000000
 
-#define MAXFIFOSIZE 200
+#define MAXFIFOSIZE 32
 																						
 void DisableInterrupts(void); // Disable interrupts
 void EnableInterrupts(void);  // Enable interrupts
@@ -90,7 +90,7 @@ void PortF_Init(void){
   GPIO_PORTF_IBE_R &= ~0x10;    //     PF4 is not both edges
   GPIO_PORTF_IEV_R &= ~0x10;    //     PF4 falling edge event
   GPIO_PORTF_ICR_R = 0x10;      // (e) clear flag4
-  NVIC_PRI7_R = (NVIC_PRI7_R&0xFF00FFFF)|0x00800000; // (g) priority 4
+  NVIC_PRI7_R = (NVIC_PRI7_R&0xFF00FFFF)|0x00400000; // (g) priority 2
   NVIC_EN0_R = 0x40000000;      // (h) enable interrupt 30 in NVIC
 }
 
@@ -129,7 +129,7 @@ void Timer5A_Init(void){ //Sleep
   TIMER5_TAPR_R = 0;            // prescale value for trigger
 	TIMER5_ICR_R = 0x00000001;    // 6) clear TIMER4A timeout flag
 	TIMER5_TAILR_R = (1*(BUSCLK/1000))-1;    // start value for trigger
-	NVIC_PRI23_R = (NVIC_PRI23_R&0xFFFFFF00)|0x00000080; // 8) priority 5
+	NVIC_PRI23_R = (NVIC_PRI23_R&0xFFFFFF00)|0x00000060; // 8) priority 3
   NVIC_EN2_R = 0x10000000;        // 9) enable interrupt 19 in NVIC
   TIMER5_IMR_R = 0x00000001;    // enable timeout interrupts
 	TIMER5_CTL_R |= 0x00000001;   // enable timer5A 32-b, periodic, no interrupts
@@ -165,7 +165,7 @@ void WTimer5A_Init(void){
   WTIMER5_TAPR_R = 0;            // prescale value for trigger
 	WTIMER5_ICR_R = 0x00000001;    // 6) clear WTIMER5A timeout flag
 	WTIMER5_TAILR_R = 0xFFFFFFFF;    // start value for trigger
-	NVIC_PRI26_R = (NVIC_PRI26_R&0xFFFFFF00)|0x00000080; // 8) priority 4
+	NVIC_PRI26_R = (NVIC_PRI26_R&0xFFFFFF00)|0x00000020; // 8) priority 1
   NVIC_EN3_R = 0x00000100;        // 9) enable interrupt 19 in NVIC
   WTIMER5_IMR_R = 0x00000001;    // enable timeout interrupts
 	WTIMER5_CTL_R |= 0x00000001;   // enable Wtimer5A 64-b, periodic, no interrupts
@@ -356,11 +356,11 @@ unsigned long OS_Id(void){
 // In lab 3, this command will be called 0 1 or 2 times
 // In lab 3, there will be up to four background threads, and this priority field 
 //           determines the relative priority of these four threads
-int OS_AddPeriodicThread(void(*task)(void),unsigned long periodMs, unsigned long priority){
+int OS_AddPeriodicThread(void(*task)(void),unsigned long period, unsigned long priority){
 	DisableInterrupts();
 	PeriodicTaskCounter = 0;
 	PeriodicTask = task;          // user function
-	TIMER4_TAILR_R = (periodMs*(BUSCLK/1000))-1;    // start value for trigger
+	TIMER4_TAILR_R = (period)-1;    // start value for trigger
 	NVIC_PRI17_R = (NVIC_PRI17_R&0xFF00FFFF)| (priority << 21); //set priority
   NVIC_EN2_R = 1<<6;              // enable interrupt 70 in NVIC
 	TIMER4_CTL_R |= 0x00000001;   // enable timer2A 32-b, periodic, no interrupts
@@ -485,7 +485,7 @@ void OS_Fifo_Init(unsigned long size){
 int OS_Fifo_Put(unsigned long data){
 	/*OS_Wait(&DataRoomLeft);
 	OS_bWait(&FifoMutex);*/
-	if(FifoNumElements == FifoSize){
+	if(FifoNumElements == MAXFIFOSIZE){
 		return 0;
 	}
 	DisableInterrupts();
@@ -574,7 +574,7 @@ unsigned long OS_MailBox_Recv(void){
 // It is ok to change the resolution and precision of this function as long as 
 //   this function and OS_TimeDifference have the same resolution and precision 
 unsigned long OS_Time(void){
-	return WTIMER5_TAILR_R;
+	return WTIMER5_TAR_R;
 }
 
 // ******** OS_TimeDifference ************
