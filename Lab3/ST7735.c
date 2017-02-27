@@ -1635,6 +1635,6 @@ void ST7735_Message (int device, int line, char *string, int32_t value){
 	ST7735_OutString(" ");
 	//ST7735_DrawString(0, line + device*8, string, ST7735_YELLOW);
 	ST7735_OutUDec(value);
-	ST7735_FillRect(StX*6+1, (device*_height)/2 + (line)*_charHeight, _width - StX*6+1, _charHeight, ST7735_BLACK);
+	ST7735_FillRect(StX*6, (device*_height)/2 + (line)*_charHeight, _width - StX*6, _charHeight, ST7735_BLACK);
 	OS_bSignal(&Semi);
 }

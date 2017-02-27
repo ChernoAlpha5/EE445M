@@ -91,15 +91,6 @@ void Interpreter(void){
 				UART_InString(string,19);
 				ST7735_Message(ST7735_DOWN, 0, string, 0);
 				break;
-			case 'O':
-			case 'o':
-				if(string[2] == 'a' || string[2] == 'A'){
-					OS_AddPeriodicThread(toggleLed, 1000, 2);
-				}
-				else if(string[2] == 'k' || string[2] == 'K'){
-					OS_KillTask();
-				}
-				break;
 			default:
 				UART_OutString("Error");
 		}

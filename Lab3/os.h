@@ -264,5 +264,6 @@ void OS_ClearPeriodicTime(void);
 uint32_t OS_ReadPeriodicTime(void);
 
 void OS_SelectNextThread(void);
+void OS_SwitchThread(void);
 
 #endif

@@ -24,7 +24,7 @@
 #define PF1             (*((volatile uint32_t *)0x40025008))																						
 #define BUSCLK 50000000
 
-#define MAXFIFOSIZE 32
+#define MAXFIFOSIZE 128
 																						
 void DisableInterrupts(void); // Disable interrupts
 void EnableInterrupts(void);  // Enable interrupts
@@ -53,26 +53,90 @@ tcbType *RunPt;
 tcbType *NextPt;
 int32_t Stacks[MAXNUMTHREADS][STACKSIZE];
 int16_t CurrentID;
+
+tcbType *SleepListStart;
+tcbType *SleepListEnd;
 uint32_t OSMsCount;
 
-uint32_t PeriodicTaskCounter;
 void(*PeriodicTask)(void);
 void(*SW1Task)(void);
 void(*SW2Task)(void);
 
-
-
-void OS_ClearPeriodicTime(void){
-	//TIMER4_TAV_R = TIMER4_TAILR_R;
-	//TIMER4_TAV_R = 0;
-	PeriodicTaskCounter = 0;
+void LinkThread(tcbType *threadPt){
+	long status = StartCritical();
+	if(NumThreads == 0){
+		threadPt->next = threadPt;
+		threadPt->prev = threadPt;
+		RunPt = threadPt;
+	}
+	else{
+		threadPt->next = RunPt->next; // Insert thread into linked list
+		RunPt->next = threadPt;
+		threadPt->prev = RunPt;
+		threadPt->next->prev = threadPt; //set prev for thread after current to current
+	}
+	NumThreads++;
+	EndCritical(status);
 }
-uint32_t OS_ReadPeriodicTime(void){
-	return PeriodicTaskCounter;
+
+void UnlinkThread(tcbType *threadPt){
+	long status = StartCritical();
+	NumThreads--;
+	if(NumThreads > 0){
+		threadPt->prev->next = threadPt->next;	//if no threads left there is no need to change pointers
+		threadPt->next->prev = threadPt->prev;
+		OS_SelectNextThread();
+	}
+	threadPt->next = 0;	//clear next for Sleeping and Blocking lists
+	threadPt->prev = 0;	//clear prev for Sleeping and Blocking lists
+	EndCritical(status);
 }
 
-void OS_KillTask(void){
-	TIMER4_CTL_R &= ~0x00000001;
+void PushToList(tcbType *threadPt, tcbType **listStartPt, tcbType **listEndPt){
+	if(*listStartPt){
+		(*listEndPt)->next = threadPt;
+		*listEndPt = threadPt;
+	}
+	else{
+		*listStartPt = threadPt;
+		*listEndPt = threadPt;
+	}
+}
+
+void AddToList(tcbType *threadPt, tcbType **listStartPt, tcbType **listEndPt){
+	if(*listStartPt){
+		(*listEndPt)->next = threadPt;
+		threadPt->prev = *listEndPt;
+		*listEndPt = threadPt;
+	}
+	else{
+		*listStartPt = threadPt;
+		*listEndPt = threadPt;
+	}
+}
+
+void RemoveFromList(tcbType *threadPt, tcbType **listStartPt, tcbType **listEndPt){
+	if(threadPt->prev){
+		threadPt->prev->next = threadPt->next;
+	}
+	else{
+		*listStartPt = threadPt->next;
+	}
+	if(threadPt->next){
+		threadPt->next->prev = threadPt->prev;
+	}
+	else{
+		*listEndPt = threadPt->prev;
+	}
+}
+
+tcbType* PopFromList(tcbType **listStartPt, tcbType **listEndPt){
+	tcbType *threadPt = *listStartPt;
+	*listStartPt = threadPt->next;
+	if(*listStartPt == 0){
+		*listEndPt = 0;
+	}
+	return threadPt;
 }
 
 long AndrewTriggered;
@@ -109,13 +173,14 @@ void Timer4A_Init(void){ //Periodic Task 1
   TIMER4_TAPR_R = 0;            // prescale value for trigger
 	TIMER4_ICR_R = 0x00000001;    // 6) clear TIMER4A timeout flag
   TIMER4_IMR_R = 0x00000001;    // enable timeout interrupts
+	NVIC_PRI17_R = (NVIC_PRI17_R&0xFF00FFFF)| (2 << 21); //set priority 2
+  NVIC_EN2_R = 1<<6;              // enable interrupt 70 in NVIC
 }
 
 void Timer4A_Handler(){
 	//PF1 ^= 0x02;
 	//PF1 ^= 0x02;
 	TIMER4_ICR_R |= 0x01;
-	PeriodicTaskCounter += 1;
 	PeriodicTask();
 	//PF1 ^= 0x02;
 }
@@ -140,19 +205,17 @@ void Timer5A_Handler(){
 	//PF1 ^= 0x02;
 	TIMER5_ICR_R |= 0x01;
 	OSMsCount += 1;
-	if(NumThreads){
-		tcbType *firstPt = RunPt;
-		tcbType *currentPt = RunPt;
-		for(int i=0; i<MAXNUMTHREADS; i++){
-			if(currentPt->sleep){
-				currentPt->sleep--;
-			}
-			currentPt = currentPt->next;
-			if(currentPt == firstPt){
-				break;
-			}
+	tcbType *curThread = SleepListStart;
+	while(curThread){
+		tcbType *nextThread = curThread->next;
+		curThread->sleep--;
+		if(curThread->sleep == 0){
+			RemoveFromList(curThread, &SleepListStart, &SleepListEnd);
+			LinkThread(curThread);
 		}
+		curThread = nextThread;
 	}
+	
 	//PF1 ^= 0x02;
 }
 
@@ -284,7 +347,6 @@ void SetInitialStack(int i){
   Stacks[i][STACKSIZE-16] = 0x04040404;  // R4
 }
 
-
 //******** OS_AddThread *************** 
 // add a foregound thread to the scheduler
 // Inputs: pointer to a void/void foreground task
@@ -308,25 +370,12 @@ int OS_AddThread(void(*task)(void), unsigned long stackSize, unsigned long prior
 		return 0;
 	}
 	unusedThread = &tcbs[numThread];
-	
-	if(NumThreads == 0){
-		unusedThread->next = unusedThread;
-		unusedThread->prev = unusedThread;
-		RunPt = unusedThread;
-	}
-	else{
-		unusedThread->next = RunPt->next; // Insert thread into linked list
-		RunPt->next = unusedThread;
-		unusedThread->prev = RunPt;
-		unusedThread->next->prev = unusedThread; //set prev for thread after current to current
-	}
-	
 	unusedThread->id = CurrentID;	//Current ID is incremented forever for different IDs
 	unusedThread->sleep = 0;
+	LinkThread(unusedThread);
 	SetInitialStack(numThread);		//initialize stack
 	Stacks[numThread][STACKSIZE-2] = (int32_t)(task); //  set PC for Task
 	CurrentID+=1;
-	NumThreads+=1;
 	EndCritical(status);
   return 1;
 }
@@ -358,11 +407,8 @@ unsigned long OS_Id(void){
 //           determines the relative priority of these four threads
 int OS_AddPeriodicThread(void(*task)(void),unsigned long period, unsigned long priority){
 	DisableInterrupts();
-	PeriodicTaskCounter = 0;
 	PeriodicTask = task;          // user function
 	TIMER4_TAILR_R = (period)-1;    // start value for trigger
-	NVIC_PRI17_R = (NVIC_PRI17_R&0xFF00FFFF)| (priority << 21); //set priority
-  NVIC_EN2_R = 1<<6;              // enable interrupt 70 in NVIC
 	TIMER4_CTL_R |= 0x00000001;   // enable timer2A 32-b, periodic, no interrupts
 	EnableInterrupts();
 	return 0; 
@@ -405,6 +451,8 @@ int OS_AddSW2Task(void(*task)(void), unsigned long priority){
 	return 0;
 }
 
+
+
 // ******** OS_Sleep ************
 // place this thread into a dormant state
 // input:  number of msec to sleep
@@ -412,8 +460,13 @@ int OS_AddSW2Task(void(*task)(void), unsigned long priority){
 // You are free to select the time resolution for this function
 // OS_Sleep(0) implements cooperative multitasking
 void OS_Sleep(unsigned long sleepTime){
-	RunPt->sleep = sleepTime;
-	OS_Suspend();
+	long status = StartCritical();
+	tcbType *sleepyThread = RunPt;
+	sleepyThread->sleep = sleepTime;
+	UnlinkThread(sleepyThread);
+	AddToList(sleepyThread, &SleepListStart, &SleepListEnd);
+	EndCritical(status);
+	OS_SwitchThread();
 }
 
 // ******** OS_Kill ************
@@ -423,14 +476,12 @@ void OS_Sleep(unsigned long sleepTime){
 void OS_Kill(void){
 	long status = StartCritical();
 	RunPt->id = 0; //set id to dead
-	NumThreads--;
-	if(NumThreads > 0){
-		RunPt->prev->next = RunPt->next;	//if no threads left there is no need to change pointers
-		RunPt->next->prev = RunPt->prev;
-	}
+	UnlinkThread(RunPt);
 	EndCritical(status);
-	OS_Suspend();		//send to graveyard	
+	OS_SwitchThread();		//send to graveyard	
 }
+
+
 
 // ******** OS_Suspend ************
 // suspend execution of currently running thread
@@ -464,9 +515,9 @@ Sema4Type FifoMutex;
 //    e.g., must be a power of 2,4,8,16,32,64,128
 void OS_Fifo_Init(unsigned long size){
 	long sr = StartCritical();      // make atomic
-	OS_InitSemaphore(&DataRoomLeft, size);
+	/*OS_InitSemaphore(&DataRoomLeft, size);
 	OS_InitSemaphore(&DataAvailable, 0);
-	OS_InitSemaphore(&FifoMutex, 1);
+	OS_InitSemaphore(&FifoMutex, 1);*/
   PutPt = 0; // Empty
 	GetPt = 0; // Empty
 	FifoSize = size;
@@ -485,12 +536,12 @@ void OS_Fifo_Init(unsigned long size){
 int OS_Fifo_Put(unsigned long data){
 	/*OS_Wait(&DataRoomLeft);
 	OS_bWait(&FifoMutex);*/
-	if(FifoNumElements == MAXFIFOSIZE){
+	if(FifoNumElements == FifoSize){
 		return 0;
 	}
 	DisableInterrupts();
 	Fifo[PutPt] = data;
-	PutPt = (PutPt + 1) % MAXFIFOSIZE;
+	PutPt = (PutPt + 1) % FifoSize;
 	FifoNumElements++;
 	EnableInterrupts();
 	/*OS_bSignal(&FifoMutex);
@@ -509,7 +560,7 @@ unsigned long OS_Fifo_Get(void){
 	while(FifoNumElements==0);
 	long sr = StartCritical();
 	unsigned long data = Fifo[GetPt];
-	GetPt = (GetPt + 1) % MAXFIFOSIZE;
+	GetPt = (GetPt + 1) % FifoSize;
 	FifoNumElements--;
 	EndCritical(sr);
 	//OS_bSignal(&FifoMutex);
@@ -627,9 +678,11 @@ void OS_Launch(unsigned long theTimeSlice){
 	StartOS();                   // start on the first task
 }
 
+void OS_SwitchThread(void){
+	NVIC_INT_CTRL_R = 0x10000000; //Trigger PendSV
+}
+
 void OS_SelectNextThread(void){
+	while(NumThreads == 0);
 	NextPt = RunPt->next;	//switch threads using round-robin, avoid dead/uninitialized threads and sleeping threads
-	while(NextPt->id == 0 || NextPt->sleep){
-		NextPt = NextPt->next;
-	}
 }

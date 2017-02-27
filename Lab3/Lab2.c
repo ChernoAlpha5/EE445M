@@ -146,7 +146,7 @@ unsigned long myId = OS_Id();
   PB3 ^= 0x08;
   ST7735_Message(1,0,"NumCreated =",NumCreated); 
   PB3 ^= 0x08;
-  OS_Sleep(50);     // set this to sleep for 50msec
+  //OS_Sleep(50);     // set this to sleep for 50msec
   ST7735_Message(1,1,"PIDWork     =",PIDWork);
   ST7735_Message(1,2,"DataLost    =",DataLost);
   ST7735_Message(1,3,"Jitter 0.1us=",MaxJitter);

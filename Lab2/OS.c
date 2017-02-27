@@ -160,7 +160,7 @@ void WTimer5A_Init(void){
 	SYSCTL_RCGCWTIMER_R |= 0x20;   //  activate WTIMER5
 	long Andrew = 0;
 	WTIMER5_CTL_R = 0x00000000;    // disable Wtimer5A during setup
-  WTIMER5_CFG_R = 0x00000000;             // configure for 64-bit timer mode
+  WTIMER5_CFG_R = 0x00000004;             // configure for 32-bit timer mode
   WTIMER5_TAMR_R = 0x00000002;   // configure for periodic mode, default down-count settings
   WTIMER5_TAPR_R = 0;            // prescale value for trigger
 	WTIMER5_ICR_R = 0x00000001;    // 6) clear WTIMER5A timeout flag
