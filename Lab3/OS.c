@@ -58,7 +58,15 @@ tcbType *SleepListStart;
 tcbType *SleepListEnd;
 uint32_t OSMsCount;
 
-void(*PeriodicTask)(void);
+void(*PeriodicTask1)(void);
+void(*PeriodicTask2)(void);
+unsigned int PeriodicTask1Period;
+unsigned int PeriodicTask2Period;
+long MaxJitter1;             // largest time jitter between interrupts in usec for task 1
+long MaxJitter2;             // largest time jitter between interrupts in usec for task 2
+#define JITTERSIZE 64
+unsigned long JitterHistogram1[JITTERSIZE]={0,};
+unsigned long JitterHistogram2[JITTERSIZE]={0,};
 void(*SW1Task)(void);
 void(*SW2Task)(void);
 
@@ -89,6 +97,7 @@ void UnlinkThread(tcbType *threadPt){
 	}
 	threadPt->next = 0;	//clear next for Sleeping and Blocking lists
 	threadPt->prev = 0;	//clear prev for Sleeping and Blocking lists
+	OS_SwitchThread();
 	EndCritical(status);
 }
 
@@ -164,27 +173,6 @@ void GPIOPortF_Handler(void){
 	AndrewTriggered+=1;
 }
 
-void Timer4A_Init(void){ //Periodic Task 1
-	SYSCTL_RCGCTIMER_R |= 0x10;   //  activate TIMER4
-	long Andrew = 0;
-	TIMER4_CTL_R = 0x00000000;    // disable timer4A during setup
-  TIMER4_CFG_R = 0x00000000;             // configure for 32-bit timer mode
-  TIMER4_TAMR_R = 0x00000002;   // configure for periodic mode, default down-count settings
-  TIMER4_TAPR_R = 0;            // prescale value for trigger
-	TIMER4_ICR_R = 0x00000001;    // 6) clear TIMER4A timeout flag
-  TIMER4_IMR_R = 0x00000001;    // enable timeout interrupts
-	NVIC_PRI17_R = (NVIC_PRI17_R&0xFF00FFFF)| (2 << 21); //set priority 2
-  NVIC_EN2_R = 1<<6;              // enable interrupt 70 in NVIC
-}
-
-void Timer4A_Handler(){
-	//PF1 ^= 0x02;
-	//PF1 ^= 0x02;
-	TIMER4_ICR_R |= 0x01;
-	PeriodicTask();
-	//PF1 ^= 0x02;
-}
-
 void Timer5A_Init(void){ //Sleep
 	SYSCTL_RCGCTIMER_R |= 0x20;   //  activate TIMER5
 	OSMsCount = 0;
@@ -219,6 +207,93 @@ void Timer5A_Handler(){
 	//PF1 ^= 0x02;
 }
 
+void WTimer0A_Init(void){ //Used for periodic Task 1
+	SYSCTL_RCGCWTIMER_R |= 0x01;   //  activate WTIMER0
+	long Andrew = 0; 
+	WTIMER0_CTL_R = (WTIMER0_CTL_R&~0x0000001F);    // disable Wtimer0A during setup
+ 	WTIMER0_CFG_R = 0x00000004;    // configure for 32-bit timer mode
+  WTIMER0_TAMR_R = 0x00000002;   // configure for periodic mode, default down-count settings
+  WTIMER0_TAPR_R = 0;            // prescale value for trigger
+	WTIMER0_ICR_R = 0x00000001;    // 6) clear WTIMER0A timeout flag
+	WTIMER0_TAILR_R = 0xFFFFFFFF;    // start value for trigger
+  WTIMER0_IMR_R = (WTIMER0_IMR_R&~0x0000001F)|0x00000001;    // enable timeout interrupts
+	NVIC_PRI23_R = (NVIC_PRI23_R&0xFF00FFFF)| (2 << 21); //set priority 2
+	NVIC_EN2_R = 1<<30;              // enable interrupt 94 in NVIC
+}
+
+unsigned long PeriodicTask1Count;
+void WideTimer0A_Handler(){
+	//PF1 ^= 0x02;
+	//PF1 ^= 0x02;
+	WTIMER0_ICR_R |= 0x01;
+	PeriodicTask1();
+	
+	unsigned static long LastTime;
+	long jitter;
+	unsigned long thisTime = OS_Time();
+	if(PeriodicTask1Count){
+		unsigned long diff = OS_TimeDifference(LastTime,thisTime);
+		if(diff>PeriodicTask1Period){
+			jitter = (diff-PeriodicTask1Period+4)/8;  // in 0.1 usec
+		}else{
+			jitter = (PeriodicTask1Period-diff+4)/8;  // in 0.1 usec
+		}
+		if(jitter > MaxJitter1){
+			MaxJitter1 = jitter; // in usec
+		}       // jitter should be 0
+		if(jitter >= JITTERSIZE){
+			jitter = JITTERSIZE-1;
+		}
+		JitterHistogram1[jitter]++;
+	}
+	LastTime = thisTime;
+	PeriodicTask1Count++;
+	//PF1 ^= 0x02;
+}
+void WTimer0B_Init(void){ //Used for periodic Task 2
+	SYSCTL_RCGCWTIMER_R |= 0x01;   //  activate WTIMER0
+	long Andrew = 0; 
+	WTIMER0_CTL_R = (WTIMER0_CTL_R&~0x00001F00);    // disable Wtimer0B during setup
+ 	WTIMER0_CFG_R = 0x00000004;    // configure for 32-bit timer mode
+  WTIMER0_TBMR_R = 0x00000002;   // configure for periodic mode, default down-count settings
+  WTIMER0_TBPR_R = 0;            // prescale value for trigger
+	WTIMER0_ICR_R = 0x00000100;    // 6) clear WTIMER0B timeout flag
+	WTIMER0_TBILR_R = 0xFFFFFFFF;    // start value for trigger
+  WTIMER0_IMR_R = (WTIMER0_IMR_R&~0x00001F00)|0x00000100;    // enable timeout interrupts
+	NVIC_PRI23_R = (NVIC_PRI23_R&0x00FFFFFF)| (2 << 29); //set priority 2
+	NVIC_EN2_R = (1<<31);              // enable interrupt 95 in NVIC
+}
+unsigned long PeriodicTask2Count = 0;
+void WideTimer0B_Handler(){
+	//PF1 ^= 0x02;
+	//PF1 ^= 0x02;
+	WTIMER0_ICR_R |= 0x0100;
+	PeriodicTask2();
+	
+	unsigned static long LastTime;
+	long jitter;
+	unsigned long thisTime = OS_Time();
+	if(PeriodicTask2Count){
+		unsigned long diff = OS_TimeDifference(LastTime,thisTime);
+		if(diff>PeriodicTask2Period){
+			jitter = (diff-PeriodicTask2Period+4)/8;  // in 0.1 usec
+		}else{
+			jitter = (PeriodicTask2Period-diff+4)/8;  // in 0.1 usec
+		}
+		if(jitter > MaxJitter2){
+			MaxJitter2 = jitter; // in usec
+		}       // jitter should be 0
+		if(jitter >= JITTERSIZE){
+			jitter = JITTERSIZE-1;
+		}
+		JitterHistogram2[jitter]++;
+	}
+	LastTime = thisTime;
+	PeriodicTask2Count++;
+	//PF1 ^= 0x02;
+	
+}
+
 void WTimer5A_Init(void){
 	SYSCTL_RCGCWTIMER_R |= 0x20;   //  activate WTIMER5
 	long Andrew = 0;
@@ -250,7 +325,8 @@ void OS_Init(void){
 	DisableInterrupts();
   PLL_Init(Bus50MHz);         // set processor clock to 50 MHz
 	Output_Init();
-	Timer4A_Init();
+	WTimer0A_Init();
+	WTimer0B_Init();
 	Timer5A_Init();
 	WTimer5A_Init();
 	PortF_Init();
@@ -271,7 +347,7 @@ void OS_InitSemaphore(Sema4Type *semaPt, long value){
 }
 
 // ******** OS_Wait ************
-// decrement semaphore 
+//decrement semaphore 
 // Lab2 spinlock
 // Lab3 block if less than zero
 // input:  pointer to a counting semaphore
@@ -405,14 +481,30 @@ unsigned long OS_Id(void){
 // In lab 3, this command will be called 0 1 or 2 times
 // In lab 3, there will be up to four background threads, and this priority field 
 //           determines the relative priority of these four threads
+int NumPeriodicThreads = 0;
 int OS_AddPeriodicThread(void(*task)(void),unsigned long period, unsigned long priority){
 	DisableInterrupts();
-	PeriodicTask = task;          // user function
-	TIMER4_TAILR_R = (period)-1;    // start value for trigger
-	TIMER4_CTL_R |= 0x00000001;   // enable timer2A 32-b, periodic, no interrupts
+	if(NumPeriodicThreads >= 2){
+		EnableInterrupts();
+		return 0;
+	}
+	if (NumPeriodicThreads == 0){//Wide Timer0A
+		PeriodicTask1 = task;          // user function
+		PeriodicTask1Period = period;
+		WTIMER0_TAILR_R = (period)-1;    // start value for trigger
+		WTIMER0_CTL_R |= 0x00000001;   // enable Wtimer0A 32-b, periodic
+	}
+	else{	//Wide Timer0B
+		PeriodicTask2 = task;          // user function
+		PeriodicTask2Period = period;
+		WTIMER0_TBILR_R = (period)-1;    // start value for trigger
+		WTIMER0_CTL_R |= 0x00000100;   // enable wtimer0B
+	}
+	NumPeriodicThreads++;
 	EnableInterrupts();
-	return 0; 
+	return 1; 
 }
+
 
 //******** OS_AddSW1Task *************** 
 // add a background task to run whenever the SW1 (PF4) button is pushed
@@ -448,6 +540,7 @@ int OS_AddSW1Task(void(*task)(void), unsigned long priority){
 //           determines the relative priority of these four threads
 int OS_AddSW2Task(void(*task)(void), unsigned long priority){
 	SW2Task = task;
+	GPIO_PORTF_IM_R |= 0x1;      // (f) arm interrupt on PF0
 	return 0;
 }
 
@@ -466,7 +559,7 @@ void OS_Sleep(unsigned long sleepTime){
 	UnlinkThread(sleepyThread);
 	AddToList(sleepyThread, &SleepListStart, &SleepListEnd);
 	EndCritical(status);
-	OS_SwitchThread();
+	//OS_SwitchThread();
 }
 
 // ******** OS_Kill ************
@@ -478,7 +571,7 @@ void OS_Kill(void){
 	RunPt->id = 0; //set id to dead
 	UnlinkThread(RunPt);
 	EndCritical(status);
-	OS_SwitchThread();		//send to graveyard	
+	//OS_SwitchThread();		//send to graveyard	
 }
 
 

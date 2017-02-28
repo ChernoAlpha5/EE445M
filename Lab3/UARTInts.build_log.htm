@@ -3,7 +3,7 @@
 <pre>
 <h1>µVision Build Log</h1>
 <h2>Project:</h2>
-C:\Users\chuchinis\Desktop\EE445M\Lab3\UARTInts.uvproj
+C:\Keil\ValvanoWareTM4C123\EE445M\Lab3\UARTInts.uvproj
 Project File Date:  02/27/2017
 
 <h2>Output:</h2>
@@ -14,11 +14,17 @@ compiling UART.c...
 compiling ST7735.c...
 compiling ADC.c...
 compiling OS.c...
-OS.c(169): warning:  #177-D: variable "Andrew" was declared but never referenced
+OS.c(212): warning:  #177-D: variable "Andrew" was declared but never referenced
+        long Andrew = 0; 
+OS.c(264): warning:  #61-D: integer operation result is out of range
+        NVIC_EN2_R = (1<<31);              // enable interrupt 95 in NVIC
+OS.c(264): warning:  #68-D: integer conversion resulted in a change of sign
+        NVIC_EN2_R = (1<<31);              // enable interrupt 95 in NVIC
+OS.c(255): warning:  #177-D: variable "Andrew" was declared but never referenced
+        long Andrew = 0; 
+OS.c(299): warning:  #177-D: variable "Andrew" was declared but never referenced
         long Andrew = 0;
-OS.c(224): warning:  #177-D: variable "Andrew" was declared but never referenced
-        long Andrew = 0;
-OS.c: 2 warnings, 0 errors
+OS.c: 5 warnings, 0 errors
 compiling Lab2.c...
 assembling PID_stm32.s...
 assembling cr4_fft_64_stm32.s...
@@ -26,26 +32,13 @@ compiling Interpreter.c...
 assembling ThreadSwitch.s...
 compiling SysTick.c...
 linking...
-Program Size: Code=11080 RO-data=2052 RW-data=280 ZI-data=27096  
-".\UARTInts.axf" - 0 Error(s), 2 Warning(s).
+Program Size: Code=11592 RO-data=2052 RW-data=320 ZI-data=27608  
+".\UARTInts.axf" - 0 Error(s), 5 Warning(s).
 </pre>
 </body>
 </html>
-\\Desktop\\EE445M\\Lab3\\UARTInts.axf" 
+eTM4C123\\EE445M\\Lab3\\UARTInts.axf" 
 Connecting: Mode=JTAG, Speed=1000000Hz
 Erase Done.
 Programming Done.
 Verify OK.
- information to list image symbols.
-Finished: 1 information, 0 warning and 1 error messages.
-".\UARTInts.axf" - 1 Error(s), 3 Warning(s).
-Target not created
-d
-Load "C:\\Users\\chuchinis\\Desktop\\EE445M\\Lab3\\UARTInts.axf" 
-_____^
-*** error 56: cannot open file
-Error: Flash Download failed  -  Could not load file 'C:\Users\chuchinis\Desktop\EE445M\Lab3\UARTInts.axf'
-Load "C:\\Users\\chuchinis\\Desktop\\EE445M\\Lab3\\UARTInts.axf" 
-_____^
-*** error 56: cannot open file
-Error: Flash Download failed  -  Could not load file 'C:\Users\chuchinis\Desktop\EE445M\Lab3\UARTInts.axf'

@@ -231,7 +231,7 @@ unsigned long myId = OS_Id();
     cr4_fft_64_stm32(y,x,64);  // complex FFT of last 64 ADC values
     DCcomponent = y[0]&0xFFFF; // Real part at frequency 0, imaginary part should be zero
     OS_MailBox_Send(DCcomponent); // called every 2.5ms*64 = 160ms
-  }
+  } 
   OS_Kill();  // done
 }
 //******** Display *************** 
@@ -248,7 +248,7 @@ unsigned long data,voltage;
     PB5 = 0x20;
     ST7735_Message(0,2,"v(mV) =",voltage);  
     PB5 = 0x20;
-  }
+  }  
   OS_Kill();  // done
 } 
 
@@ -318,21 +318,21 @@ int main(void){
 
 //********initialize communication channels
   OS_MailBox_Init();
-  OS_Fifo_Init(1);    // ***note*** 4 is not big enough*****
+  OS_Fifo_Init(64);    // ***note*** 4 is not big enough*****
 
 //*******attach background tasks***********
   OS_AddSW1Task(&SW1Push,2);
 //  OS_AddSW2Task(&SW2Push,2);  // add this line in Lab 3
   ADC_Open(4);  // sequencer 3, channel 4, PD3, sampling in DAS()
   OS_AddPeriodicThread(&DAS,PERIOD,1); // 2 kHz real time sampling of PD3
-
+	//OS_AddPeriodicThread(&DAS,PERIOD,1); // 2 kHz real time sampling of PD3
   NumCreated = 0 ;
 // create initial foreground threads
   NumCreated += OS_AddThread(&Interpreter,128,2); 
   NumCreated += OS_AddThread(&Consumer,128,1); 
   NumCreated += OS_AddThread(&PID,128,3);  // Lab 3, make this lowest priority
  
-  OS_Launch(TIME_2MS*5); // doesn't return, interrupts enabled in here
+  OS_Launch(TIME_2MS); // doesn't return, interrupts enabled in here
   return 0;            // this never executes
 }
 
