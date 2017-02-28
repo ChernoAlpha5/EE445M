@@ -38,16 +38,7 @@ void StartOS(void);
 uint8_t NumThreads;
 #define MAXNUMTHREADS 30
 #define STACKSIZE 200
-struct tcb{
-	int32_t *sp;
-	struct tcb *next;
-	struct tcb *prev;
-	int16_t id;
-	uint16_t sleep;
-	uint8_t priority;
-	uint8_t blocked;
-};
-typedef struct tcb tcbType;
+
 tcbType tcbs[MAXNUMTHREADS];
 tcbType *RunPt;
 tcbType *NextPt;
@@ -101,7 +92,7 @@ void UnlinkThread(tcbType *threadPt){
 	EndCritical(status);
 }
 
-void PushToList(tcbType *threadPt, tcbType **listStartPt, tcbType **listEndPt){
+/*void PushToList(tcbType *threadPt, tcbType **listStartPt, tcbType **listEndPt){
 	if(*listStartPt){
 		(*listEndPt)->next = threadPt;
 		*listEndPt = threadPt;
@@ -110,7 +101,7 @@ void PushToList(tcbType *threadPt, tcbType **listStartPt, tcbType **listEndPt){
 		*listStartPt = threadPt;
 		*listEndPt = threadPt;
 	}
-}
+}*/
 
 void AddToList(tcbType *threadPt, tcbType **listStartPt, tcbType **listEndPt){
 	if(*listStartPt){
@@ -121,7 +112,7 @@ void AddToList(tcbType *threadPt, tcbType **listStartPt, tcbType **listEndPt){
 	else{
 		*listStartPt = threadPt;
 		*listEndPt = threadPt;
-	}
+	}	
 }
 
 void RemoveFromList(tcbType *threadPt, tcbType **listStartPt, tcbType **listEndPt){
@@ -139,37 +130,54 @@ void RemoveFromList(tcbType *threadPt, tcbType **listStartPt, tcbType **listEndP
 	}
 }
 
-tcbType* PopFromList(tcbType **listStartPt, tcbType **listEndPt){
+/*tcbType* PopFromList(tcbType **listStartPt, tcbType **listEndPt){
 	tcbType *threadPt = *listStartPt;
 	*listStartPt = threadPt->next;
 	if(*listStartPt == 0){
 		*listEndPt = 0;
 	}
 	return threadPt;
-}
+}*/
 
 long AndrewTriggered;
 void PortF_Init(void){
 	SYSCTL_RCGCGPIO_R |= 0x20; // activate port F
   while((SYSCTL_PRGPIO_R&0x20)==0){}; // allow time for clock to start 
 	AndrewTriggered = 0;
-  GPIO_PORTF_DIR_R &= ~0x10;    // (c) make PF4 in (built-in button)
-  GPIO_PORTF_AFSEL_R &= ~0x10;  //     disable alt funct on PF4
-  GPIO_PORTF_DEN_R |= 0x10;     //     enable digital I/O on PF4
-  GPIO_PORTF_PCTL_R &= ~0x000F0000; //  configure PF4 as GPIO
-  GPIO_PORTF_AMSEL_R &= ~0x10;  //    disable analog functionality on PF4
-  GPIO_PORTF_PUR_R |= 0x10;     //     enable weak pull-up on PF4
-  GPIO_PORTF_IS_R &= ~0x10;     // (d) PF4 is edge-sensitive
-  GPIO_PORTF_IBE_R &= ~0x10;    //     PF4 is not both edges
-  GPIO_PORTF_IEV_R &= ~0x10;    //     PF4 falling edge event
-  GPIO_PORTF_ICR_R = 0x10;      // (e) clear flag4
+  GPIO_PORTF_DIR_R &= ~0x11;    // (c) make PF4 in (built-in button)
+  GPIO_PORTF_AFSEL_R &= ~0x11;  //     disable alt funct on PF0, PF4
+  GPIO_PORTF_DEN_R |= 0x11;     //     enable digital I/O on PF4
+  GPIO_PORTF_PCTL_R &= ~0x000F000F; //  configure PF4 as GPIO
+  GPIO_PORTF_AMSEL_R &= ~0x11;  //    disable analog functionality on PF4
+  GPIO_PORTF_PUR_R |= 0x11;     //     enable weak pull-up on PF4
+  GPIO_PORTF_IS_R &= ~0x11;     // (d) PF4 is edge-sensitive
+  GPIO_PORTF_IBE_R &= ~0x11;    //     PF4 is not both edges
+  GPIO_PORTF_IEV_R &= ~0x11;    //     PF4 falling edge event
+  GPIO_PORTF_ICR_R = 0x11;      // (e) clear flag4
   NVIC_PRI7_R = (NVIC_PRI7_R&0xFF00FFFF)|0x00400000; // (g) priority 2
   NVIC_EN0_R = 0x40000000;      // (h) enable interrupt 30 in NVIC
 }
 
+void disarmButt(int disableButt){
+	//disable button 1
+	if (disableButt == 1){
+		GPIO_PORTF_IM_R  &= ~0x10;	//PF4 = switch 1
+	}
+	//disable button 2
+	if (disableButt == 2){
+		GPIO_PORTF_IM_R  &= ~0x01;  //PF1 = switch 2
+	}
+}
+
 void GPIOPortF_Handler(void){
-  GPIO_PORTF_ICR_R = 0x10;      // acknowledge flag4
-	SW1Task();
+	if(GPIO_PORTF_MIS_R&0x10){
+		GPIO_PORTF_ICR_R = 0x10;      // acknowledge flag4
+		SW1Task();
+	}
+	if(GPIO_PORTF_MIS_R&0x01){
+		GPIO_PORTF_ICR_R = 0x01;      // acknowledge flag4
+		SW2Task();
+	}
 	AndrewTriggered+=1;
 }
 
@@ -258,8 +266,7 @@ void WTimer0B_Init(void){ //Used for periodic Task 2
   WTIMER0_TBMR_R = 0x00000002;   // configure for periodic mode, default down-count settings
   WTIMER0_TBPR_R = 0;            // prescale value for trigger
 	WTIMER0_ICR_R = 0x00000100;    // 6) clear WTIMER0B timeout flag
-	WTIMER0_TBILR_R = 0xFFFFFFFF;    // start value for trigger
-  WTIMER0_IMR_R = (WTIMER0_IMR_R&~0x00001F00)|0x00000100;    // enable timeout interrupts
+	//WTIMER0_TBILR_R = 0xFFFFFFFF;    // start value for trigger
 	NVIC_PRI23_R = (NVIC_PRI23_R&0x00FFFFFF)| (2 << 29); //set priority 2
 	NVIC_EN2_R = (1<<31);              // enable interrupt 95 in NVIC
 }
@@ -354,11 +361,22 @@ void OS_InitSemaphore(Sema4Type *semaPt, long value){
 // output: none
 void OS_Wait(Sema4Type *semaPt) {
   DisableInterrupts();
-  while((semaPt->Value) <= 0){
-    EnableInterrupts();
-    DisableInterrupts();
-  }
   (semaPt->Value) = (semaPt->Value) - 1;
+   // take tcb out of linked list
+  if (semaPt->Value < 0){
+  	if (semaPt->blockedPtr == 0){
+  		semaPt -> blockedPtr = RunPt;
+  		semaPt -> currBlockedPtr = RunPt;	//currBlockedPtr points to beginning of blocked linked list
+  	} 
+  	else{
+  		semaPt -> currBlockedPtr -> next = RunPt; 
+  	}
+  	// remove from linked list
+  	if (NumThreads > 1){
+  		RunPt->prev->next = RunPt -> next;
+  		RunPt->next->prev = RunPt -> prev; 
+  	}
+  }
   EnableInterrupts();
 }
 
@@ -491,12 +509,14 @@ int OS_AddPeriodicThread(void(*task)(void),unsigned long period, unsigned long p
 	if (NumPeriodicThreads == 0){//Wide Timer0A
 		PeriodicTask1 = task;          // user function
 		PeriodicTask1Period = period;
+		WTIMER0_IMR_R = (WTIMER0_IMR_R&~0x0000001F)|0x00000001;    // enable timeout interrupts
 		WTIMER0_TAILR_R = (period)-1;    // start value for trigger
 		WTIMER0_CTL_R |= 0x00000001;   // enable Wtimer0A 32-b, periodic
 	}
 	else{	//Wide Timer0B
 		PeriodicTask2 = task;          // user function
 		PeriodicTask2Period = period;
+		WTIMER0_IMR_R = (WTIMER0_IMR_R&~0x00001F00)|0x00000100;    // enable timeout interrupts
 		WTIMER0_TBILR_R = (period)-1;    // start value for trigger
 		WTIMER0_CTL_R |= 0x00000100;   // enable wtimer0B
 	}

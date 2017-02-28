@@ -23,14 +23,14 @@ OS_AddPeriodicThread(void(*task)(void),unsigned long period, unsigned long prior
 			PeriodicTask1 = task;          // user function
 			TIMER4_TAILR_R = (period)-1;    // start value for trigger
 			NVIC_PRI17_R = (NVIC_PRI17_R&0xFF00FFFF)| (priority << 21); //set priority
-	  		NVIC_EN2_R = 1<<6;              // enable interrupt 70 in NVIC
+	  	NVIC_EN2_R = 1<<6;              // enable interrupt 70 in NVIC
 			TIMER4_CTL_R |= 0x00000001;   // enable timer2A 32-b, periodic, no interrupts
 		}
 		else{	//Wide Timer0A
 			PeriodicTask2 = task;          // user function
 			WTIMER0_TAILR_R = (period)-1;    // start value for trigger
 			NVIC_PRI23_R = (NVIC_PRI23_R&0xFF00FFFF)| (priority << 21); //set priority
-	  		NVIC_EN2_R = 1<<30;              // enable interrupt 94 in NVIC
+	  	NVIC_EN2_R = 1<<30;              // enable interrupt 94 in NVIC
 			WTIMER0_CTL_R |= 0x00000001;   // enable timer0
 		}
 	}
@@ -100,7 +100,7 @@ void OS_Wait(Sema4Type *semaPt) {
 }
 
 
-void void OS_Signal(Sema4Type *semaPt){
+void OS_Signal(Sema4Type *semaPt){
 	
   long status;
   status = StartCritical();
