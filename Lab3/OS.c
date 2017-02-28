@@ -61,6 +61,7 @@ unsigned long JitterHistogram2[JITTERSIZE]={0,};
 void(*SW1Task)(void);
 void(*SW2Task)(void);
 
+//Adds thread to circular linked list of active threads
 void LinkThread(tcbType *threadPt){
 	long status = StartCritical();
 	if(NumThreads == 0){
@@ -78,6 +79,7 @@ void LinkThread(tcbType *threadPt){
 	EndCritical(status);
 }
 
+//Removes thread from circular linked list of active threads
 void UnlinkThread(tcbType *threadPt){
 	long status = StartCritical();
 	NumThreads--;
@@ -92,18 +94,31 @@ void UnlinkThread(tcbType *threadPt){
 	EndCritical(status);
 }
 
-/*void PushToList(tcbType *threadPt, tcbType **listStartPt, tcbType **listEndPt){
+//Appends to end of doubly-linked list
+void PushToList(tcbType *threadPt, tcbType **listStartPt, tcbType **listEndPt){
 	if(*listStartPt){
 		(*listEndPt)->next = threadPt;
+		threadPt->prev = *listEndPt;
 		*listEndPt = threadPt;
 	}
 	else{
 		*listStartPt = threadPt;
 		*listEndPt = threadPt;
 	}
-}*/
+}
 
-void AddToList(tcbType *threadPt, tcbType **listStartPt, tcbType **listEndPt){
+//returns first element in list
+tcbType* PopFromList(tcbType **listStartPt, tcbType **listEndPt){
+	tcbType *threadPt = *listStartPt;
+	*listStartPt = threadPt->next;
+	if(*listStartPt == 0){
+		*listEndPt = 0;
+	}
+	return threadPt;
+}
+
+//adds an element to an ordered doubly-linked list
+void AddToOrderedList(tcbType *threadPt, tcbType **listStartPt, tcbType **listEndPt, int order){//TODO:add in order
 	if(*listStartPt){
 		(*listEndPt)->next = threadPt;
 		threadPt->prev = *listEndPt;
@@ -115,6 +130,7 @@ void AddToList(tcbType *threadPt, tcbType **listStartPt, tcbType **listEndPt){
 	}	
 }
 
+//removes a given thread from a linked list
 void RemoveFromList(tcbType *threadPt, tcbType **listStartPt, tcbType **listEndPt){
 	if(threadPt->prev){
 		threadPt->prev->next = threadPt->next;
@@ -129,15 +145,6 @@ void RemoveFromList(tcbType *threadPt, tcbType **listStartPt, tcbType **listEndP
 		*listEndPt = threadPt->prev;
 	}
 }
-
-/*tcbType* PopFromList(tcbType **listStartPt, tcbType **listEndPt){
-	tcbType *threadPt = *listStartPt;
-	*listStartPt = threadPt->next;
-	if(*listStartPt == 0){
-		*listEndPt = 0;
-	}
-	return threadPt;
-}*/
 
 long AndrewTriggered;
 void PortF_Init(void){
@@ -154,7 +161,6 @@ void PortF_Init(void){
   GPIO_PORTF_IBE_R &= ~0x11;    //     PF4 is not both edges
   GPIO_PORTF_IEV_R &= ~0x11;    //     PF4 falling edge event
   GPIO_PORTF_ICR_R = 0x11;      // (e) clear flag4
-  NVIC_PRI7_R = (NVIC_PRI7_R&0xFF00FFFF)|0x00400000; // (g) priority 2
   NVIC_EN0_R = 0x40000000;      // (h) enable interrupt 30 in NVIC
 }
 
@@ -190,7 +196,7 @@ void Timer5A_Init(void){ //Sleep
   TIMER5_TAPR_R = 0;            // prescale value for trigger
 	TIMER5_ICR_R = 0x00000001;    // 6) clear TIMER4A timeout flag
 	TIMER5_TAILR_R = (1*(BUSCLK/1000))-1;    // start value for trigger
-	NVIC_PRI23_R = (NVIC_PRI23_R&0xFFFFFF00)|0x00000060; // 8) priority 3
+	NVIC_PRI23_R = (NVIC_PRI23_R&0xFFFFFF00)|0x00000000; // 8) priority 0
   NVIC_EN2_R = 0x10000000;        // 9) enable interrupt 19 in NVIC
   TIMER5_IMR_R = 0x00000001;    // enable timeout interrupts
 	TIMER5_CTL_R |= 0x00000001;   // enable timer5A 32-b, periodic, no interrupts
@@ -225,7 +231,6 @@ void WTimer0A_Init(void){ //Used for periodic Task 1
 	WTIMER0_ICR_R = 0x00000001;    // 6) clear WTIMER0A timeout flag
 	WTIMER0_TAILR_R = 0xFFFFFFFF;    // start value for trigger
   WTIMER0_IMR_R = (WTIMER0_IMR_R&~0x0000001F)|0x00000001;    // enable timeout interrupts
-	NVIC_PRI23_R = (NVIC_PRI23_R&0xFF00FFFF)| (2 << 21); //set priority 2
 	NVIC_EN2_R = 1<<30;              // enable interrupt 94 in NVIC
 }
 
@@ -267,7 +272,6 @@ void WTimer0B_Init(void){ //Used for periodic Task 2
   WTIMER0_TBPR_R = 0;            // prescale value for trigger
 	WTIMER0_ICR_R = 0x00000100;    // 6) clear WTIMER0B timeout flag
 	//WTIMER0_TBILR_R = 0xFFFFFFFF;    // start value for trigger
-	NVIC_PRI23_R = (NVIC_PRI23_R&0x00FFFFFF)| (2 << 29); //set priority 2
 	NVIC_EN2_R = (1<<31);              // enable interrupt 95 in NVIC
 }
 unsigned long PeriodicTask2Count = 0;
@@ -332,6 +336,7 @@ void OS_Init(void){
 	DisableInterrupts();
   PLL_Init(Bus50MHz);         // set processor clock to 50 MHz
 	Output_Init();
+	UART_Init();
 	WTimer0A_Init();
 	WTimer0B_Init();
 	Timer5A_Init();
@@ -351,8 +356,15 @@ void OS_Init(void){
 // output: none
 void OS_InitSemaphore(Sema4Type *semaPt, long value){
 	semaPt->Value = value;
+	semaPt->BlockedListEnd = 0;
+	semaPt->BlockedListStart = 0;
 }
 
+
+void Block(tcbType *threadPt, Sema4Type *semaPt){
+	UnlinkThread(threadPt);
+	PushToList(threadPt, &(semaPt->BlockedListStart), &(semaPt->BlockedListEnd));
+}
 // ******** OS_Wait ************
 //decrement semaphore 
 // Lab2 spinlock
@@ -364,23 +376,14 @@ void OS_Wait(Sema4Type *semaPt) {
   (semaPt->Value) = (semaPt->Value) - 1;
    // take tcb out of linked list
   if (semaPt->Value < 0){
-  	if (semaPt->blockedPtr == 0){
-  		semaPt -> blockedPtr = RunPt;
-  		semaPt -> currBlockedPtr = RunPt;	//currBlockedPtr points to beginning of blocked linked list
-  	} 
-  	else{
-  		semaPt -> currBlockedPtr -> next = RunPt; 
-  	}
-  	// remove from linked list
-  	if (NumThreads > 1){
-  		RunPt->prev->next = RunPt -> next;
-  		RunPt->next->prev = RunPt -> prev; 
-  	}
+		Block(RunPt, semaPt);
   }
   EnableInterrupts();
 }
 
-
+void WakeUp(Sema4Type *semaPt){
+	LinkThread(PopFromList(&(semaPt->BlockedListStart), &(semaPt->BlockedListEnd)));
+}
 // ******** OS_Signal ************
 // increment semaphore 
 // Lab2 spinlock
@@ -388,9 +391,11 @@ void OS_Wait(Sema4Type *semaPt) {
 // input:  pointer to a counting semaphore
 // output: none
 void OS_Signal(Sema4Type *semaPt) {
-  long status;
-  status = StartCritical();
-  (semaPt->Value) = (semaPt->Value) + 1;
+  long status = StartCritical();
+  (semaPt->Value) = (semaPt->Value) + 1; //add 1 to semaphore
+  if (semaPt->Value <= 0){
+  	WakeUp(semaPt);
+  }
   EndCritical(status);
 }
 
@@ -402,11 +407,10 @@ void OS_Signal(Sema4Type *semaPt) {
 // output: none
 void OS_bWait(Sema4Type *semaPt) {
   DisableInterrupts();
-  while((semaPt->Value) == 0){
-    EnableInterrupts();
-    DisableInterrupts();
+  (semaPt->Value) = (semaPt->Value) - 1;
+  if (semaPt->Value < 0){
+		Block(RunPt, semaPt);
   }
-  (semaPt->Value) = 0;
   EnableInterrupts();
 }
 
@@ -417,7 +421,10 @@ void OS_bWait(Sema4Type *semaPt) {
 // output: none
 void OS_bSignal(Sema4Type *semaPt){
 	long status = StartCritical();
-  (semaPt->Value) = 1;
+  (semaPt->Value) = (semaPt->Value) + 1; //add 1 to semaphore
+  if (semaPt -> Value <= 0){
+  	WakeUp(semaPt);
+  }
   EndCritical(status);
 }
 		
@@ -509,6 +516,7 @@ int OS_AddPeriodicThread(void(*task)(void),unsigned long period, unsigned long p
 	if (NumPeriodicThreads == 0){//Wide Timer0A
 		PeriodicTask1 = task;          // user function
 		PeriodicTask1Period = period;
+		NVIC_PRI23_R = (NVIC_PRI23_R&0xFF00FFFF)| (priority << 21); //set priority 
 		WTIMER0_IMR_R = (WTIMER0_IMR_R&~0x0000001F)|0x00000001;    // enable timeout interrupts
 		WTIMER0_TAILR_R = (period)-1;    // start value for trigger
 		WTIMER0_CTL_R |= 0x00000001;   // enable Wtimer0A 32-b, periodic
@@ -516,6 +524,7 @@ int OS_AddPeriodicThread(void(*task)(void),unsigned long period, unsigned long p
 	else{	//Wide Timer0B
 		PeriodicTask2 = task;          // user function
 		PeriodicTask2Period = period;
+		NVIC_PRI23_R = (NVIC_PRI23_R&0x00FFFFFF)| (priority << 29); //set priority 
 		WTIMER0_IMR_R = (WTIMER0_IMR_R&~0x00001F00)|0x00000100;    // enable timeout interrupts
 		WTIMER0_TBILR_R = (period)-1;    // start value for trigger
 		WTIMER0_CTL_R |= 0x00000100;   // enable wtimer0B
@@ -541,6 +550,7 @@ int OS_AddPeriodicThread(void(*task)(void),unsigned long period, unsigned long p
 //           determines the relative priority of these four threads
 int OS_AddSW1Task(void(*task)(void), unsigned long priority){
 	SW1Task = task;
+	NVIC_PRI7_R = (NVIC_PRI7_R&0xFF00FFFF)|(priority << 21); // (g) priority 2
 	GPIO_PORTF_IM_R |= 0x10;      // (f) arm interrupt on PF4
 	return 0;
 }
@@ -560,7 +570,8 @@ int OS_AddSW1Task(void(*task)(void), unsigned long priority){
 //           determines the relative priority of these four threads
 int OS_AddSW2Task(void(*task)(void), unsigned long priority){
 	SW2Task = task;
-	GPIO_PORTF_IM_R |= 0x1;      // (f) arm interrupt on PF0
+	NVIC_PRI7_R = (NVIC_PRI7_R&0xFF00FFFF)|(priority << 21);
+	GPIO_PORTF_IM_R |= 0x01;      // (f) arm interrupt on PF0
 	return 0;
 }
 
@@ -577,7 +588,7 @@ void OS_Sleep(unsigned long sleepTime){
 	tcbType *sleepyThread = RunPt;
 	sleepyThread->sleep = sleepTime;
 	UnlinkThread(sleepyThread);
-	AddToList(sleepyThread, &SleepListStart, &SleepListEnd);
+	PushToList(sleepyThread, &SleepListStart, &SleepListEnd);
 	EndCritical(status);
 	//OS_SwitchThread();
 }

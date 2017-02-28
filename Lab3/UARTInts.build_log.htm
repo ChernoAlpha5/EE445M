@@ -3,8 +3,8 @@
 <pre>
 <h1>µVision Build Log</h1>
 <h2>Project:</h2>
-C:\Keil\ValvanoWareTM4C123\EE445M\Lab3\UARTInts.uvproj
-Project File Date:  02/27/2017
+C:\Users\chuchinis\Desktop\EE445M\Lab3\UARTInts.uvproj
+Project File Date:  02/28/2017
 
 <h2>Output:</h2>
 Rebuild target 'UARTInts'
@@ -14,15 +14,15 @@ compiling UART.c...
 compiling ST7735.c...
 compiling ADC.c...
 compiling OS.c...
-OS.c(220): warning:  #177-D: variable "Andrew" was declared but never referenced
+OS.c(226): warning:  #177-D: variable "Andrew" was declared but never referenced
         long Andrew = 0; 
-OS.c(271): warning:  #61-D: integer operation result is out of range
+OS.c(275): warning:  #61-D: integer operation result is out of range
         NVIC_EN2_R = (1<<31);              // enable interrupt 95 in NVIC
-OS.c(271): warning:  #68-D: integer conversion resulted in a change of sign
+OS.c(275): warning:  #68-D: integer conversion resulted in a change of sign
         NVIC_EN2_R = (1<<31);              // enable interrupt 95 in NVIC
-OS.c(263): warning:  #177-D: variable "Andrew" was declared but never referenced
+OS.c(268): warning:  #177-D: variable "Andrew" was declared but never referenced
         long Andrew = 0; 
-OS.c(306): warning:  #177-D: variable "Andrew" was declared but never referenced
+OS.c(310): warning:  #177-D: variable "Andrew" was declared but never referenced
         long Andrew = 0;
 OS.c: 5 warnings, 0 errors
 compiling Lab2.c...
@@ -32,40 +32,13 @@ compiling Interpreter.c...
 assembling ThreadSwitch.s...
 compiling SysTick.c...
 linking...
-Program Size: Code=11608 RO-data=2052 RW-data=284 ZI-data=27716  
+Program Size: Code=11724 RO-data=2052 RW-data=284 ZI-data=27716  
 ".\UARTInts.axf" - 0 Error(s), 5 Warning(s).
-Load "C:\\Keil\\ValvanoWareTM4C123\\EE445M\\Lab3\\UARTInts.axf" 
+</pre>
+</body>
+</html>
+\\Desktop\\EE445M\\Lab3\\UARTInts.axf" 
 Connecting: Mode=JTAG, Speed=1000000Hz
 Erase Done.
 Programming Done.
 Verify OK.
-</pre>
-</body>
-</html>
- -> currBlockedPtr -> next = RunPt; 
-OS.c(387): error:  #29: expected an expression
-                RunPt -> next - > prev = RunPt -> prev; 
-OS.c: 5 warnings, 4 errors
-compiling Lab2.c...
-OS.h(22): error:  #20: identifier "tcbType" is undefined
-        tcbType *currBlockedPtr;
-OS.h(23): error:  #20: identifier "tcbType" is undefined
-        tcbType *blockedPtr;
-Lab2.c: 0 warnings, 2 errors
-assembling PID_stm32.s...
-assembling cr4_fft_64_stm32.s...
-compiling Interpreter.c...
-OS.h(22): error:  #20: identifier "tcbType" is undefined
-        tcbType *currBlockedPtr;
-OS.h(23): error:  #20: identifier "tcbType" is undefined
-        tcbType *blockedPtr;
-Interpreter.c: 0 warnings, 2 errors
-assembling ThreadSwitch.s...
-compiling SysTick.c...
-OS.h(22): error:  #20: identifier "tcbType" is undefined
-        tcbType *currBlockedPtr;
-OS.h(23): error:  #20: identifier "tcbType" is undefined
-        tcbType *blockedPtr;
-SysTick.c: 0 warnings, 2 errors
-".\UARTInts.axf" - 12 Error(s), 5 Warning(s).
-Target not created

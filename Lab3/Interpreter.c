@@ -64,7 +64,6 @@ void toggleLed(void){
 void Interpreter(void){
   char string[20];  // global to assist in debugging
 	heartBeatInit();
-  UART_Init();              // initialize UART
 	//Output_Init();
 	
   while(1){
