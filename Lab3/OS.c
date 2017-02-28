@@ -47,6 +47,7 @@ int16_t CurrentID;
 
 tcbType *SleepListStart;
 tcbType *SleepListEnd;
+tcbType *LinkinPointer;
 uint32_t OSMsCount;
 
 void(*PeriodicTask1)(void);
@@ -67,12 +68,13 @@ void LinkThread(tcbType *threadPt){
 	if(NumThreads == 0){
 		threadPt->next = threadPt;
 		threadPt->prev = threadPt;
+		LinkinPointer = threadPt;
 		RunPt = threadPt;
 	}
 	else{
-		threadPt->next = RunPt->next; // Insert thread into linked list
-		RunPt->next = threadPt;
-		threadPt->prev = RunPt;
+		threadPt->next = LinkinPointer->next; // Insert thread into linked list
+		LinkinPointer->next = threadPt;
+		threadPt->prev = LinkinPointer;
 		threadPt->next->prev = threadPt; //set prev for thread after current to current
 	}
 	NumThreads++;
@@ -86,6 +88,7 @@ void UnlinkThread(tcbType *threadPt){
 	if(NumThreads > 0){
 		threadPt->prev->next = threadPt->next;	//if no threads left there is no need to change pointers
 		threadPt->next->prev = threadPt->prev;
+		LinkinPointer = threadPt->next;
 		OS_SelectNextThread();
 	}
 	threadPt->next = 0;	//clear next for Sleeping and Blocking lists
@@ -355,15 +358,17 @@ void OS_Init(void){
 // input:  pointer to a semaphore
 // output: none
 void OS_InitSemaphore(Sema4Type *semaPt, long value){
+	long status = StartCritical();
 	semaPt->Value = value;
 	semaPt->BlockedListEnd = 0;
 	semaPt->BlockedListStart = 0;
+	EndCritical(status);
 }
 
 
 void Block(tcbType *threadPt, Sema4Type *semaPt){
-	UnlinkThread(threadPt);
-	PushToList(threadPt, &(semaPt->BlockedListStart), &(semaPt->BlockedListEnd));
+	UnlinkThread(threadPt);	//take tcb out of circular linked list
+	PushToList(threadPt, &(semaPt->BlockedListStart), &(semaPt->BlockedListEnd));	//add tcb to end of blocked linked list
 }
 // ******** OS_Wait ************
 //decrement semaphore 
@@ -372,13 +377,12 @@ void Block(tcbType *threadPt, Sema4Type *semaPt){
 // input:  pointer to a counting semaphore
 // output: none
 void OS_Wait(Sema4Type *semaPt) {
-  DisableInterrupts();
+  long status = StartCritical();
   (semaPt->Value) = (semaPt->Value) - 1;
-   // take tcb out of linked list
   if (semaPt->Value < 0){
 		Block(RunPt, semaPt);
   }
-  EnableInterrupts();
+  EndCritical(status);
 }
 
 void WakeUp(Sema4Type *semaPt){
@@ -406,12 +410,12 @@ void OS_Signal(Sema4Type *semaPt) {
 // input:  pointer to a binary semaphore
 // output: none
 void OS_bWait(Sema4Type *semaPt) {
-  DisableInterrupts();
+  long status = StartCritical();
   (semaPt->Value) = (semaPt->Value) - 1;
   if (semaPt->Value < 0){
 		Block(RunPt, semaPt);
   }
-  EnableInterrupts();
+  EndCritical(status);
 }
 
 // ******** OS_bSignal ************
@@ -508,7 +512,7 @@ unsigned long OS_Id(void){
 //           determines the relative priority of these four threads
 int NumPeriodicThreads = 0;
 int OS_AddPeriodicThread(void(*task)(void),unsigned long period, unsigned long priority){
-	DisableInterrupts();
+	long status = StartCritical();
 	if(NumPeriodicThreads >= 2){
 		EnableInterrupts();
 		return 0;
@@ -530,7 +534,7 @@ int OS_AddPeriodicThread(void(*task)(void),unsigned long period, unsigned long p
 		WTIMER0_CTL_R |= 0x00000100;   // enable wtimer0B
 	}
 	NumPeriodicThreads++;
-	EnableInterrupts();
+	EndCritical(status);
 	return 1; 
 }
 
@@ -807,6 +811,9 @@ void OS_SwitchThread(void){
 }
 
 void OS_SelectNextThread(void){
-	while(NumThreads == 0);
-	NextPt = RunPt->next;	//switch threads using round-robin, avoid dead/uninitialized threads and sleeping threads
+	long status = StartCritical();
+	if(RunPt->next){	//avoid selecting next thread if runpointer got blocked/slept and next has already been chosen
+		NextPt = RunPt->next;	//switch threads using round-robin
+	}
+	EndCritical(status);
 }
