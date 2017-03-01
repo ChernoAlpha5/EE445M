@@ -162,7 +162,7 @@ void SW1Push(void){
 	PB1 ^= 0x02;
 	PB1 ^= 0x02;
   if(OS_MsTime() > 20){ // debounce
-    if(OS_AddThread(&ButtonWork,100,4)){
+    if(OS_AddThread(&ButtonWork,100,1)){
       NumCreated++; 
     }
     OS_ClearMsTime();  // at least 20ms between touches
@@ -175,7 +175,7 @@ void SW1Push(void){
 // background threads execute once and return
 void SW2Push(void){
   if(OS_MsTime() > 20){ // debounce
-    if(OS_AddThread(&ButtonWork,100,4)){
+    if(OS_AddThread(&ButtonWork,100,1)){
       NumCreated++; 
     }
     OS_ClearMsTime();  // at least 20ms between touches
@@ -309,7 +309,7 @@ void Interpreter(void);    // just a prototype, link to your interpreter
 
 
 //*******************final user main DEMONTRATE THIS TO TA**********
-int main(void){ 
+int Testmain(void){ 
   OS_Init();           // initialize, disable interrupts
   PortB_Init();
   DataLost = 0;        // lost data between producer and consumer
@@ -318,15 +318,15 @@ int main(void){
 
 //********initialize communication channels
   OS_MailBox_Init();
-  OS_Fifo_Init(64);    // ***note*** 4 is not big enough*****
+  OS_Fifo_Init(128);    // ***note*** 4 is not big enough*****
 
 //*******attach background tasks***********
   OS_AddSW1Task(&SW1Push,2);
-//  OS_AddSW2Task(&SW2Push,2);  // add this line in Lab 3
+  OS_AddSW2Task(&SW2Push,2);  // add this line in Lab 3
   ADC_Open(4);  // sequencer 3, channel 4, PD3, sampling in DAS()
   OS_AddPeriodicThread(&DAS,PERIOD,1); // 2 kHz real time sampling of PD3
-	//OS_AddPeriodicThread(&DAS,PERIOD,1); // 2 kHz real time sampling of PD3
-  NumCreated = 0 ;
+
+  NumCreated = 0;
 // create initial foreground threads
   NumCreated += OS_AddThread(&Interpreter,128,2); 
   NumCreated += OS_AddThread(&Consumer,128,1); 
@@ -710,7 +710,7 @@ static long result;
   result = m+n;
   return result;
 }
-int Testmain6(void){      // Testmain6  Lab 3
+int main(void){      // Testmain6  Lab 3
   volatile unsigned long delay;
   OS_Init();           // initialize, disable interrupts
   delay = add(3,4);

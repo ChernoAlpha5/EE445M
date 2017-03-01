@@ -6,6 +6,8 @@
 #include "PLL.h"
 #include "ST7735.h"
 
+#define PRISCHED 1
+
 #define TIMER_CFG_16_BIT        0x00000004  // 16-bit timer configuration,
                                             // function is controlled by bits
                                             // 1:0 of GPTMTAMR and GPTMTBMR
@@ -36,7 +38,7 @@ void EndCritical(long primask);
 void StartOS(void);
 
 uint8_t NumThreads;
-#define MAXNUMTHREADS 30
+#define MAXNUMTHREADS 10
 #define STACKSIZE 200
 
 tcbType tcbs[MAXNUMTHREADS];
@@ -78,6 +80,11 @@ void LinkThread(tcbType *threadPt){
 		threadPt->next->prev = threadPt; //set prev for thread after current to current
 	}
 	NumThreads++;
+	/*#ifdef PRISCHED
+		if(threadPt->priority < RunPt->priority){
+			OS_Suspend();										//switch to new thread if higher priority
+		}
+	#endif*/
 	EndCritical(status);
 }
 
@@ -121,13 +128,27 @@ tcbType* PopFromList(tcbType **listStartPt, tcbType **listEndPt){
 }
 
 //adds an element to an ordered doubly-linked list
-void AddToOrderedList(tcbType *threadPt, tcbType **listStartPt, tcbType **listEndPt, int order){//TODO:add in order
+void AddToPriorityList(tcbType *threadPt, tcbType **listStartPt, tcbType **listEndPt){
 	if(*listStartPt){
-		(*listEndPt)->next = threadPt;
-		threadPt->prev = *listEndPt;
-		*listEndPt = threadPt;
+		tcbType *curThread = *listStartPt;
+		while(curThread->next && (curThread->priority <= threadPt->priority)){	//skip threads ordered by priority
+			curThread = curThread->next;
+		}
+		if(curThread->priority > threadPt->priority){		//cur thread is lower priority than thread to be inserted
+			threadPt->next = curThread;	
+			threadPt->prev = curThread->prev;
+			curThread->prev = threadPt;
+			if(*listStartPt == curThread){								//check if inserting at start of the list
+				*listStartPt = threadPt;	
+			}
+		}
+		else{																						//arrived to end of list
+			(*listEndPt)->next = threadPt;
+			threadPt->prev = *listEndPt;
+			*listEndPt = threadPt;
+		}
 	}
-	else{
+	else{																							//list is empty
 		*listStartPt = threadPt;
 		*listEndPt = threadPt;
 	}	
@@ -154,6 +175,8 @@ void PortF_Init(void){
 	SYSCTL_RCGCGPIO_R |= 0x20; // activate port F
   while((SYSCTL_PRGPIO_R&0x20)==0){}; // allow time for clock to start 
 	AndrewTriggered = 0;
+	GPIO_PORTF_LOCK_R = GPIO_LOCK_KEY;
+	GPIO_PORTF_CR_R |= 0x11;
   GPIO_PORTF_DIR_R &= ~0x11;    // (c) make PF4 in (built-in button)
   GPIO_PORTF_AFSEL_R &= ~0x11;  //     disable alt funct on PF0, PF4
   GPIO_PORTF_DEN_R |= 0x11;     //     enable digital I/O on PF4
@@ -368,7 +391,11 @@ void OS_InitSemaphore(Sema4Type *semaPt, long value){
 
 void Block(tcbType *threadPt, Sema4Type *semaPt){
 	UnlinkThread(threadPt);	//take tcb out of circular linked list
-	PushToList(threadPt, &(semaPt->BlockedListStart), &(semaPt->BlockedListEnd));	//add tcb to end of blocked linked list
+	#ifdef PRISCHED
+		AddToPriorityList(threadPt, &(semaPt->BlockedListStart), &(semaPt->BlockedListEnd));
+	#else
+		PushToList(threadPt, &(semaPt->BlockedListStart), &(semaPt->BlockedListEnd));	//add tcb to end of blocked linked list
+	#endif
 }
 // ******** OS_Wait ************
 //decrement semaphore 
@@ -476,6 +503,7 @@ int OS_AddThread(void(*task)(void), unsigned long stackSize, unsigned long prior
 	}
 	unusedThread = &tcbs[numThread];
 	unusedThread->id = CurrentID;	//Current ID is incremented forever for different IDs
+	unusedThread->priority = priority;
 	unusedThread->sleep = 0;
 	LinkThread(unusedThread);
 	SetInitialStack(numThread);		//initialize stack
@@ -643,9 +671,6 @@ Sema4Type FifoMutex;
 //    e.g., must be a power of 2,4,8,16,32,64,128
 void OS_Fifo_Init(unsigned long size){
 	long sr = StartCritical();      // make atomic
-	/*OS_InitSemaphore(&DataRoomLeft, size);
-	OS_InitSemaphore(&DataAvailable, 0);
-	OS_InitSemaphore(&FifoMutex, 1);*/
   PutPt = 0; // Empty
 	GetPt = 0; // Empty
 	FifoSize = size;
@@ -811,9 +836,24 @@ void OS_SwitchThread(void){
 }
 
 void OS_SelectNextThread(void){
+	while(NumThreads == 0);	//spin until a thread is added
 	long status = StartCritical();
-	if(RunPt->next){	//avoid selecting next thread if runpointer got blocked/slept and next has already been chosen
-		NextPt = RunPt->next;	//switch threads using round-robin
+	if(RunPt->next){	//avoid selecting next thread if runpointer got unliked so RunPt->next is 0 and NextPt has been chosen
+		#ifdef PRISCHED
+			tcbType *maxPtr = RunPt->next;
+			tcbType *curPtr = maxPtr;
+			 // find maximum priority, assume first one is max and compare the rest against it
+			for (int i = 0; i < NumThreads-1; i++){
+				curPtr = curPtr->next;
+				if (curPtr->priority < maxPtr->priority){
+					maxPtr = curPtr;
+				}
+			}
+			 // set next pointer to TCB with highest priority
+			NextPt = maxPtr;
+		#else
+			NextPt = RunPt->next;
+		#endif
 	}
 	EndCritical(status);
 }

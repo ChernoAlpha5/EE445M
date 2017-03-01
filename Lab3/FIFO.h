@@ -28,39 +28,48 @@
 #ifndef __FIFO_H__
 #define __FIFO_H__
 
+
 long StartCritical (void);    // previous I bit, disable interrupts
 void EndCritical(long sr);    // restore I bit to previous value
 
 
 
-// macro to create an index FIFO
+// macro to create an index FIFO using wait/signal
 #define AddIndexFifo(NAME,SIZE,TYPE,SUCCESS,FAIL) \
+Sema4Type NAME ## FifoMutex;       \
+Sema4Type NAME ## DataRoomLeft;    \
+Sema4Type NAME ## DataAvailable;   \
 uint32_t volatile NAME ## PutI;    \
 uint32_t volatile NAME ## GetI;    \
 TYPE static NAME ## Fifo [SIZE];        \
 void NAME ## Fifo_Init(void){ long sr;  \
   sr = StartCritical();                 \
   NAME ## PutI = NAME ## GetI = 0;      \
+	OS_InitSemaphore(&NAME ## DataRoomLeft, SIZE);\
+	OS_InitSemaphore(&NAME ## DataAvailable, 0);	\
+	OS_InitSemaphore(&NAME ## FifoMutex, 1);			\
   EndCritical(sr);                      \
 }                                       \
 int NAME ## Fifo_Put (TYPE data){       \
-  if(( NAME ## PutI - NAME ## GetI ) & ~(SIZE-1)){  \
-    return(FAIL);      \
-  }                    \
+  OS_Wait(&NAME ## DataRoomLeft);       \
+	OS_bWait(&NAME ## FifoMutex);         \
   NAME ## Fifo[ NAME ## PutI &(SIZE-1)] = data; \
   NAME ## PutI ## ++;  \
+	OS_bSignal(&NAME ## FifoMutex);       \
+	OS_Signal(&NAME ## DataAvailable);    \
   return(SUCCESS);     \
 }                      \
 int NAME ## Fifo_Get (TYPE *datapt){  \
-  if( NAME ## PutI == NAME ## GetI ){ \
-    return(FAIL);      \
-  }                    \
+	OS_Wait(&NAME ## DataAvailable);    \
+	OS_bWait(&NAME ## FifoMutex);       \
   *datapt = NAME ## Fifo[ NAME ## GetI &(SIZE-1)];  \
   NAME ## GetI ## ++;  \
+	OS_bSignal(&NAME ## FifoMutex);   \
+	OS_Signal(&NAME ## DataRoomLeft); \
   return(SUCCESS);     \
 }                      \
 unsigned short NAME ## Fifo_Size (void){  \
- return ((unsigned short)( NAME ## PutI - NAME ## GetI ));  \
+ return ((unsigned short)( NAME ## PutI - NAME ## GetI));  \
 }
 // e.g.,
 // AddIndexFifo(Tx,32,unsigned char, 1,0)

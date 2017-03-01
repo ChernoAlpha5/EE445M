@@ -30,6 +30,7 @@
 #include <stdint.h>
 #include "../inc/tm4c123gh6pm.h"
 
+#include "OS.h"
 #include "FIFO.h"
 #include "UART.h"
 
@@ -70,6 +71,7 @@ void WaitForInterrupt(void);  // low power mode
                               // create index implementation FIFO (see FIFO.h)
 AddIndexFifo(Rx, FIFOSIZE, char, FIFOSUCCESS, FIFOFAIL)
 AddIndexFifo(Tx, FIFOSIZE, char, FIFOSUCCESS, FIFOFAIL)
+
 
 // Initialize UART0
 // Baud rate is 115200 bits/sec
@@ -122,13 +124,13 @@ void static copySoftwareToHardware(void){
 // spin if RxFifo is empty
 char UART_InChar(void){
   char letter;
-  while(RxFifo_Get(&letter) == FIFOFAIL){};
+  RxFifo_Get(&letter);
   return(letter);
 }
 // output ASCII character to UART
 // spin if TxFifo is full
 void UART_OutChar(char data){
-  while(TxFifo_Put(data) == FIFOFAIL){};
+  TxFifo_Put(data);
   UART0_IM_R &= ~UART_IM_TXIM;          // disable TX FIFO interrupt
   copySoftwareToHardware();
   UART0_IM_R |= UART_IM_TXIM;           // enable TX FIFO interrupt
