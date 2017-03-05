@@ -63,7 +63,7 @@
 #define SYSCTL_RCGCGPIO_R1      0x00000002  // GPIO Port B Run Mode Clock
                                             // Gating Control
 
-#define BUSCLK 50000000
+#define BUSCLK 80000000
 
 
 void DisableInterrupts(void); // Disable interrupts

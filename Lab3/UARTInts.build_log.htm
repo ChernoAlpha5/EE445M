@@ -14,15 +14,15 @@ compiling UART.c...
 compiling ST7735.c...
 compiling ADC.c...
 compiling OS.c...
-OS.c(259): warning:  #177-D: variable "Andrew" was declared but never referenced
+OS.c(291): warning:  #177-D: variable "Andrew" was declared but never referenced
         long Andrew = 0; 
-OS.c(309): warning:  #61-D: integer operation result is out of range
+OS.c(343): warning:  #61-D: integer operation result is out of range
         NVIC_EN2_R = (1<<31);              // enable interrupt 95 in NVIC
-OS.c(309): warning:  #68-D: integer conversion resulted in a change of sign
+OS.c(343): warning:  #68-D: integer conversion resulted in a change of sign
         NVIC_EN2_R = (1<<31);              // enable interrupt 95 in NVIC
-OS.c(302): warning:  #177-D: variable "Andrew" was declared but never referenced
+OS.c(336): warning:  #177-D: variable "Andrew" was declared but never referenced
         long Andrew = 0; 
-OS.c(345): warning:  #177-D: variable "Andrew" was declared but never referenced
+OS.c(381): warning:  #177-D: variable "Andrew" was declared but never referenced
         long Andrew = 0;
 OS.c: 5 warnings, 0 errors
 compiling Lab2.c...
@@ -32,10 +32,21 @@ compiling Interpreter.c...
 assembling ThreadSwitch.s...
 compiling SysTick.c...
 linking...
-Program Size: Code=12116 RO-data=2052 RW-data=304 ZI-data=11384  
+Program Size: Code=12388 RO-data=2052 RW-data=304 ZI-data=12184  
 ".\UARTInts.axf" - 0 Error(s), 5 Warning(s).
 Load "C:\\Keil\\ValvanoWareTM4C123\\EE445M\\Lab3\\UARTInts.axf" 
 Connecting: Mode=JTAG, Speed=1000000Hz
 Erase Done.
 Programming Done.
 Verify OK.
+</pre>
+</body>
+</html>
+Ints.axf: Error: L6238E: threadswitch.o(.text) contains invalid call from '~PRES8 (The user did not require code to preserve 8-byte aligment of 8-byte data objects)' function to 'REQ8 (Code was permitted to depend on the 8-byte aligment of 8-byte data items)' function RecordDongs.
+Finished: 0 information, 0 warning and 2 error messages.
+".\UARTInts.axf" - 2 Error(s), 5 Warning(s).
+Target not created
+Load "C:\\Keil\\ValvanoWareTM4C123\\EE445M\\Lab3\\UARTInts.axf" 
+_____^
+*** error 56: cannot open file
+Error: Flash Download failed  -  Could not load file 'C:\Keil\ValvanoWareTM4C123\EE445M\Lab3\UARTInts.axf'

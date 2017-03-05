@@ -1,10 +1,13 @@
 		AREA    |.text|, CODE, READONLY, ALIGN=2
-		THUMB		        
+		THUMB		   
+		PRESERVE8 {TRUE}
 		EXPORT PendSV_Handler 
 ;		EXPORT SysTick_Handler
 		EXPORT StartOS
 		EXTERN RunPt
 		EXTERN NextPt
+		EXTERN RecordDongs
+		EXTERN OS_Id
 
 			
 ;Round-Robin Switching			
@@ -20,10 +23,14 @@
 ;	POP {R4 - R11}
 ;	CPSIE I
 ;	BX LR
-	
+
 ;switch using chosen NextPt
 PendSV_Handler
 	CPSID I
+	PUSH {LR}
+	BL OS_Id
+	BL RecordDongs
+	POP {LR}
 	PUSH {R4 - R11}
 	LDR R0, =RunPt
 	LDR R1, [R0]

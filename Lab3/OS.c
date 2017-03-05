@@ -24,7 +24,7 @@
 																						
 #define PF2             (*((volatile uint32_t *)0x40025010))
 #define PF1             (*((volatile uint32_t *)0x40025008))																						
-#define BUSCLK 50000000
+#define BUSCLK 80000000
 
 #define MAXFIFOSIZE 128
 																						
@@ -64,7 +64,39 @@ unsigned long JitterHistogram2[JITTERSIZE]={0,};
 void(*SW1Task)(void);
 void(*SW2Task)(void);
 
+#define MAXDONGS	100
+unsigned long DongTime[MAXDONGS];
+unsigned long DongThread[MAXDONGS];
+unsigned short CurDong = 0;
+
 unsigned short IsInit = 0;
+
+
+void RecordDongs(unsigned long id){
+	if(CurDong < MAXDONGS){
+		DongTime[CurDong] = (0xFFFFFFFF - OS_Time());
+		DongThread[CurDong] = id;
+		CurDong++;
+	}
+}	
+void OS_ResetDongs(void){
+	CurDong = 0;
+}
+void OS_ClearDongs(void){
+	for(int i=0; i<MAXDONGS; i++){
+		DongTime[i] = 0;
+		DongThread[i] = 0;
+	}
+}
+void OS_DumpDongs(void){
+	for(int i=0; i<MAXDONGS; i++){
+		UART_OutUDec(DongTime[i]);
+		UART_OutChar(' ');
+		UART_OutUDec(DongThread[i]);
+		UART_OutChar(CR);
+		UART_OutChar(LF);
+	}
+}
 
 void Jitter(void){
 	ST7735_Message(0,0,"Jitter 0.1us=",MaxJitter1);
@@ -276,7 +308,9 @@ void WideTimer0A_Handler(){
 	unsigned static long LastTime;
 	long jitter;
 	unsigned long thisTime = OS_Time();
+	RecordDongs(0);// sausages are my fav food
 	PeriodicTask1();
+	RecordDongs(0);// sausages are my fav food
 	if(PeriodicTask1Count){
 		unsigned long diff = OS_TimeDifference(LastTime,thisTime);
 		if(diff>PeriodicTask1Period){
@@ -317,7 +351,9 @@ void WideTimer0B_Handler(){
 	unsigned static long LastTime;
 	unsigned long jitter;
 	unsigned long thisTime = OS_Time();
+	RecordDongs(1);// sausages are my fav food
 	PeriodicTask2();
+	RecordDongs(1);// sausages are my fav food
 	if(PeriodicTask2Count){
 		unsigned long diff = OS_TimeDifference(LastTime,thisTime);
 		if(diff>PeriodicTask2Period){
@@ -369,7 +405,7 @@ void WideTimer5A_Handler(void){
 // output: none
 void OS_Init(void){
 	DisableInterrupts();
-  PLL_Init(Bus50MHz);         // set processor clock to 50 MHz
+  PLL_Init(Bus80MHz);         // set processor clock to 80 MHz
 	Output_Init();
 	UART_Init();
 	WTimer0A_Init();
@@ -381,7 +417,7 @@ void OS_Init(void){
   NVIC_ST_CURRENT_R = 0;      // any write to current clears it
   NVIC_SYS_PRI3_R =(NVIC_SYS_PRI3_R&0x00FFFFFF)|0xC0000000; // priority 6 SysTick
 	NVIC_SYS_PRI3_R =(NVIC_SYS_PRI3_R&0xFF00FFFF)|0x00E00000; // priority 7 PendSV
-	CurrentID = 1;
+	CurrentID = 4;
 	NumThreads = 0;
 	IsInit = 1;
 }
