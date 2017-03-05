@@ -64,6 +64,11 @@ unsigned long JitterHistogram2[JITTERSIZE]={0,};
 void(*SW1Task)(void);
 void(*SW2Task)(void);
 
+void Jitter(void){
+	ST7735_Message(0,0,"Jitter 0.1us=",MaxJitter1);
+	ST7735_Message(0,1,"Jitter 0.1us=",MaxJitter2);
+}
+
 //Adds thread to circular linked list of active threads
 void LinkThread(tcbType *threadPt){
 	long status = StartCritical();
@@ -265,11 +270,11 @@ void WideTimer0A_Handler(){
 	//PF1 ^= 0x02;
 	//PF1 ^= 0x02;
 	WTIMER0_ICR_R |= 0x01;
-	PeriodicTask1();
 	
 	unsigned static long LastTime;
 	long jitter;
 	unsigned long thisTime = OS_Time();
+	PeriodicTask1();
 	if(PeriodicTask1Count){
 		unsigned long diff = OS_TimeDifference(LastTime,thisTime);
 		if(diff>PeriodicTask1Period){
@@ -287,6 +292,7 @@ void WideTimer0A_Handler(){
 	}
 	LastTime = thisTime;
 	PeriodicTask1Count++;
+	
 	//PF1 ^= 0x02;
 }
 void WTimer0B_Init(void){ //Used for periodic Task 2
@@ -300,16 +306,16 @@ void WTimer0B_Init(void){ //Used for periodic Task 2
 	//WTIMER0_TBILR_R = 0xFFFFFFFF;    // start value for trigger
 	NVIC_EN2_R = (1<<31);              // enable interrupt 95 in NVIC
 }
-unsigned long PeriodicTask2Count = 0;
+unsigned long PeriodicTask2Count;
 void WideTimer0B_Handler(){
 	//PF1 ^= 0x02;
 	//PF1 ^= 0x02;
 	WTIMER0_ICR_R |= 0x0100;
-	PeriodicTask2();
 	
 	unsigned static long LastTime;
-	long jitter;
+	unsigned long jitter;
 	unsigned long thisTime = OS_Time();
+	PeriodicTask2();
 	if(PeriodicTask2Count){
 		unsigned long diff = OS_TimeDifference(LastTime,thisTime);
 		if(diff>PeriodicTask2Period){
@@ -327,6 +333,7 @@ void WideTimer0B_Handler(){
 	}
 	LastTime = thisTime;
 	PeriodicTask2Count++;
+	
 	//PF1 ^= 0x02;
 	
 }
@@ -856,4 +863,19 @@ void OS_SelectNextThread(void){
 		#endif
 	}
 	EndCritical(status);
+}
+
+unsigned long DITime;
+void OS_DITime(void){
+	DITime = OS_Time();
+}
+
+unsigned long TotalDITime;
+unsigned long MaxDITime = 0;
+void OS_EITime(void){
+	unsigned long dif = OS_TimeDifference(DITime, OS_Time());
+	 if(dif > MaxDITime){
+		 MaxDITime = dif;
+	 }
+	TotalDITime += dif;
 }

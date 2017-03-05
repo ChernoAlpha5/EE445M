@@ -61,34 +61,20 @@ void toggleLed(void){
 	PF2^=0x04;
 }
 //debug code
+extern unsigned long MaxDITime;
 void Interpreter(void){
   char string[20];  // global to assist in debugging
-	heartBeatInit();
+	//heartBeatInit();
 	//Output_Init();
 	
   while(1){
     UART_OutString("> ");
     UART_InToken(string,19);
 		switch(string[0]){
-			case 'A':
-			case 'a':
-				if(string[3] =='t' || string[3] == 'T'){
-					ADC_Open(0);
-					UART_OutString(" ");
-					UART_OutUDec(ADC_In());
-				}
-				break;
-			case 'U':
-			case 'u':
+			case 'M':
+			case 'm':
 				UART_OutString(" ");
-				UART_InString(string,19);
-				ST7735_Message(ST7735_UP, 0, string, 0);
-				break;
-			case 'D':
-			case 'd':
-				UART_OutString(" ");
-				UART_InString(string,19);
-				ST7735_Message(ST7735_DOWN, 0, string, 0);
+				UART_OutUDec(MaxDITime);
 				break;
 			default:
 				UART_OutString("Error");

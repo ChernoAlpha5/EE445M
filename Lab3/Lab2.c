@@ -309,7 +309,7 @@ void Interpreter(void);    // just a prototype, link to your interpreter
 
 
 //*******************final user main DEMONTRATE THIS TO TA**********
-int Testmain(void){ 
+int main(void){ 
   OS_Init();           // initialize, disable interrupts
   PortB_Init();
   DataLost = 0;        // lost data between producer and consumer
@@ -318,7 +318,7 @@ int Testmain(void){
 
 //********initialize communication channels
   OS_MailBox_Init();
-  OS_Fifo_Init(128);    // ***note*** 4 is not big enough*****
+  OS_Fifo_Init(4);    // ***note*** 4 is not big enough*****
 
 //*******attach background tasks***********
   OS_AddSW1Task(&SW1Push,2);
@@ -586,9 +586,9 @@ unsigned long Count1;   // number of times thread1 loops
 // simple time delay, simulates user program doing real work
 // Input: amount of work in 100ns units (free free to change units
 // Output: none
-void PseudoWork(unsigned short work){
-unsigned short startTime;
-  startTime = OS_Time();    // time in 100ns units
+void PseudoWork(unsigned long work){
+unsigned long startTime;
+  startTime = OS_Time();    // time in 12.5ns units
   while(OS_TimeDifference(startTime,OS_Time()) <= work){} 
 }
 void Thread6(void){  // foreground thread
@@ -598,21 +598,21 @@ void Thread6(void){  // foreground thread
     PB2 ^= 0x04;        // debugging toggle bit 0  
   }
 }
-extern void Jitter(void){	// prints jitter information (write this)
-}
+extern void Jitter(void);	// prints jitter information (write this)
+
 void Thread7(void){  // foreground thread
   UART_OutString("\n\rEE345M/EE380L, Lab 3 Preparation 2\n\r");
-  OS_Sleep(5000);   // 10 seconds        
+  OS_Sleep(10000);   // 10 seconds        
   Jitter();         // print jitter information
   UART_OutString("\n\r\n\r");
   OS_Kill();
 }
 #define workA 500       // {5,50,500 us} work in Task A
-#define counts1us 10    // number of OS_Time counts per 1us
+#define counts1us 80    // number of OS_Time counts per 1us
 void TaskA(void){       // called every {1000, 2990us} in background
   PB3 = 0x08;      // debugging profile  
   CountA++;
-  PseudoWork(workA*counts1us); //  do work (100ns time resolution)
+  PseudoWork(workA*counts1us); //  do work (12.5ns time resolution)
   PB3 = 0x00;      // debugging profile  
 }
 #define workB 250       // 250 us work in Task B
@@ -629,7 +629,7 @@ int Testmain5(void){       // Testmain5 Lab 3
   NumCreated = 0 ;
   NumCreated += OS_AddThread(&Thread6,128,2); 
   NumCreated += OS_AddThread(&Thread7,128,1); 
-  OS_AddPeriodicThread(&TaskA,TIME_1MS,0);           // 1 ms, higher priority
+  OS_AddPeriodicThread(&TaskA,2.99*TIME_1MS,0);           // 1 ms, higher priority
   OS_AddPeriodicThread(&TaskB,2*TIME_1MS,1);         // 2 ms, lower priority
  
   OS_Launch(TIME_2MS); // 2ms, doesn't return, interrupts enabled in here
@@ -710,7 +710,7 @@ static long result;
   result = m+n;
   return result;
 }
-int main(void){      // Testmain6  Lab 3
+int Testmain6(void){      // Testmain6  Lab 3
   volatile unsigned long delay;
   OS_Init();           // initialize, disable interrupts
   delay = add(3,4);
