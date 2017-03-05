@@ -62,6 +62,7 @@ void toggleLed(void){
 }
 //debug code
 extern unsigned long MaxDITime;
+extern unsigned long TotalDITime;
 void Interpreter(void){
   char string[20];  // global to assist in debugging
 	//heartBeatInit();
@@ -75,6 +76,21 @@ void Interpreter(void){
 			case 'm':
 				UART_OutString(" ");
 				UART_OutUDec(MaxDITime);
+				break;
+			case 'P':
+			case 'p':
+				UART_OutString(" ");
+				UART_OutUDec(TotalDITime*1000/(0xFFFFFFFF - OS_Time()));
+				break;
+			case 'T':
+			case 't':
+				UART_OutString(" ");
+				UART_OutUDec((0xFFFFFFFF - OS_Time()));
+				break;
+			case 'D':
+			case 'd':
+				UART_OutString(" ");
+				UART_OutUDec(TotalDITime);
 				break;
 			default:
 				UART_OutString("Error");

@@ -6,7 +6,7 @@
 #include "PLL.h"
 #include "ST7735.h"
 
-#define PRISCHED 1
+//#define PRISCHED 1
 
 #define TIMER_CFG_16_BIT        0x00000004  // 16-bit timer configuration,
                                             // function is controlled by bits
@@ -63,6 +63,8 @@ unsigned long JitterHistogram1[JITTERSIZE]={0,};
 unsigned long JitterHistogram2[JITTERSIZE]={0,};
 void(*SW1Task)(void);
 void(*SW2Task)(void);
+
+unsigned short IsInit = 0;
 
 void Jitter(void){
 	ST7735_Message(0,0,"Jitter 0.1us=",MaxJitter1);
@@ -381,6 +383,7 @@ void OS_Init(void){
 	NVIC_SYS_PRI3_R =(NVIC_SYS_PRI3_R&0xFF00FFFF)|0x00E00000; // priority 7 PendSV
 	CurrentID = 1;
 	NumThreads = 0;
+	IsInit = 1;
 }
 
 // ******** OS_InitSemaphore ************
@@ -785,7 +788,10 @@ unsigned long OS_MailBox_Recv(void){
 // It is ok to change the resolution and precision of this function as long as 
 //   this function and OS_TimeDifference have the same resolution and precision 
 unsigned long OS_Time(void){
+	if(IsInit){
 	return WTIMER5_TAR_R;
+	}
+	return 0;
 }
 
 // ******** OS_TimeDifference ************

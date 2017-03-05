@@ -994,101 +994,121 @@ ARM Macro Assembler    Page 16
   594 00000000                 EXPORT           StartCritical
   595 00000000                 EXPORT           EndCritical
   596 00000000                 EXPORT           WaitForInterrupt
-  597 00000000         
-  598 00000000         
-  599 00000000         ;*********** DisableInterrupts ***************
-  600 00000000         ; disable interrupts
-  601 00000000         ; inputs:  none
-  602 00000000         ; outputs: none
-  603 00000000         DisableInterrupts
-  604 00000000 B672            CPSID            I
-  605 00000002 4770            BX               LR
-  606 00000004         
-  607 00000004         
-  608 00000004         ;*********** EnableInterrupts ***************
-  609 00000004         ; disable interrupts
-  610 00000004         ; inputs:  none
-  611 00000004         ; outputs: none
-  612 00000004         EnableInterrupts
-  613 00000004 B662            CPSIE            I
-  614 00000006 4770            BX               LR
-  615 00000008         
-  616 00000008         ;*********** StartCritical ************************
-  617 00000008         ; make a copy of previous I bit, disable interrupts
-  618 00000008         ; inputs:  none
-  619 00000008         ; outputs: previous I bit
-  620 00000008         StartCritical
-  621 00000008 F3EF 8010       MRS              R0, PRIMASK ; save old status
-  622 0000000C B672            CPSID            I           ; mask all (except 
+  597 00000000                 EXTERN           OS_DITime
+  598 00000000                 EXTERN           OS_EITime
+  599 00000000         
+  600 00000000         
+  601 00000000         ;*********** DisableInterrupts ***************
+  602 00000000         ; disable interrupts
+  603 00000000         ; inputs:  none
+  604 00000000         ; outputs: none
+  605 00000000         DisableInterrupts
+  606 00000000 B672            CPSID            I
+  607 00000002 B500            PUSH             {LR}
+  608 00000004 F7FF FFFE       BL               OS_DITime
+  609 00000008 F85D EB04       POP              {LR}
+  610 0000000C 4770            BX               LR
+  611 0000000E         
+  612 0000000E         
+  613 0000000E         ;*********** EnableInterrupts ***************
+  614 0000000E         ; disable interrupts
+  615 0000000E         ; inputs:  none
+  616 0000000E         ; outputs: none
+  617 0000000E         EnableInterrupts
+  618 0000000E B662            CPSIE            I
+  619 00000010 B500            PUSH             {LR}
+  620 00000012 F7FF FFFE       BL               OS_EITime
+  621 00000016 F85D EB04       POP              {LR}
+  622 0000001A 4770            BX               LR
+  623 0000001C         
+  624 0000001C         ;*********** StartCritical ************************
+  625 0000001C         ; make a copy of previous I bit, disable interrupts
+  626 0000001C         ; inputs:  none
+  627 0000001C         ; outputs: previous I bit
+  628 0000001C         StartCritical
+  629 0000001C F3EF 8010       MRS              R0, PRIMASK ; save old status
+  630 00000020 B672            CPSID            I           ; mask all (except 
                                                             faults)
-  623 0000000E 4770            BX               LR
-  624 00000010         
-  625 00000010         ;*********** EndCritical ************************
-  626 00000010         ; using the copy of previous I bit, restore I bit to pre
+  631 00000022 B501            PUSH             {LR, R0}
+  632 00000024 F7FF FFFE       BL               OS_DITime
+  633 00000028 E8BD 4001       POP              {LR, R0}
+  634 0000002C 4770            BX               LR
+  635 0000002E         
+  636 0000002E         ;*********** EndCritical ************************
+  637 0000002E         ; using the copy of previous I bit, restore I bit to pre
                        vious value
-  627 00000010         ; inputs:  previous I bit
-  628 00000010         ; outputs: none
-  629 00000010         EndCritical
-  630 00000010 F380 8810       MSR              PRIMASK, R0
-  631 00000014 4770            BX               LR
-  632 00000016         
-  633 00000016         ;*********** WaitForInterrupt ************************
-  634 00000016         ; go to low power mode while waiting for the next interr
-                       upt
-  635 00000016         ; inputs:  none
-  636 00000016         ; outputs: none
-  637 00000016         WaitForInterrupt
+  638 0000002E         ; inputs:  previous I bit
 
 
 
 ARM Macro Assembler    Page 17 
 
 
-  638 00000016 BF30            WFI
-  639 00000018 4770            BX               LR
-  640 0000001A         
-  641 0000001A         ;*******************************************************
+  639 0000002E         ; outputs: none
+  640 0000002E         EndCritical
+  641 0000002E F380 8810       MSR              PRIMASK, R0
+  642 00000032 B500            PUSH             {LR}
+  643 00000034 F7FF FFFE       BL               OS_EITime
+  644 00000038 F85D EB04       POP              {LR}
+  645 0000003C 4770            BX               LR
+  646 0000003E         
+  647 0000003E         ;*********** WaitForInterrupt ************************
+  648 0000003E         ; go to low power mode while waiting for the next interr
+                       upt
+  649 0000003E         ; inputs:  none
+  650 0000003E         ; outputs: none
+  651 0000003E         WaitForInterrupt
+  652 0000003E BF30            WFI
+  653 00000040 4770            BX               LR
+  654 00000042         
+  655 00000042         ;*******************************************************
                        ***********************
-  642 0000001A         ;
-  643 0000001A         ; The function expected of the C library startup code fo
+  656 00000042         ;
+  657 00000042         ; The function expected of the C library startup code fo
                        r defining the stack
-  644 0000001A         ; and heap memory locations.  For the C library version 
+  658 00000042         ; and heap memory locations.  For the C library version 
                        of the startup code,
-  645 0000001A         ; provide this function so that the C library initializa
+  659 00000042         ; provide this function so that the C library initializa
                        tion code can find out
-  646 0000001A         ; the location of the stack and heap.
-  647 0000001A         ;
-  648 0000001A         ;*******************************************************
+  660 00000042         ; the location of the stack and heap.
+  661 00000042         ;
+  662 00000042         ;*******************************************************
                        ***********************
-  649 0000001A                 IF               :DEF: __MICROLIB
-  654 0000001A                 IMPORT           __use_two_region_memory
-  655 0000001A                 EXPORT           __user_initial_stackheap
-  656 0000001A         __user_initial_stackheap
-  657 0000001A 4802            LDR              R0, =HeapMem
-  658 0000001C 4902            LDR              R1, =(StackMem + Stack)
-  659 0000001E 4A01            LDR              R2, =(HeapMem + Heap)
-  660 00000020 4B02            LDR              R3, =StackMem
-  661 00000022 4770            BX               LR
-  662 00000024                 ENDIF
-  663 00000024         
-  664 00000024         ;*******************************************************
+  663 00000042                 IF               :DEF: __MICROLIB
+  668 00000042                 IMPORT           __use_two_region_memory
+  669 00000042                 EXPORT           __user_initial_stackheap
+  670 00000042         __user_initial_stackheap
+  671 00000042 4802            LDR              R0, =HeapMem
+  672 00000044 4902            LDR              R1, =(StackMem + Stack)
+  673 00000046 4A01            LDR              R2, =(HeapMem + Heap)
+  674 00000048 4B02            LDR              R3, =StackMem
+  675 0000004A 4770            BX               LR
+  676 0000004C                 ENDIF
+  677 0000004C         
+  678 0000004C         ;*******************************************************
                        ***********************
-  665 00000024         ;
-  666 00000024         ; Make sure the end of this section is aligned.
-  667 00000024         ;
-  668 00000024         ;*******************************************************
+  679 0000004C         ;
+  680 0000004C         ; Make sure the end of this section is aligned.
+  681 0000004C         ;
+  682 0000004C         ;*******************************************************
                        ***********************
-  669 00000024                 ALIGN
-  670 00000024         
-  671 00000024         ;*******************************************************
+  683 0000004C                 ALIGN
+  684 0000004C         
+  685 0000004C         ;*******************************************************
                        ***********************
-  672 00000024         ;
-  673 00000024         ; Tell the assembler that we're done.
-  674 00000024         ;
-  675 00000024         ;*******************************************************
+  686 0000004C         ;
+  687 0000004C         ; Tell the assembler that we're done.
+  688 0000004C         ;
+  689 0000004C         ;*******************************************************
                        ***********************
-  676 00000024                 END
+  690 0000004C                 END
               00000000 
+
+
+
+ARM Macro Assembler    Page 18 
+
+
               00000400 
               00000000 
 Command Line: --debug --xref --cpu=Cortex-M4 --apcs=interwork --depend=.\startu
@@ -1115,8 +1135,8 @@ Symbol: StackMem
       At line 53 in file startup.s
    Uses
       At line 90 in file startup.s
-      At line 658 in file startup.s
-      At line 660 in file startup.s
+      At line 672 in file startup.s
+      At line 674 in file startup.s
 
 __initial_sp 00000400
 
@@ -1147,8 +1167,8 @@ Symbol: HeapMem
    Definitions
       At line 64 in file startup.s
    Uses
-      At line 657 in file startup.s
-      At line 659 in file startup.s
+      At line 671 in file startup.s
+      At line 673 in file startup.s
 
 __heap_base 00000000
 
@@ -2446,49 +2466,49 @@ DisableInterrupts 00000000
 
 Symbol: DisableInterrupts
    Definitions
-      At line 603 in file startup.s
+      At line 605 in file startup.s
    Uses
       At line 592 in file startup.s
 Comment: DisableInterrupts used once
-EnableInterrupts 00000004
+EnableInterrupts 0000000E
 
 Symbol: EnableInterrupts
    Definitions
-      At line 612 in file startup.s
+      At line 617 in file startup.s
    Uses
       At line 593 in file startup.s
 Comment: EnableInterrupts used once
-EndCritical 00000010
+EndCritical 0000002E
 
 Symbol: EndCritical
    Definitions
-      At line 629 in file startup.s
+      At line 640 in file startup.s
    Uses
       At line 595 in file startup.s
 Comment: EndCritical used once
-StartCritical 00000008
+StartCritical 0000001C
 
 Symbol: StartCritical
    Definitions
-      At line 620 in file startup.s
+      At line 628 in file startup.s
    Uses
       At line 594 in file startup.s
 Comment: StartCritical used once
-WaitForInterrupt 00000016
+WaitForInterrupt 0000003E
 
 Symbol: WaitForInterrupt
    Definitions
-      At line 637 in file startup.s
+      At line 651 in file startup.s
    Uses
       At line 596 in file startup.s
 Comment: WaitForInterrupt used once
-__user_initial_stackheap 0000001A
+__user_initial_stackheap 00000042
 
 Symbol: __user_initial_stackheap
    Definitions
-      At line 656 in file startup.s
+      At line 670 in file startup.s
    Uses
-      At line 655 in file startup.s
+      At line 669 in file startup.s
 Comment: __user_initial_stackheap used once
 7 symbols
 
@@ -2504,7 +2524,7 @@ Symbol: Heap
       At line 45 in file startup.s
    Uses
       At line 65 in file startup.s
-      At line 659 in file startup.s
+      At line 673 in file startup.s
 
 Stack 00000400
 
@@ -2514,7 +2534,7 @@ Symbol: Stack
    Uses
       At line 54 in file startup.s
       At line 90 in file startup.s
-      At line 658 in file startup.s
+      At line 672 in file startup.s
 
 2 symbols
 
@@ -2522,6 +2542,24 @@ Symbol: Stack
 
 ARM Macro Assembler    Page 1 Alphabetic symbol ordering
 External symbols
+
+OS_DITime 00000000
+
+Symbol: OS_DITime
+   Definitions
+      At line 597 in file startup.s
+   Uses
+      At line 608 in file startup.s
+      At line 632 in file startup.s
+
+OS_EITime 00000000
+
+Symbol: OS_EITime
+   Definitions
+      At line 598 in file startup.s
+   Uses
+      At line 620 in file startup.s
+      At line 643 in file startup.s
 
 __main 00000000
 
@@ -2535,9 +2573,9 @@ __use_two_region_memory 00000000
 
 Symbol: __use_two_region_memory
    Definitions
-      At line 654 in file startup.s
+      At line 668 in file startup.s
    Uses
       None
 Comment: __use_two_region_memory unused
-2 symbols
-480 symbols in table
+4 symbols
+482 symbols in table

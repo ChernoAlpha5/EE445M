@@ -594,6 +594,8 @@ PWM1Fault_Handler
         EXPORT  StartCritical
         EXPORT  EndCritical
         EXPORT  WaitForInterrupt
+		EXTERN  OS_DITime
+		EXTERN	OS_EITime
 
 		
 ;*********** DisableInterrupts ***************
@@ -602,6 +604,9 @@ PWM1Fault_Handler
 ; outputs: none
 DisableInterrupts
         CPSID  I
+		PUSH {LR}
+		BL OS_DITime
+		POP {LR}
         BX     LR
 
 		
@@ -611,6 +616,9 @@ DisableInterrupts
 ; outputs: none
 EnableInterrupts
         CPSIE  I
+		PUSH {LR}
+		BL OS_EITime
+		POP {LR}
         BX     LR
 
 ;*********** StartCritical ************************
@@ -620,6 +628,9 @@ EnableInterrupts
 StartCritical
         MRS    R0, PRIMASK  ; save old status
         CPSID  I            ; mask all (except faults)
+		PUSH {LR, R0}
+		BL OS_DITime
+		POP {LR, R0}
         BX     LR
 
 ;*********** EndCritical ************************
@@ -628,6 +639,9 @@ StartCritical
 ; outputs: none
 EndCritical
         MSR    PRIMASK, R0
+		PUSH {LR}
+		BL OS_EITime
+		POP {LR}
         BX     LR
 
 ;*********** WaitForInterrupt ************************
