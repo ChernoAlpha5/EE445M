@@ -595,6 +595,7 @@ PWM1Fault_Handler
         EXPORT  EndCritical
         EXPORT  WaitForInterrupt
 
+		
 ;*********** DisableInterrupts ***************
 ; disable interrupts
 ; inputs:  none
@@ -603,6 +604,7 @@ DisableInterrupts
         CPSID  I
         BX     LR
 
+		
 ;*********** EnableInterrupts ***************
 ; disable interrupts
 ; inputs:  none

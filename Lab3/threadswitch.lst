@@ -13,66 +13,67 @@ ARM Macro Assembler    Page 1
     6 00000000                 EXTERN           RunPt
     7 00000000                 EXTERN           NextPt
     8 00000000         
-    9 00000000         ;Round-Robin Switching   
-   10 00000000         ;SysTick_Handler 
-   11 00000000         ; CPSID I
-   12 00000000         ; PUSH {R4 - R11}
-   13 00000000         ; LDR R0, =RunPt
-   14 00000000         ; LDR R1, [R0]
-   15 00000000         ; STR SP, [R1]
-   16 00000000         ; LDR R1, [R1, #4]
-   17 00000000         ; STR R1, [R0]
-   18 00000000         ; LDR SP, [R1]
-   19 00000000         ; POP {R4 - R11}
-   20 00000000         ; CPSIE I
-   21 00000000         ; BX LR
-   22 00000000         
-   23 00000000         ;switch using chosen NextPt
-   24 00000000         PendSV_Handler
-   25 00000000 B672            CPSID            I
-   26 00000002 E92D 0FF0       PUSH             {R4 - R11}
-   27 00000006 480E            LDR              R0, =RunPt
-   28 00000008 6801            LDR              R1, [R0]
-   29 0000000A F8C1 D000       STR              SP, [R1]
-   30 0000000E 490D            LDR              R1, =NextPt
-   31 00000010 680A            LDR              R2, [R1]
-   32 00000012 6002            STR              R2, [R0]
-   33 00000014 F8D2 D000       LDR              SP, [R2]
-   34 00000018 E8BD 0FF0       POP              {R4 - R11}
-   35 0000001C B662            CPSIE            I
-   36 0000001E 4770            BX               LR
-   37 00000020         
-   38 00000020         StartOS
-   39 00000020 4807            LDR              R0, =RunPt  ; currently running
+    9 00000000         
+   10 00000000         ;Round-Robin Switching   
+   11 00000000         ;SysTick_Handler 
+   12 00000000         ; CPSID I
+   13 00000000         ; PUSH {R4 - R11}
+   14 00000000         ; LDR R0, =RunPt
+   15 00000000         ; LDR R1, [R0]
+   16 00000000         ; STR SP, [R1]
+   17 00000000         ; LDR R1, [R1, #4]
+   18 00000000         ; STR R1, [R0]
+   19 00000000         ; LDR SP, [R1]
+   20 00000000         ; POP {R4 - R11}
+   21 00000000         ; CPSIE I
+   22 00000000         ; BX LR
+   23 00000000         
+   24 00000000         ;switch using chosen NextPt
+   25 00000000         PendSV_Handler
+   26 00000000 B672            CPSID            I
+   27 00000002 E92D 0FF0       PUSH             {R4 - R11}
+   28 00000006 480E            LDR              R0, =RunPt
+   29 00000008 6801            LDR              R1, [R0]
+   30 0000000A F8C1 D000       STR              SP, [R1]
+   31 0000000E 490D            LDR              R1, =NextPt
+   32 00000010 680A            LDR              R2, [R1]
+   33 00000012 6002            STR              R2, [R0]
+   34 00000014 F8D2 D000       LDR              SP, [R2]
+   35 00000018 E8BD 0FF0       POP              {R4 - R11}
+   36 0000001C B662            CPSIE            I
+   37 0000001E 4770            BX               LR
+   38 00000020         
+   39 00000020         StartOS
+   40 00000020 4807            LDR              R0, =RunPt  ; currently running
                                                              thread
-   40 00000022 6802            LDR              R2, [R0]    ; R2 = value of Run
+   41 00000022 6802            LDR              R2, [R0]    ; R2 = value of Run
                                                             Pt
-   41 00000024 F8D2 D000       LDR              SP, [R2]    ; new thread SP; SP
+   42 00000024 F8D2 D000       LDR              SP, [R2]    ; new thread SP; SP
                                                              = RunPt->stackPoin
                                                             ter;
-   42 00000028 E8BD 0FF0       POP              {R4-R11}    ; restore regs r4-1
+   43 00000028 E8BD 0FF0       POP              {R4-R11}    ; restore regs r4-1
                                                             1
-   43 0000002C BC0F            POP              {R0-R3}     ; restore regs r0-3
+   44 0000002C BC0F            POP              {R0-R3}     ; restore regs r0-3
                                                             
-   44 0000002E F85D CB04       POP              {R12}
-   45 00000032 F85D EB04       POP              {LR}        ; discard LR from i
+   45 0000002E F85D CB04       POP              {R12}
+   46 00000032 F85D EB04       POP              {LR}        ; discard LR from i
                                                             nitial stack
-   46 00000036 F85D EB04       POP              {LR}        ; start location
-   47 0000003A BC02            POP              {R1}        ; discard PSR
-   48 0000003C B662            CPSIE            I           ; Enable interrupts
+   47 00000036 F85D EB04       POP              {LR}        ; start location
+   48 0000003A BC02            POP              {R1}        ; discard PSR
+   49 0000003C B662            CPSIE            I           ; Enable interrupts
                                                              at processor level
                                                             
-   49 0000003E 4770            BX               LR          ; start first threa
 
 
 
 ARM Macro Assembler    Page 2 
 
 
+   50 0000003E 4770            BX               LR          ; start first threa
                                                             d
-   50 00000040         
-   51 00000040                 ALIGN
-   52 00000040                 END
+   51 00000040         
+   52 00000040                 ALIGN
+   53 00000040                 END
               00000000 
               00000000 
 Command Line: --debug --xref --cpu=Cortex-M4 --apcs=interwork --depend=.\thread
@@ -97,7 +98,7 @@ PendSV_Handler 00000000
 
 Symbol: PendSV_Handler
    Definitions
-      At line 24 in file ThreadSwitch.s
+      At line 25 in file ThreadSwitch.s
    Uses
       At line 3 in file ThreadSwitch.s
 Comment: PendSV_Handler used once
@@ -105,7 +106,7 @@ StartOS 00000020
 
 Symbol: StartOS
    Definitions
-      At line 38 in file ThreadSwitch.s
+      At line 39 in file ThreadSwitch.s
    Uses
       At line 5 in file ThreadSwitch.s
 Comment: StartOS used once
@@ -122,7 +123,7 @@ Symbol: NextPt
    Definitions
       At line 7 in file ThreadSwitch.s
    Uses
-      At line 30 in file ThreadSwitch.s
+      At line 31 in file ThreadSwitch.s
 Comment: NextPt used once
 RunPt 00000000
 
@@ -130,8 +131,8 @@ Symbol: RunPt
    Definitions
       At line 6 in file ThreadSwitch.s
    Uses
-      At line 27 in file ThreadSwitch.s
-      At line 39 in file ThreadSwitch.s
+      At line 28 in file ThreadSwitch.s
+      At line 40 in file ThreadSwitch.s
 
 2 symbols
 338 symbols in table
