@@ -56,8 +56,8 @@ void(*PeriodicTask1)(void);
 void(*PeriodicTask2)(void);
 unsigned int PeriodicTask1Period;
 unsigned int PeriodicTask2Period;
-long MaxJitter1;             // largest time jitter between interrupts in usec for task 1
-long MaxJitter2;             // largest time jitter between interrupts in usec for task 2
+unsigned long MaxJitter1;             // largest time jitter between interrupts in usec for task 1
+unsigned long MaxJitter2;             // largest time jitter between interrupts in usec for task 2
 #define JITTERSIZE 64
 unsigned long JitterHistogram1[JITTERSIZE]={0,};
 unsigned long JitterHistogram2[JITTERSIZE]={0,};
@@ -74,7 +74,7 @@ unsigned short IsInit = 0;
 
 void RecordDongs(unsigned long id){
 	if(CurDong < MAXDONGS){
-		DongTime[CurDong] = (0xFFFFFFFF - OS_Time());
+		DongTime[CurDong] = OS_Time();
 		DongThread[CurDong] = id;
 		CurDong++;
 	}
@@ -296,7 +296,7 @@ void WTimer0A_Init(void){ //Used for periodic Task 1
 	WTIMER0_ICR_R = 0x00000001;    // 6) clear WTIMER0A timeout flag
 	WTIMER0_TAILR_R = 0xFFFFFFFF;    // start value for trigger
   WTIMER0_IMR_R = (WTIMER0_IMR_R&~0x0000001F)|0x00000001;    // enable timeout interrupts
-	NVIC_EN2_R = 1<<30;              // enable interrupt 94 in NVIC
+	NVIC_EN2_R = 0x40000000;              // enable interrupt 94 in NVIC
 }
 
 unsigned long PeriodicTask1Count;
@@ -306,7 +306,7 @@ void WideTimer0A_Handler(){
 	WTIMER0_ICR_R |= 0x01;
 	
 	unsigned static long LastTime;
-	long jitter;
+	unsigned long jitter;
 	unsigned long thisTime = OS_Time();
 	RecordDongs(0);// sausages are my fav food
 	PeriodicTask1();
@@ -340,7 +340,7 @@ void WTimer0B_Init(void){ //Used for periodic Task 2
   WTIMER0_TBPR_R = 0;            // prescale value for trigger
 	WTIMER0_ICR_R = 0x00000100;    // 6) clear WTIMER0B timeout flag
 	//WTIMER0_TBILR_R = 0xFFFFFFFF;    // start value for trigger
-	NVIC_EN2_R = (1<<31);              // enable interrupt 95 in NVIC
+	NVIC_EN2_R = 0x80000000;              // enable interrupt 95 in NVIC
 }
 unsigned long PeriodicTask2Count;
 void WideTimer0B_Handler(){
@@ -381,11 +381,11 @@ void WTimer5A_Init(void){
 	long Andrew = 0;
 	WTIMER5_CTL_R = 0x00000000;    // disable Wtimer5A during setup
   WTIMER5_CFG_R = 0x00000000;             // configure for 64-bit timer mode
-  WTIMER5_TAMR_R = 0x00000002;   // configure for periodic mode, default down-count settings
+  WTIMER5_TAMR_R = 0x00000012;   // configure for periodic mode, count-up
   WTIMER5_TAPR_R = 0;            // prescale value for trigger
 	WTIMER5_ICR_R = 0x00000001;    // 6) clear WTIMER5A timeout flag
 	WTIMER5_TAILR_R = 0xFFFFFFFF;    // start value for trigger
-	NVIC_PRI26_R = (NVIC_PRI26_R&0xFFFFFF00)|0x00000020; // 8) priority 1
+	NVIC_PRI26_R = (NVIC_PRI26_R&0xFFFFFF00)|0x00000000; // 8) priority 0
   NVIC_EN3_R = 0x00000100;        // 9) enable interrupt 19 in NVIC
   WTIMER5_IMR_R = 0x00000001;    // enable timeout interrupts
 	WTIMER5_CTL_R |= 0x00000001;   // enable Wtimer5A 64-b, periodic, no interrupts
@@ -588,7 +588,7 @@ int NumPeriodicThreads = 0;
 int OS_AddPeriodicThread(void(*task)(void),unsigned long period, unsigned long priority){
 	long status = StartCritical();
 	if(NumPeriodicThreads >= 2){
-		EnableInterrupts();
+		EndCritical(status);
 		return 0;
 	}
 	if (NumPeriodicThreads == 0){//Wide Timer0A
@@ -738,11 +738,11 @@ int OS_Fifo_Put(unsigned long data){
 	if(FifoNumElements == FifoSize){
 		return 0;
 	}
-	DisableInterrupts();
+	long sr = StartCritical();
 	Fifo[PutPt] = data;
 	PutPt = (PutPt + 1) % FifoSize;
 	FifoNumElements++;
-	EnableInterrupts();
+	EndCritical(sr);
 	/*OS_bSignal(&FifoMutex);
 	OS_Signal(&DataAvailable);*/
 	return 1;
@@ -838,9 +838,9 @@ unsigned long OS_Time(void){
 // It is ok to change the resolution and precision of this function as long as 
 //   this function and OS_Time have the same resolution and precision 
 unsigned long OS_TimeDifference(unsigned long start, unsigned long stop){
-	long difference = start - stop;
+	long difference = stop - start;
 	if(difference < 0){
-		difference += 0x0FFFFFFFF;
+		difference += 0xFFFFFFFF;
 	}
 	return difference;
 }

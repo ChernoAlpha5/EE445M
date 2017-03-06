@@ -80,12 +80,12 @@ void Interpreter(void){
 			case 'P':
 			case 'p':
 				UART_OutString(" ");
-				UART_OutUDec(TotalDITime*1000/(0xFFFFFFFF - OS_Time()));
+				UART_OutUDec(TotalDITime*1000/OS_Time());
 				break;
 			case 'T':
 			case 't':
 				UART_OutString(" ");
-				UART_OutUDec((0xFFFFFFFF - OS_Time()));
+				UART_OutUDec(OS_Time());
 				break;
 			case 'D':
 			case 'd':
