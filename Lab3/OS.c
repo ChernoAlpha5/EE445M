@@ -6,7 +6,7 @@
 #include "PLL.h"
 #include "ST7735.h"
 
-//#define PRISCHED 1
+#define PRISCHED 1
 
 #define TIMER_CFG_16_BIT        0x00000004  // 16-bit timer configuration,
                                             // function is controlled by bits
@@ -56,10 +56,10 @@ void(*PeriodicTask1)(void);
 void(*PeriodicTask2)(void);
 unsigned int PeriodicTask1Period;
 unsigned int PeriodicTask2Period;
-unsigned long MaxJitter1;             // largest time jitter between interrupts in usec for task 1
+unsigned long MaxJitter;             // largest time jitter between interrupts in usec for task 1
 unsigned long MaxJitter2;             // largest time jitter between interrupts in usec for task 2
 #define JITTERSIZE 64
-unsigned long JitterHistogram1[JITTERSIZE]={0,};
+unsigned long JitterHistogram[JITTERSIZE]={0,};
 unsigned long JitterHistogram2[JITTERSIZE]={0,};
 void(*SW1Task)(void);
 void(*SW2Task)(void);
@@ -99,7 +99,7 @@ void OS_DumpDongs(void){
 }
 
 void Jitter(void){
-	ST7735_Message(0,0,"Jitter 0.1us=",MaxJitter1);
+	ST7735_Message(0,0,"Jitter 0.1us=",MaxJitter);
 	ST7735_Message(0,1,"Jitter 0.1us=",MaxJitter2);
 }
 
@@ -318,13 +318,13 @@ void WideTimer0A_Handler(){
 		}else{
 			jitter = (PeriodicTask1Period-diff+4)/8;  // in 0.1 usec
 		}
-		if(jitter > MaxJitter1){
-			MaxJitter1 = jitter; // in usec
+		if(jitter > MaxJitter){
+			MaxJitter = jitter; // in usec
 		}       // jitter should be 0
 		if(jitter >= JITTERSIZE){
 			jitter = JITTERSIZE-1;
 		}
-		JitterHistogram1[jitter]++;
+		JitterHistogram[jitter]++;
 	}
 	LastTime = thisTime;
 	PeriodicTask1Count++;

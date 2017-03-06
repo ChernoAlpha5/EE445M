@@ -75,7 +75,7 @@ void WaitForInterrupt(void);  // low power mode
 void(*DataConsumer)(unsigned long);
 
 
-int ADC_Open(uint8_t channelNum){
+int ADC_Init(uint8_t channelNum){
   volatile uint32_t delay;
   // **** GPIO pin initialization ****
   switch(channelNum){             // 1) activate clock

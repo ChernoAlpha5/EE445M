@@ -22,7 +22,7 @@
  http://users.ece.utexas.edu/~valvano/
  */
 
-int ADC_Open(uint32_t channelNum);
+int ADC_Init(uint32_t channelNum);
 
 uint16_t ADC_In(void);
 
