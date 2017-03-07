@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\UARTInts.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\UARTInts.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5.03 [Build 76]: Last Updated: Mon Mar 06 12:16:01 2017
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5.03 [Build 76]: Last Updated: Mon Mar 06 20:55:23 2017
 <BR><P>
 <H3>Maximum Stack Usage =        208 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -22,7 +22,7 @@ Functions with no stack information
  <LI><a href="#[d7]">PID_stm32</a>
  <LI><a href="#[ad]">cr4_fft_64_stm32</a>
  <LI><a href="#[b]">PendSV_Handler</a>
- <LI><a href="#[cc]">StartOS</a>
+ <LI><a href="#[ce]">StartOS</a>
 </UL>
 </UL>
 <P>
@@ -697,7 +697,7 @@ Global Symbols
 </UL>
 <BR>[Called By]<UL><LI><a href="#[a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ADC_Init
 <LI><a href="#[a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ADC_Collect
-<LI><a href="#[c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Init
+<LI><a href="#[c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Init
 </UL>
 
 <P><STRONG><a name="[9a]"></a>EnableInterrupts</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, startup.o(.text))
@@ -708,7 +708,7 @@ Global Symbols
 </UL>
 <BR>[Called By]<UL><LI><a href="#[a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ADC_Init
 <LI><a href="#[a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ADC_Collect
-<LI><a href="#[c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_Init
+<LI><a href="#[c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_Init
 </UL>
 
 <P><STRONG><a name="[9c]"></a>StartCritical</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, startup.o(.text))
@@ -717,19 +717,19 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[99]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_DITime
 </UL>
-<BR>[Called By]<UL><LI><a href="#[ce]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_bWait
-<LI><a href="#[cf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_bSignal
-<LI><a href="#[d4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Wait
-<LI><a href="#[d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Signal
-<LI><a href="#[ca]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_InitSemaphore
+<BR>[Called By]<UL><LI><a href="#[d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_bWait
+<LI><a href="#[d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_bSignal
+<LI><a href="#[bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Wait
+<LI><a href="#[c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Signal
+<LI><a href="#[c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_InitSemaphore
 <LI><a href="#[ee]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TxFifo_Init
 <LI><a href="#[d9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RxFifo_Init
 <LI><a href="#[a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UnlinkThread
 <LI><a href="#[a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Sleep
-<LI><a href="#[d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_SelectNextThread
+<LI><a href="#[d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_SelectNextThread
 <LI><a href="#[aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Kill
-<LI><a href="#[c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Fifo_Put
-<LI><a href="#[bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Fifo_Init
+<LI><a href="#[c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Fifo_Put
+<LI><a href="#[c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Fifo_Init
 <LI><a href="#[ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Fifo_Get
 <LI><a href="#[ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_AddThread
 <LI><a href="#[bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_AddPeriodicThread
@@ -742,19 +742,19 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[9b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_EITime
 </UL>
-<BR>[Called By]<UL><LI><a href="#[ce]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_bWait
-<LI><a href="#[cf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_bSignal
-<LI><a href="#[d4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Wait
-<LI><a href="#[d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Signal
-<LI><a href="#[ca]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_InitSemaphore
+<BR>[Called By]<UL><LI><a href="#[d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_bWait
+<LI><a href="#[d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_bSignal
+<LI><a href="#[bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Wait
+<LI><a href="#[c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Signal
+<LI><a href="#[c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_InitSemaphore
 <LI><a href="#[ee]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TxFifo_Init
 <LI><a href="#[d9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RxFifo_Init
 <LI><a href="#[a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UnlinkThread
 <LI><a href="#[a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Sleep
-<LI><a href="#[d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_SelectNextThread
+<LI><a href="#[d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_SelectNextThread
 <LI><a href="#[aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Kill
-<LI><a href="#[c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Fifo_Put
-<LI><a href="#[bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Fifo_Init
+<LI><a href="#[c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Fifo_Put
+<LI><a href="#[c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Fifo_Init
 <LI><a href="#[ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Fifo_Get
 <LI><a href="#[ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_AddThread
 <LI><a href="#[bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_AddPeriodicThread
@@ -784,8 +784,8 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup.o(RESET)
 </UL>
-<P><STRONG><a name="[cc]"></a>StartOS</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, threadswitch.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[cb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Launch
+<P><STRONG><a name="[ce]"></a>StartOS</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, threadswitch.o(.text))
+<BR><BR>[Called By]<UL><LI><a href="#[cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Launch
 </UL>
 
 <P><STRONG><a name="[11f]"></a>__use_two_region_memory</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, heapauxi.o(.text), UNUSED)
@@ -870,8 +870,8 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UnlinkThread
 <LI><a href="#[a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AddToPriorityList
 </UL>
-<BR>[Called By]<UL><LI><a href="#[ce]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_bWait
-<LI><a href="#[d4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Wait
+<BR>[Called By]<UL><LI><a href="#[d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_bWait
+<LI><a href="#[bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Wait
 </UL>
 
 <P><STRONG><a name="[81]"></a>ButtonWork</STRONG> (Thumb, 112 bytes, Stack size 8 bytes, lab2.o(i.ButtonWork))
@@ -887,8 +887,8 @@ Global Symbols
 <LI> lab2.o(i.SW2Push)
 </UL>
 <P><STRONG><a name="[86]"></a>Consumer</STRONG> (Thumb, 118 bytes, Stack size 24 bytes, lab2.o(i.Consumer))
-<BR><BR>[Stack]<UL><LI>Max Depth = 108 + Unknown Stack Size
-<LI>Call Chain = Consumer &rArr; OS_MailBox_Send &rArr; OS_bWait &rArr; Block &rArr; UnlinkThread &rArr; OS_SelectNextThread &rArr; EndCritical &rArr; OS_EITime
+<BR><BR>[Stack]<UL><LI>Max Depth = 116 + Unknown Stack Size
+<LI>Call Chain = Consumer &rArr; OS_Fifo_Get &rArr; OS_Wait &rArr; Block &rArr; UnlinkThread &rArr; OS_SelectNextThread &rArr; EndCritical &rArr; OS_EITime
 </UL>
 <BR>[Calls]<UL><LI><a href="#[a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ADC_Collect
 <LI><a href="#[ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;cr4_fft_64_stm32
@@ -958,7 +958,7 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EndCritical
 <LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StartCritical
 </UL>
-<BR>[Called By]<UL><LI><a href="#[d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WakeUp
+<BR>[Called By]<UL><LI><a href="#[d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WakeUp
 <LI><a href="#[51]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Timer5A_Handler
 <LI><a href="#[ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_AddThread
 </UL>
@@ -1034,31 +1034,34 @@ Global Symbols
 <LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EnableInterrupts
 </UL>
 
-<P><STRONG><a name="[ac]"></a>OS_Fifo_Get</STRONG> (Thumb, 70 bytes, Stack size 16 bytes, os.o(i.OS_Fifo_Get))
-<BR><BR>[Stack]<UL><LI>Max Depth = 28 + Unknown Stack Size
-<LI>Call Chain = OS_Fifo_Get &rArr; EndCritical &rArr; OS_EITime
+<P><STRONG><a name="[ac]"></a>OS_Fifo_Get</STRONG> (Thumb, 66 bytes, Stack size 16 bytes, os.o(i.OS_Fifo_Get))
+<BR><BR>[Stack]<UL><LI>Max Depth = 92 + Unknown Stack Size
+<LI>Call Chain = OS_Fifo_Get &rArr; OS_Wait &rArr; Block &rArr; UnlinkThread &rArr; OS_SelectNextThread &rArr; EndCritical &rArr; OS_EITime
 </UL>
-<BR>[Calls]<UL><LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EndCritical
+<BR>[Calls]<UL><LI><a href="#[bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Wait
+<LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EndCritical
 <LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StartCritical
 </UL>
 <BR>[Called By]<UL><LI><a href="#[86]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Consumer
 </UL>
 
-<P><STRONG><a name="[bf]"></a>OS_Fifo_Init</STRONG> (Thumb, 38 bytes, Stack size 16 bytes, os.o(i.OS_Fifo_Init))
-<BR><BR>[Stack]<UL><LI>Max Depth = 28 + Unknown Stack Size
-<LI>Call Chain = OS_Fifo_Init &rArr; EndCritical &rArr; OS_EITime
+<P><STRONG><a name="[c0]"></a>OS_Fifo_Init</STRONG> (Thumb, 46 bytes, Stack size 16 bytes, os.o(i.OS_Fifo_Init))
+<BR><BR>[Stack]<UL><LI>Max Depth = 44 + Unknown Stack Size
+<LI>Call Chain = OS_Fifo_Init &rArr; OS_InitSemaphore &rArr; EndCritical &rArr; OS_EITime
 </UL>
-<BR>[Calls]<UL><LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EndCritical
+<BR>[Calls]<UL><LI><a href="#[c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_InitSemaphore
+<LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EndCritical
 <LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StartCritical
 </UL>
 <BR>[Called By]<UL><LI><a href="#[92]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[c0]"></a>OS_Fifo_Put</STRONG> (Thumb, 78 bytes, Stack size 16 bytes, os.o(i.OS_Fifo_Put))
-<BR><BR>[Stack]<UL><LI>Max Depth = 28 + Unknown Stack Size
-<LI>Call Chain = OS_Fifo_Put &rArr; EndCritical &rArr; OS_EITime
+<P><STRONG><a name="[c2]"></a>OS_Fifo_Put</STRONG> (Thumb, 84 bytes, Stack size 16 bytes, os.o(i.OS_Fifo_Put))
+<BR><BR>[Stack]<UL><LI>Max Depth = 76 + Unknown Stack Size
+<LI>Call Chain = OS_Fifo_Put &rArr; OS_Signal &rArr; WakeUp &rArr; LinkThread &rArr; EndCritical &rArr; OS_EITime
 </UL>
-<BR>[Calls]<UL><LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EndCritical
+<BR>[Calls]<UL><LI><a href="#[c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Signal
+<LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EndCritical
 <LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StartCritical
 </UL>
 <BR>[Called By]<UL><LI><a href="#[7f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Producer
@@ -1071,34 +1074,35 @@ Global Symbols
 <LI><a href="#[81]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ButtonWork
 </UL>
 
-<P><STRONG><a name="[c1]"></a>OS_Init</STRONG> (Thumb, 100 bytes, Stack size 8 bytes, os.o(i.OS_Init))
+<P><STRONG><a name="[c4]"></a>OS_Init</STRONG> (Thumb, 100 bytes, Stack size 8 bytes, os.o(i.OS_Init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 96 + Unknown Stack Size
 <LI>Call Chain = OS_Init &rArr; Output_Init &rArr; ST7735_InitR &rArr; ST7735_FillScreen &rArr; ST7735_FillRect &rArr; setAddrWindow
 </UL>
-<BR>[Calls]<UL><LI><a href="#[c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Output_Init
-<LI><a href="#[c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_Init
-<LI><a href="#[c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PLL_Init
+<BR>[Calls]<UL><LI><a href="#[c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Output_Init
+<LI><a href="#[c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_Init
+<LI><a href="#[c5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PLL_Init
 <LI><a href="#[98]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DisableInterrupts
-<LI><a href="#[c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WTimer5A_Init
-<LI><a href="#[c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WTimer0B_Init
-<LI><a href="#[c5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WTimer0A_Init
-<LI><a href="#[c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Timer5A_Init
-<LI><a href="#[c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PortF_Init
+<LI><a href="#[cb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WTimer5A_Init
+<LI><a href="#[c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WTimer0B_Init
+<LI><a href="#[c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WTimer0A_Init
+<LI><a href="#[ca]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Timer5A_Init
+<LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PortF_Init
 </UL>
 <BR>[Called By]<UL><LI><a href="#[92]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[ca]"></a>OS_InitSemaphore</STRONG> (Thumb, 28 bytes, Stack size 16 bytes, os.o(i.OS_InitSemaphore))
+<P><STRONG><a name="[c1]"></a>OS_InitSemaphore</STRONG> (Thumb, 28 bytes, Stack size 16 bytes, os.o(i.OS_InitSemaphore))
 <BR><BR>[Stack]<UL><LI>Max Depth = 28 + Unknown Stack Size
 <LI>Call Chain = OS_InitSemaphore &rArr; EndCritical &rArr; OS_EITime
 </UL>
 <BR>[Calls]<UL><LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EndCritical
 <LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StartCritical
 </UL>
-<BR>[Called By]<UL><LI><a href="#[c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Output_Init
+<BR>[Called By]<UL><LI><a href="#[c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Output_Init
 <LI><a href="#[ee]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TxFifo_Init
 <LI><a href="#[d9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RxFifo_Init
-<LI><a href="#[cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_MailBox_Init
+<LI><a href="#[cf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_MailBox_Init
+<LI><a href="#[c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Fifo_Init
 </UL>
 
 <P><STRONG><a name="[aa]"></a>OS_Kill</STRONG> (Thumb, 32 bytes, Stack size 8 bytes, os.o(i.OS_Kill))
@@ -1114,20 +1118,20 @@ Global Symbols
 <LI><a href="#[81]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ButtonWork
 </UL>
 
-<P><STRONG><a name="[cb]"></a>OS_Launch</STRONG> (Thumb, 22 bytes, Stack size 8 bytes, os.o(i.OS_Launch))
+<P><STRONG><a name="[cd]"></a>OS_Launch</STRONG> (Thumb, 22 bytes, Stack size 8 bytes, os.o(i.OS_Launch))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8 + Unknown Stack Size
 <LI>Call Chain = OS_Launch
 </UL>
-<BR>[Calls]<UL><LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StartOS
+<BR>[Calls]<UL><LI><a href="#[ce]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StartOS
 </UL>
 <BR>[Called By]<UL><LI><a href="#[92]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[cd]"></a>OS_MailBox_Init</STRONG> (Thumb, 20 bytes, Stack size 8 bytes, os.o(i.OS_MailBox_Init))
+<P><STRONG><a name="[cf]"></a>OS_MailBox_Init</STRONG> (Thumb, 20 bytes, Stack size 8 bytes, os.o(i.OS_MailBox_Init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 36 + Unknown Stack Size
 <LI>Call Chain = OS_MailBox_Init &rArr; OS_InitSemaphore &rArr; EndCritical &rArr; OS_EITime
 </UL>
-<BR>[Calls]<UL><LI><a href="#[ca]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_InitSemaphore
+<BR>[Calls]<UL><LI><a href="#[c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_InitSemaphore
 </UL>
 <BR>[Called By]<UL><LI><a href="#[92]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
@@ -1136,8 +1140,8 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 84 + Unknown Stack Size
 <LI>Call Chain = OS_MailBox_Recv &rArr; OS_bWait &rArr; Block &rArr; UnlinkThread &rArr; OS_SelectNextThread &rArr; EndCritical &rArr; OS_EITime
 </UL>
-<BR>[Calls]<UL><LI><a href="#[ce]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_bWait
-<LI><a href="#[cf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_bSignal
+<BR>[Calls]<UL><LI><a href="#[d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_bWait
+<LI><a href="#[d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_bSignal
 </UL>
 <BR>[Called By]<UL><LI><a href="#[80]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Display
 </UL>
@@ -1146,8 +1150,8 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 84 + Unknown Stack Size
 <LI>Call Chain = OS_MailBox_Send &rArr; OS_bWait &rArr; Block &rArr; UnlinkThread &rArr; OS_SelectNextThread &rArr; EndCritical &rArr; OS_EITime
 </UL>
-<BR>[Calls]<UL><LI><a href="#[ce]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_bWait
-<LI><a href="#[cf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_bSignal
+<BR>[Calls]<UL><LI><a href="#[d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_bWait
+<LI><a href="#[d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_bSignal
 </UL>
 <BR>[Called By]<UL><LI><a href="#[86]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Consumer
 </UL>
@@ -1161,7 +1165,7 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[85]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Interpreter
 </UL>
 
-<P><STRONG><a name="[d0]"></a>OS_SelectNextThread</STRONG> (Thumb, 76 bytes, Stack size 16 bytes, os.o(i.OS_SelectNextThread))
+<P><STRONG><a name="[d2]"></a>OS_SelectNextThread</STRONG> (Thumb, 76 bytes, Stack size 16 bytes, os.o(i.OS_SelectNextThread))
 <BR><BR>[Stack]<UL><LI>Max Depth = 28 + Unknown Stack Size
 <LI>Call Chain = OS_SelectNextThread &rArr; EndCritical &rArr; OS_EITime
 </UL>
@@ -1172,18 +1176,19 @@ Global Symbols
 <LI><a href="#[a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UnlinkThread
 </UL>
 
-<P><STRONG><a name="[d1]"></a>OS_Signal</STRONG> (Thumb, 36 bytes, Stack size 16 bytes, os.o(i.OS_Signal))
+<P><STRONG><a name="[c3]"></a>OS_Signal</STRONG> (Thumb, 36 bytes, Stack size 16 bytes, os.o(i.OS_Signal))
 <BR><BR>[Stack]<UL><LI>Max Depth = 60 + Unknown Stack Size
 <LI>Call Chain = OS_Signal &rArr; WakeUp &rArr; LinkThread &rArr; EndCritical &rArr; OS_EITime
 </UL>
 <BR>[Calls]<UL><LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EndCritical
 <LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StartCritical
-<LI><a href="#[d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WakeUp
+<LI><a href="#[d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WakeUp
 </UL>
 <BR>[Called By]<UL><LI><a href="#[ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TxFifo_Put
 <LI><a href="#[ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TxFifo_Get
 <LI><a href="#[da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RxFifo_Put
 <LI><a href="#[d8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RxFifo_Get
+<LI><a href="#[c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Fifo_Put
 </UL>
 
 <P><STRONG><a name="[a9]"></a>OS_Sleep</STRONG> (Thumb, 40 bytes, Stack size 16 bytes, os.o(i.OS_Sleep))
@@ -1193,7 +1198,7 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EndCritical
 <LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StartCritical
 <LI><a href="#[a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UnlinkThread
-<LI><a href="#[d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PushToList
+<LI><a href="#[d4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PushToList
 </UL>
 <BR>[Called By]<UL><LI><a href="#[81]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ButtonWork
 </UL>
@@ -1217,7 +1222,7 @@ Global Symbols
 <LI><a href="#[53]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WideTimer0A_Handler
 </UL>
 
-<P><STRONG><a name="[d4]"></a>OS_Wait</STRONG> (Thumb, 40 bytes, Stack size 16 bytes, os.o(i.OS_Wait))
+<P><STRONG><a name="[bf]"></a>OS_Wait</STRONG> (Thumb, 40 bytes, Stack size 16 bytes, os.o(i.OS_Wait))
 <BR><BR>[Stack]<UL><LI>Max Depth = 76 + Unknown Stack Size
 <LI>Call Chain = OS_Wait &rArr; Block &rArr; UnlinkThread &rArr; OS_SelectNextThread &rArr; EndCritical &rArr; OS_EITime
 </UL>
@@ -1229,15 +1234,16 @@ Global Symbols
 <LI><a href="#[ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TxFifo_Get
 <LI><a href="#[da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RxFifo_Put
 <LI><a href="#[d8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RxFifo_Get
+<LI><a href="#[ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Fifo_Get
 </UL>
 
-<P><STRONG><a name="[cf]"></a>OS_bSignal</STRONG> (Thumb, 36 bytes, Stack size 16 bytes, os.o(i.OS_bSignal))
+<P><STRONG><a name="[d1]"></a>OS_bSignal</STRONG> (Thumb, 36 bytes, Stack size 16 bytes, os.o(i.OS_bSignal))
 <BR><BR>[Stack]<UL><LI>Max Depth = 60 + Unknown Stack Size
 <LI>Call Chain = OS_bSignal &rArr; WakeUp &rArr; LinkThread &rArr; EndCritical &rArr; OS_EITime
 </UL>
 <BR>[Calls]<UL><LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EndCritical
 <LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StartCritical
-<LI><a href="#[d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WakeUp
+<LI><a href="#[d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WakeUp
 </UL>
 <BR>[Called By]<UL><LI><a href="#[a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ST7735_Message
 <LI><a href="#[ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TxFifo_Put
@@ -1248,7 +1254,7 @@ Global Symbols
 <LI><a href="#[b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_MailBox_Recv
 </UL>
 
-<P><STRONG><a name="[ce]"></a>OS_bWait</STRONG> (Thumb, 40 bytes, Stack size 16 bytes, os.o(i.OS_bWait))
+<P><STRONG><a name="[d0]"></a>OS_bWait</STRONG> (Thumb, 40 bytes, Stack size 16 bytes, os.o(i.OS_bWait))
 <BR><BR>[Stack]<UL><LI>Max Depth = 76 + Unknown Stack Size
 <LI>Call Chain = OS_bWait &rArr; Block &rArr; UnlinkThread &rArr; OS_SelectNextThread &rArr; EndCritical &rArr; OS_EITime
 </UL>
@@ -1274,15 +1280,15 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[85]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Interpreter
 </UL>
 
-<P><STRONG><a name="[c3]"></a>Output_Init</STRONG> (Thumb, 24 bytes, Stack size 8 bytes, st7735.o(i.Output_Init))
+<P><STRONG><a name="[c6]"></a>Output_Init</STRONG> (Thumb, 24 bytes, Stack size 8 bytes, st7735.o(i.Output_Init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 88 + Unknown Stack Size
 <LI>Call Chain = Output_Init &rArr; ST7735_InitR &rArr; ST7735_FillScreen &rArr; ST7735_FillRect &rArr; setAddrWindow
 </UL>
 <BR>[Calls]<UL><LI><a href="#[d5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ST7735_InitR
 <LI><a href="#[d6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ST7735_FillScreen
-<LI><a href="#[ca]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_InitSemaphore
+<LI><a href="#[c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_InitSemaphore
 </UL>
-<BR>[Called By]<UL><LI><a href="#[c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Init
+<BR>[Called By]<UL><LI><a href="#[c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Init
 </UL>
 
 <P><STRONG><a name="[87]"></a>PID</STRONG> (Thumb, 96 bytes, Stack size 0 bytes, lab2.o(i.PID))
@@ -1291,31 +1297,31 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> lab2.o(i.main)
 </UL>
-<P><STRONG><a name="[c2]"></a>PLL_Init</STRONG> (Thumb, 118 bytes, Stack size 0 bytes, pll.o(i.PLL_Init))
-<BR><BR>[Called By]<UL><LI><a href="#[c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Init
+<P><STRONG><a name="[c5]"></a>PLL_Init</STRONG> (Thumb, 118 bytes, Stack size 0 bytes, pll.o(i.PLL_Init))
+<BR><BR>[Called By]<UL><LI><a href="#[c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Init
 </UL>
 
 <P><STRONG><a name="[f5]"></a>PopFromList</STRONG> (Thumb, 18 bytes, Stack size 0 bytes, os.o(i.PopFromList))
-<BR><BR>[Called By]<UL><LI><a href="#[d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WakeUp
+<BR><BR>[Called By]<UL><LI><a href="#[d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WakeUp
 </UL>
 
 <P><STRONG><a name="[f8]"></a>PortE_Init</STRONG> (Thumb, 86 bytes, Stack size 0 bytes, lab2.o(i.PortE_Init))
 <BR><BR>[Called By]<UL><LI><a href="#[92]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[c9]"></a>PortF_Init</STRONG> (Thumb, 192 bytes, Stack size 0 bytes, os.o(i.PortF_Init))
-<BR><BR>[Called By]<UL><LI><a href="#[c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Init
+<P><STRONG><a name="[cc]"></a>PortF_Init</STRONG> (Thumb, 192 bytes, Stack size 0 bytes, os.o(i.PortF_Init))
+<BR><BR>[Called By]<UL><LI><a href="#[c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Init
 </UL>
 
 <P><STRONG><a name="[7f]"></a>Producer</STRONG> (Thumb, 44 bytes, Stack size 8 bytes, lab2.o(i.Producer))
-<BR><BR>[Stack]<UL><LI>Max Depth = 36 + Unknown Stack Size
-<LI>Call Chain = Producer &rArr; OS_Fifo_Put &rArr; EndCritical &rArr; OS_EITime
+<BR><BR>[Stack]<UL><LI>Max Depth = 84 + Unknown Stack Size
+<LI>Call Chain = Producer &rArr; OS_Fifo_Put &rArr; OS_Signal &rArr; WakeUp &rArr; LinkThread &rArr; EndCritical &rArr; OS_EITime
 </UL>
-<BR>[Calls]<UL><LI><a href="#[c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Fifo_Put
+<BR>[Calls]<UL><LI><a href="#[c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Fifo_Put
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> lab2.o(i.Consumer)
 </UL>
-<P><STRONG><a name="[d3]"></a>PushToList</STRONG> (Thumb, 22 bytes, Stack size 0 bytes, os.o(i.PushToList))
+<P><STRONG><a name="[d4]"></a>PushToList</STRONG> (Thumb, 22 bytes, Stack size 0 bytes, os.o(i.PushToList))
 <BR><BR>[Called By]<UL><LI><a href="#[a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Sleep
 </UL>
 
@@ -1325,8 +1331,6 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Time
 </UL>
 <BR>[Called By]<UL><LI><a href="#[b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PendSV_Handler
-<LI><a href="#[54]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WideTimer0B_Handler
-<LI><a href="#[53]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WideTimer0A_Handler
 </UL>
 
 <P><STRONG><a name="[ec]"></a>RemoveFromList</STRONG> (Thumb, 36 bytes, Stack size 8 bytes, os.o(i.RemoveFromList))
@@ -1339,10 +1343,10 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 84 + Unknown Stack Size
 <LI>Call Chain = RxFifo_Get &rArr; OS_bWait &rArr; Block &rArr; UnlinkThread &rArr; OS_SelectNextThread &rArr; EndCritical &rArr; OS_EITime
 </UL>
-<BR>[Calls]<UL><LI><a href="#[ce]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_bWait
-<LI><a href="#[cf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_bSignal
-<LI><a href="#[d4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Wait
-<LI><a href="#[d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Signal
+<BR>[Calls]<UL><LI><a href="#[d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_bWait
+<LI><a href="#[d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_bSignal
+<LI><a href="#[bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Wait
+<LI><a href="#[c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Signal
 </UL>
 <BR>[Called By]<UL><LI><a href="#[f3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_InChar
 </UL>
@@ -1351,21 +1355,21 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 36 + Unknown Stack Size
 <LI>Call Chain = RxFifo_Init &rArr; OS_InitSemaphore &rArr; EndCritical &rArr; OS_EITime
 </UL>
-<BR>[Calls]<UL><LI><a href="#[ca]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_InitSemaphore
+<BR>[Calls]<UL><LI><a href="#[c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_InitSemaphore
 <LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EndCritical
 <LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StartCritical
 </UL>
-<BR>[Called By]<UL><LI><a href="#[c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_Init
+<BR>[Called By]<UL><LI><a href="#[c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_Init
 </UL>
 
 <P><STRONG><a name="[da]"></a>RxFifo_Put</STRONG> (Thumb, 54 bytes, Stack size 8 bytes, uart.o(i.RxFifo_Put))
 <BR><BR>[Stack]<UL><LI>Max Depth = 84 + Unknown Stack Size
 <LI>Call Chain = RxFifo_Put &rArr; OS_bWait &rArr; Block &rArr; UnlinkThread &rArr; OS_SelectNextThread &rArr; EndCritical &rArr; OS_EITime
 </UL>
-<BR>[Calls]<UL><LI><a href="#[ce]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_bWait
-<LI><a href="#[cf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_bSignal
-<LI><a href="#[d4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Wait
-<LI><a href="#[d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Signal
+<BR>[Calls]<UL><LI><a href="#[d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_bWait
+<LI><a href="#[d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_bSignal
+<LI><a href="#[bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Wait
+<LI><a href="#[c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Signal
 </UL>
 <BR>[Called By]<UL><LI><a href="#[f2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;copyHardwareToSoftware
 </UL>
@@ -1420,7 +1424,7 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ST7735_FillRect
 </UL>
 <BR>[Called By]<UL><LI><a href="#[d5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ST7735_InitR
-<LI><a href="#[c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Output_Init
+<LI><a href="#[c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Output_Init
 </UL>
 
 <P><STRONG><a name="[d5]"></a>ST7735_InitR</STRONG> (Thumb, 90 bytes, Stack size 8 bytes, st7735.o(i.ST7735_InitR))
@@ -1433,7 +1437,7 @@ Global Symbols
 <LI><a href="#[e2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;commonInit
 <LI><a href="#[e3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;commandList
 </UL>
-<BR>[Called By]<UL><LI><a href="#[c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Output_Init
+<BR>[Called By]<UL><LI><a href="#[c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Output_Init
 </UL>
 
 <P><STRONG><a name="[a8]"></a>ST7735_Message</STRONG> (Thumb, 126 bytes, Stack size 32 bytes, st7735.o(i.ST7735_Message))
@@ -1444,8 +1448,8 @@ Global Symbols
 <LI><a href="#[e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ST7735_OutUDec
 <LI><a href="#[e6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ST7735_OutString
 <LI><a href="#[dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ST7735_FillRect
-<LI><a href="#[ce]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_bWait
-<LI><a href="#[cf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_bSignal
+<LI><a href="#[d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_bWait
+<LI><a href="#[d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_bSignal
 </UL>
 <BR>[Called By]<UL><LI><a href="#[80]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Display
 <LI><a href="#[81]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ButtonWork
@@ -1511,7 +1515,7 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 36 + Unknown Stack Size
 <LI>Call Chain = SysTick_Handler &rArr; OS_SelectNextThread &rArr; EndCritical &rArr; OS_EITime
 </UL>
-<BR>[Calls]<UL><LI><a href="#[d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_SelectNextThread
+<BR>[Calls]<UL><LI><a href="#[d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_SelectNextThread
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup.o(RESET)
 </UL>
@@ -1524,18 +1528,18 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup.o(RESET)
 </UL>
-<P><STRONG><a name="[c7]"></a>Timer5A_Init</STRONG> (Thumb, 80 bytes, Stack size 0 bytes, os.o(i.Timer5A_Init))
-<BR><BR>[Called By]<UL><LI><a href="#[c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Init
+<P><STRONG><a name="[ca]"></a>Timer5A_Init</STRONG> (Thumb, 80 bytes, Stack size 0 bytes, os.o(i.Timer5A_Init))
+<BR><BR>[Called By]<UL><LI><a href="#[c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Init
 </UL>
 
 <P><STRONG><a name="[ed]"></a>TxFifo_Get</STRONG> (Thumb, 56 bytes, Stack size 8 bytes, uart.o(i.TxFifo_Get))
 <BR><BR>[Stack]<UL><LI>Max Depth = 84 + Unknown Stack Size
 <LI>Call Chain = TxFifo_Get &rArr; OS_bWait &rArr; Block &rArr; UnlinkThread &rArr; OS_SelectNextThread &rArr; EndCritical &rArr; OS_EITime
 </UL>
-<BR>[Calls]<UL><LI><a href="#[ce]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_bWait
-<LI><a href="#[cf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_bSignal
-<LI><a href="#[d4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Wait
-<LI><a href="#[d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Signal
+<BR>[Calls]<UL><LI><a href="#[d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_bWait
+<LI><a href="#[d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_bSignal
+<LI><a href="#[bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Wait
+<LI><a href="#[c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Signal
 </UL>
 <BR>[Called By]<UL><LI><a href="#[f0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;copySoftwareToHardware
 </UL>
@@ -1544,21 +1548,21 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 36 + Unknown Stack Size
 <LI>Call Chain = TxFifo_Init &rArr; OS_InitSemaphore &rArr; EndCritical &rArr; OS_EITime
 </UL>
-<BR>[Calls]<UL><LI><a href="#[ca]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_InitSemaphore
+<BR>[Calls]<UL><LI><a href="#[c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_InitSemaphore
 <LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EndCritical
 <LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StartCritical
 </UL>
-<BR>[Called By]<UL><LI><a href="#[c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_Init
+<BR>[Called By]<UL><LI><a href="#[c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_Init
 </UL>
 
 <P><STRONG><a name="[ef]"></a>TxFifo_Put</STRONG> (Thumb, 54 bytes, Stack size 8 bytes, uart.o(i.TxFifo_Put))
 <BR><BR>[Stack]<UL><LI>Max Depth = 84 + Unknown Stack Size
 <LI>Call Chain = TxFifo_Put &rArr; OS_bWait &rArr; Block &rArr; UnlinkThread &rArr; OS_SelectNextThread &rArr; EndCritical &rArr; OS_EITime
 </UL>
-<BR>[Calls]<UL><LI><a href="#[ce]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_bWait
-<LI><a href="#[cf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_bSignal
-<LI><a href="#[d4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Wait
-<LI><a href="#[d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Signal
+<BR>[Calls]<UL><LI><a href="#[d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_bWait
+<LI><a href="#[d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_bSignal
+<LI><a href="#[bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Wait
+<LI><a href="#[c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Signal
 </UL>
 <BR>[Called By]<UL><LI><a href="#[bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_OutChar
 </UL>
@@ -1597,7 +1601,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[85]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Interpreter
 </UL>
 
-<P><STRONG><a name="[c4]"></a>UART_Init</STRONG> (Thumb, 178 bytes, Stack size 8 bytes, uart.o(i.UART_Init))
+<P><STRONG><a name="[c7]"></a>UART_Init</STRONG> (Thumb, 178 bytes, Stack size 8 bytes, uart.o(i.UART_Init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 44 + Unknown Stack Size
 <LI>Call Chain = UART_Init &rArr; TxFifo_Init &rArr; OS_InitSemaphore &rArr; EndCritical &rArr; OS_EITime
 </UL>
@@ -1605,7 +1609,7 @@ Global Symbols
 <LI><a href="#[d9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RxFifo_Init
 <LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EnableInterrupts
 </UL>
-<BR>[Called By]<UL><LI><a href="#[c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Init
+<BR>[Called By]<UL><LI><a href="#[c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Init
 </UL>
 
 <P><STRONG><a name="[bd]"></a>UART_OutChar</STRONG> (Thumb, 40 bytes, Stack size 8 bytes, uart.o(i.UART_OutChar))
@@ -1651,50 +1655,48 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EndCritical
 <LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StartCritical
 <LI><a href="#[f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_SwitchThread
-<LI><a href="#[d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_SelectNextThread
+<LI><a href="#[d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_SelectNextThread
 </UL>
 <BR>[Called By]<UL><LI><a href="#[a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Sleep
 <LI><a href="#[aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Kill
 <LI><a href="#[a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Block
 </UL>
 
-<P><STRONG><a name="[c5]"></a>WTimer0A_Init</STRONG> (Thumb, 68 bytes, Stack size 0 bytes, os.o(i.WTimer0A_Init))
-<BR><BR>[Called By]<UL><LI><a href="#[c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Init
+<P><STRONG><a name="[c8]"></a>WTimer0A_Init</STRONG> (Thumb, 68 bytes, Stack size 0 bytes, os.o(i.WTimer0A_Init))
+<BR><BR>[Called By]<UL><LI><a href="#[c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Init
 </UL>
 
-<P><STRONG><a name="[c6]"></a>WTimer0B_Init</STRONG> (Thumb, 50 bytes, Stack size 0 bytes, os.o(i.WTimer0B_Init))
-<BR><BR>[Called By]<UL><LI><a href="#[c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Init
+<P><STRONG><a name="[c9]"></a>WTimer0B_Init</STRONG> (Thumb, 50 bytes, Stack size 0 bytes, os.o(i.WTimer0B_Init))
+<BR><BR>[Called By]<UL><LI><a href="#[c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Init
 </UL>
 
-<P><STRONG><a name="[c8]"></a>WTimer5A_Init</STRONG> (Thumb, 78 bytes, Stack size 0 bytes, os.o(i.WTimer5A_Init))
-<BR><BR>[Called By]<UL><LI><a href="#[c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Init
+<P><STRONG><a name="[cb]"></a>WTimer5A_Init</STRONG> (Thumb, 78 bytes, Stack size 0 bytes, os.o(i.WTimer5A_Init))
+<BR><BR>[Called By]<UL><LI><a href="#[c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Init
 </UL>
 
-<P><STRONG><a name="[d2]"></a>WakeUp</STRONG> (Thumb, 22 bytes, Stack size 16 bytes, os.o(i.WakeUp))
+<P><STRONG><a name="[d3]"></a>WakeUp</STRONG> (Thumb, 22 bytes, Stack size 16 bytes, os.o(i.WakeUp))
 <BR><BR>[Stack]<UL><LI>Max Depth = 44 + Unknown Stack Size
 <LI>Call Chain = WakeUp &rArr; LinkThread &rArr; EndCritical &rArr; OS_EITime
 </UL>
 <BR>[Calls]<UL><LI><a href="#[f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PopFromList
 <LI><a href="#[ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LinkThread
 </UL>
-<BR>[Called By]<UL><LI><a href="#[cf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_bSignal
-<LI><a href="#[d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Signal
+<BR>[Called By]<UL><LI><a href="#[d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_bSignal
+<LI><a href="#[c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Signal
 </UL>
 
-<P><STRONG><a name="[53]"></a>WideTimer0A_Handler</STRONG> (Thumb, 136 bytes, Stack size 16 bytes, os.o(i.WideTimer0A_Handler))
-<BR><BR>[Stack]<UL><LI>Max Depth = 20<LI>Call Chain = WideTimer0A_Handler &rArr; RecordDongs
+<P><STRONG><a name="[53]"></a>WideTimer0A_Handler</STRONG> (Thumb, 124 bytes, Stack size 16 bytes, os.o(i.WideTimer0A_Handler))
+<BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = WideTimer0A_Handler
 </UL>
-<BR>[Calls]<UL><LI><a href="#[9f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RecordDongs
-<LI><a href="#[be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_TimeDifference
+<BR>[Calls]<UL><LI><a href="#[be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_TimeDifference
 <LI><a href="#[b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Time
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup.o(RESET)
 </UL>
-<P><STRONG><a name="[54]"></a>WideTimer0B_Handler</STRONG> (Thumb, 136 bytes, Stack size 16 bytes, os.o(i.WideTimer0B_Handler))
-<BR><BR>[Stack]<UL><LI>Max Depth = 20<LI>Call Chain = WideTimer0B_Handler &rArr; RecordDongs
+<P><STRONG><a name="[54]"></a>WideTimer0B_Handler</STRONG> (Thumb, 124 bytes, Stack size 16 bytes, os.o(i.WideTimer0B_Handler))
+<BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = WideTimer0B_Handler
 </UL>
-<BR>[Calls]<UL><LI><a href="#[9f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RecordDongs
-<LI><a href="#[be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_TimeDifference
+<BR>[Calls]<UL><LI><a href="#[be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_TimeDifference
 <LI><a href="#[b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Time
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup.o(RESET)
@@ -1718,10 +1720,10 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ADC_Init
 <LI><a href="#[f8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PortE_Init
-<LI><a href="#[cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_MailBox_Init
-<LI><a href="#[cb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Launch
-<LI><a href="#[c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Init
-<LI><a href="#[bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Fifo_Init
+<LI><a href="#[cf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_MailBox_Init
+<LI><a href="#[cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Launch
+<LI><a href="#[c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Init
+<LI><a href="#[c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_Fifo_Init
 <LI><a href="#[ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_AddThread
 <LI><a href="#[fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_AddSW2Task
 <LI><a href="#[f9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_AddSW1Task
