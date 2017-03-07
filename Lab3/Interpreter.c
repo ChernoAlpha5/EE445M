@@ -80,17 +80,30 @@ void Interpreter(void){
 			case 'P':
 			case 'p':
 				UART_OutString(" ");
-				UART_OutUDec(TotalDITime*1000/(0xFFFFFFFF - OS_Time()));
+				UART_OutUDec(TotalDITime*1000/OS_Time());
 				break;
 			case 'T':
 			case 't':
 				UART_OutString(" ");
-				UART_OutUDec((0xFFFFFFFF - OS_Time()));
+				UART_OutUDec(OS_Time());
 				break;
 			case 'D':
 			case 'd':
-				UART_OutString(" ");
-				UART_OutUDec(TotalDITime);
+				if(string[1] == 'T' || string[1] == 't'){
+					UART_OutString(" ");
+					UART_OutUDec(TotalDITime);
+				}
+				else{
+					OS_DumpDongs();
+				}
+				break;
+			case 'C':
+			case 'c':
+				OS_ClearDongs();
+				break;
+			case 'R':
+			case 'r':
+				OS_ResetDongs();
 				break;
 			default:
 				UART_OutString("Error");

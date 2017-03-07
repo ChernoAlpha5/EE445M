@@ -6,7 +6,7 @@
 #include "PLL.h"
 #include "ST7735.h"
 
-//#define PRISCHED 1
+#define PRISCHED 1
 
 #define TIMER_CFG_16_BIT        0x00000004  // 16-bit timer configuration,
                                             // function is controlled by bits
@@ -24,7 +24,7 @@
 																						
 #define PF2             (*((volatile uint32_t *)0x40025010))
 #define PF1             (*((volatile uint32_t *)0x40025008))																						
-#define BUSCLK 50000000
+#define BUSCLK 80000000
 
 #define MAXFIFOSIZE 128
 																						
@@ -56,18 +56,50 @@ void(*PeriodicTask1)(void);
 void(*PeriodicTask2)(void);
 unsigned int PeriodicTask1Period;
 unsigned int PeriodicTask2Period;
-long MaxJitter1;             // largest time jitter between interrupts in usec for task 1
-long MaxJitter2;             // largest time jitter between interrupts in usec for task 2
+unsigned long MaxJitter;             // largest time jitter between interrupts in usec for task 1
+unsigned long MaxJitter2;             // largest time jitter between interrupts in usec for task 2
 #define JITTERSIZE 64
-unsigned long JitterHistogram1[JITTERSIZE]={0,};
+unsigned long JitterHistogram[JITTERSIZE]={0,};
 unsigned long JitterHistogram2[JITTERSIZE]={0,};
 void(*SW1Task)(void);
 void(*SW2Task)(void);
 
+#define MAXDONGS	100
+unsigned long DongTime[MAXDONGS];
+unsigned long DongThread[MAXDONGS];
+unsigned short CurDong = 0;
+
 unsigned short IsInit = 0;
 
+
+void RecordDongs(unsigned long id){
+	if(CurDong < MAXDONGS){
+		DongTime[CurDong] = OS_Time();
+		DongThread[CurDong] = id;
+		CurDong++;
+	}
+}	
+void OS_ResetDongs(void){
+	CurDong = 0;
+}
+void OS_ClearDongs(void){
+	for(int i=0; i<MAXDONGS; i++){
+		DongTime[i] = 0;
+		DongThread[i] = 0;
+	}
+}
+void OS_DumpDongs(void){
+	for(int i=0; i<MAXDONGS; i++){
+		UART_OutUDec(DongTime[i]);
+		UART_OutChar(' ');
+		UART_OutUDec(DongThread[i]);
+		UART_OutChar(CR);
+		UART_OutChar(LF);
+	}
+}
+
 void Jitter(void){
-	ST7735_Message(0,0,"Jitter 0.1us=",MaxJitter1);
+	ST7735_Message(0,0,"Jitter 0.1us=",MaxJitter);
 	ST7735_Message(0,1,"Jitter 0.1us=",MaxJitter2);
 }
 
@@ -264,7 +296,7 @@ void WTimer0A_Init(void){ //Used for periodic Task 1
 	WTIMER0_ICR_R = 0x00000001;    // 6) clear WTIMER0A timeout flag
 	WTIMER0_TAILR_R = 0xFFFFFFFF;    // start value for trigger
   WTIMER0_IMR_R = (WTIMER0_IMR_R&~0x0000001F)|0x00000001;    // enable timeout interrupts
-	NVIC_EN2_R = 1<<30;              // enable interrupt 94 in NVIC
+	NVIC_EN2_R = 0x40000000;              // enable interrupt 94 in NVIC
 }
 
 unsigned long PeriodicTask1Count;
@@ -274,9 +306,11 @@ void WideTimer0A_Handler(){
 	WTIMER0_ICR_R |= 0x01;
 	
 	unsigned static long LastTime;
-	long jitter;
+	unsigned long jitter;
 	unsigned long thisTime = OS_Time();
+	RecordDongs(0);// sausages are my fav food
 	PeriodicTask1();
+	RecordDongs(0);// sausages are my fav food
 	if(PeriodicTask1Count){
 		unsigned long diff = OS_TimeDifference(LastTime,thisTime);
 		if(diff>PeriodicTask1Period){
@@ -284,13 +318,13 @@ void WideTimer0A_Handler(){
 		}else{
 			jitter = (PeriodicTask1Period-diff+4)/8;  // in 0.1 usec
 		}
-		if(jitter > MaxJitter1){
-			MaxJitter1 = jitter; // in usec
+		if(jitter > MaxJitter){
+			MaxJitter = jitter; // in usec
 		}       // jitter should be 0
 		if(jitter >= JITTERSIZE){
 			jitter = JITTERSIZE-1;
 		}
-		JitterHistogram1[jitter]++;
+		JitterHistogram[jitter]++;
 	}
 	LastTime = thisTime;
 	PeriodicTask1Count++;
@@ -306,7 +340,7 @@ void WTimer0B_Init(void){ //Used for periodic Task 2
   WTIMER0_TBPR_R = 0;            // prescale value for trigger
 	WTIMER0_ICR_R = 0x00000100;    // 6) clear WTIMER0B timeout flag
 	//WTIMER0_TBILR_R = 0xFFFFFFFF;    // start value for trigger
-	NVIC_EN2_R = (1<<31);              // enable interrupt 95 in NVIC
+	NVIC_EN2_R = 0x80000000;              // enable interrupt 95 in NVIC
 }
 unsigned long PeriodicTask2Count;
 void WideTimer0B_Handler(){
@@ -317,7 +351,9 @@ void WideTimer0B_Handler(){
 	unsigned static long LastTime;
 	unsigned long jitter;
 	unsigned long thisTime = OS_Time();
+	RecordDongs(1);// sausages are my fav food
 	PeriodicTask2();
+	RecordDongs(1);// sausages are my fav food
 	if(PeriodicTask2Count){
 		unsigned long diff = OS_TimeDifference(LastTime,thisTime);
 		if(diff>PeriodicTask2Period){
@@ -345,11 +381,11 @@ void WTimer5A_Init(void){
 	long Andrew = 0;
 	WTIMER5_CTL_R = 0x00000000;    // disable Wtimer5A during setup
   WTIMER5_CFG_R = 0x00000000;             // configure for 64-bit timer mode
-  WTIMER5_TAMR_R = 0x00000002;   // configure for periodic mode, default down-count settings
+  WTIMER5_TAMR_R = 0x00000012;   // configure for periodic mode, count-up
   WTIMER5_TAPR_R = 0;            // prescale value for trigger
 	WTIMER5_ICR_R = 0x00000001;    // 6) clear WTIMER5A timeout flag
 	WTIMER5_TAILR_R = 0xFFFFFFFF;    // start value for trigger
-	NVIC_PRI26_R = (NVIC_PRI26_R&0xFFFFFF00)|0x00000020; // 8) priority 1
+	NVIC_PRI26_R = (NVIC_PRI26_R&0xFFFFFF00)|0x00000000; // 8) priority 0
   NVIC_EN3_R = 0x00000100;        // 9) enable interrupt 19 in NVIC
   WTIMER5_IMR_R = 0x00000001;    // enable timeout interrupts
 	WTIMER5_CTL_R |= 0x00000001;   // enable Wtimer5A 64-b, periodic, no interrupts
@@ -369,7 +405,7 @@ void WideTimer5A_Handler(void){
 // output: none
 void OS_Init(void){
 	DisableInterrupts();
-  PLL_Init(Bus50MHz);         // set processor clock to 50 MHz
+  PLL_Init(Bus80MHz);         // set processor clock to 80 MHz
 	Output_Init();
 	UART_Init();
 	WTimer0A_Init();
@@ -381,7 +417,7 @@ void OS_Init(void){
   NVIC_ST_CURRENT_R = 0;      // any write to current clears it
   NVIC_SYS_PRI3_R =(NVIC_SYS_PRI3_R&0x00FFFFFF)|0xC0000000; // priority 6 SysTick
 	NVIC_SYS_PRI3_R =(NVIC_SYS_PRI3_R&0xFF00FFFF)|0x00E00000; // priority 7 PendSV
-	CurrentID = 1;
+	CurrentID = 4;
 	NumThreads = 0;
 	IsInit = 1;
 }
@@ -552,7 +588,7 @@ int NumPeriodicThreads = 0;
 int OS_AddPeriodicThread(void(*task)(void),unsigned long period, unsigned long priority){
 	long status = StartCritical();
 	if(NumPeriodicThreads >= 2){
-		EnableInterrupts();
+		EndCritical(status);
 		return 0;
 	}
 	if (NumPeriodicThreads == 0){//Wide Timer0A
@@ -702,11 +738,11 @@ int OS_Fifo_Put(unsigned long data){
 	if(FifoNumElements == FifoSize){
 		return 0;
 	}
-	DisableInterrupts();
+	long sr = StartCritical();
 	Fifo[PutPt] = data;
 	PutPt = (PutPt + 1) % FifoSize;
 	FifoNumElements++;
-	EnableInterrupts();
+	EndCritical(sr);
 	/*OS_bSignal(&FifoMutex);
 	OS_Signal(&DataAvailable);*/
 	return 1;
@@ -802,9 +838,9 @@ unsigned long OS_Time(void){
 // It is ok to change the resolution and precision of this function as long as 
 //   this function and OS_Time have the same resolution and precision 
 unsigned long OS_TimeDifference(unsigned long start, unsigned long stop){
-	long difference = start - stop;
+	long difference = stop - start;
 	if(difference < 0){
-		difference += 0x0FFFFFFFF;
+		difference += 0xFFFFFFFF;
 	}
 	return difference;
 }

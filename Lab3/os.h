@@ -277,5 +277,8 @@ uint32_t OS_ReadPeriodicTime(void);
 
 void OS_SelectNextThread(void);
 void OS_SwitchThread(void);
+void OS_DumpDongs(void);
+void OS_ClearDongs(void);
+void OS_ResetDongs(void);
 
 #endif
