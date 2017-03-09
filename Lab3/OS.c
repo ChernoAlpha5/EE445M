@@ -308,9 +308,9 @@ void WideTimer0A_Handler(){
 	unsigned static long LastTime;
 	unsigned long jitter;
 	unsigned long thisTime = OS_Time();
-	RecordDongs(0);// sausages are my fav food
+	//RecordDongs(0);// sausages are my fav food
 	PeriodicTask1();
-	RecordDongs(0);// sausages are my fav food
+	//RecordDongs(0);// sausages are my fav food
 	if(PeriodicTask1Count){
 		unsigned long diff = OS_TimeDifference(LastTime,thisTime);
 		if(diff>PeriodicTask1Period){
@@ -351,9 +351,9 @@ void WideTimer0B_Handler(){
 	unsigned static long LastTime;
 	unsigned long jitter;
 	unsigned long thisTime = OS_Time();
-	RecordDongs(1);// sausages are my fav food
+	//RecordDongs(1);// sausages are my fav food
 	PeriodicTask2();
-	RecordDongs(1);// sausages are my fav food
+	//RecordDongs(1);// sausages are my fav food
 	if(PeriodicTask2Count){
 		unsigned long diff = OS_TimeDifference(LastTime,thisTime);
 		if(diff>PeriodicTask2Period){
@@ -717,6 +717,7 @@ Sema4Type FifoMutex;
 //    e.g., must be a power of 2,4,8,16,32,64,128
 void OS_Fifo_Init(unsigned long size){
 	long sr = StartCritical();      // make atomic
+	OS_InitSemaphore(&DataAvailable, 0);
   PutPt = 0; // Empty
 	GetPt = 0; // Empty
 	FifoSize = size;
@@ -743,8 +744,8 @@ int OS_Fifo_Put(unsigned long data){
 	PutPt = (PutPt + 1) % FifoSize;
 	FifoNumElements++;
 	EndCritical(sr);
-	/*OS_bSignal(&FifoMutex);
-	OS_Signal(&DataAvailable);*/
+	//OS_bSignal(&FifoMutex);
+	OS_Signal(&DataAvailable);
 	return 1;
 }
 
@@ -754,9 +755,8 @@ int OS_Fifo_Put(unsigned long data){
 // Inputs:  none
 // Outputs: data 
 unsigned long OS_Fifo_Get(void){
-	//OS_Wait(&DataAvailable);
+	OS_Wait(&DataAvailable);
 	//OS_bWait(&FifoMutex);
-	while(FifoNumElements==0);
 	long sr = StartCritical();
 	unsigned long data = Fifo[GetPt];
 	GetPt = (GetPt + 1) % FifoSize;
