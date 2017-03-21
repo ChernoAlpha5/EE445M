@@ -1,0 +1,312 @@
+
+
+
+ARM Macro Assembler    Page 1 
+
+
+    1 00000000         ;/******************************************************
+                       ***********************/
+    2 00000000         ;/* OSasm.s: low-level OS commands, written in assembly 
+                                             */
+    3 00000000         ;/* derived from uCOS-II                                
+                                             */
+    4 00000000         ;/******************************************************
+                       ***********************/
+    5 00000000         ;Jonathan Valvano, OS Lab2/3/4 solution, 3/9/17
+    6 00000000         
+    7 00000000         
+    8 00000000                 AREA             |.text|, CODE, READONLY, ALIGN=
+2
+    9 00000000                 THUMB
+   10 00000000                 REQUIRE8
+   11 00000000                 PRESERVE8
+   12 00000000         
+   13 00000000                 EXTERN           RunPt       ; currently running
+                                                             thread
+   14 00000000                 EXTERN           NextThreadPt ; next thread to r
+                                                            un, set by schedule
+                                                            
+   15 00000000                 EXPORT           StartOS
+   16 00000000                 EXPORT           ContextSwitch
+   17 00000000                 EXPORT           PendSV_Handler
+   18 00000000         
+   19 00000000         
+   20 00000000 E000ED04 
+                       NVIC_INT_CTRL
+                               EQU              0xE000ED04  ; Interrupt control
+                                                             state register.
+   21 00000000 E000ED22 
+                       NVIC_SYSPRI14
+                               EQU              0xE000ED22  ; PendSV priority r
+                                                            egister (position 1
+                                                            4).
+   22 00000000 E000ED23 
+                       NVIC_SYSPRI15
+                               EQU              0xE000ED23  ; Systick priority 
+                                                            register (position 
+                                                            15).
+   23 00000000 000000EF 
+                       NVIC_LEVEL14
+                               EQU              0xEF        ; Systick priority 
+                                                            value (second lowes
+                                                            t).
+   24 00000000 000000FF 
+                       NVIC_LEVEL15
+                               EQU              0xFF        ; PendSV priority v
+                                                            alue (lowest).
+   25 00000000 10000000 
+                       NVIC_PENDSVSET
+                               EQU              0x10000000  ; Value to trigger 
+                                                            PendSV exception.
+   26 00000000         
+   27 00000000         
+   28 00000000         
+   29 00000000         StartOS
+   30 00000000         
+
+
+
+ARM Macro Assembler    Page 2 
+
+
+   31 00000000 4770            BX               LR          ; start first threa
+                                                            d
+   32 00000002         
+   33 00000002         OSStartHang
+   34 00000002 E7FE            B                OSStartHang ; Should never get 
+                                                            here
+   35 00000004         
+   36 00000004         
+   37 00000004         ;*******************************************************
+                       *************************************************
+   38 00000004         ;                               PERFORM A CONTEXT SWITCH
+                        (From task level)
+   39 00000004         ;                                           void Context
+                       Switch(void)
+   40 00000004         ;
+   41 00000004         ; Note(s) : 1) ContextSwitch() is called when OS wants t
+                       o perform a task context switch.  This function
+   42 00000004         ;              triggers the PendSV exception which is wh
+                       ere the real work is done.
+   43 00000004         ;*******************************************************
+                       *************************************************
+   44 00000004         
+   45 00000004         ContextSwitch
+   46 00000004 4802            LDR              R0, =NVIC_INT_CTRL ; Trigger th
+                                                            e PendSV exception 
+                                                            (causes context swi
+                                                            tch)
+   47 00000006 F04F 5180       LDR              R1, =NVIC_PENDSVSET
+   48 0000000A 6001            STR              R1, [R0]
+   49 0000000C 4770            BX               LR
+   50 0000000E         
+   51 0000000E         
+   52 0000000E         ;*******************************************************
+                       *************************************************
+   53 0000000E         ;                                         HANDLE PendSV 
+                       EXCEPTION
+   54 0000000E         ;                                     void OS_CPU_PendSV
+                       Handler(void)
+   55 0000000E         ;
+   56 0000000E         ; Note(s) : 1) PendSV is used to cause a context switch.
+                         This is a recommended method for performing
+   57 0000000E         ;              context switches with Cortex-M3.  This is
+                        because the Cortex-M3 auto-saves half of the
+   58 0000000E         ;              processor context on any exception, and r
+                       estores same on return from exception.  So only
+   59 0000000E         ;              saving of R4-R11 is required and fixing u
+                       p the stack pointers.  Using the PendSV exception
+   60 0000000E         ;              this way means that context saving and re
+                       storing is identical whether it is initiated from
+   61 0000000E         ;              a thread or occurs due to an interrupt or
+                        exception.
+   62 0000000E         ;
+   63 0000000E         ;           2) Pseudo-code is:
+   64 0000000E         ;              a) Get the process SP, if 0 then skip (go
+                       to d) the saving part (first context switch);
+   65 0000000E         ;              b) Save remaining regs r4-r11 on process 
+                       stack;
+   66 0000000E         ;              c) Save the process SP in its TCB, OSTCBC
+                       ur->OSTCBStkPtr = SP;
+
+
+
+ARM Macro Assembler    Page 3 
+
+
+   67 0000000E         ;              d) Call OSTaskSwHook();
+   68 0000000E         ;              e) Get current high priority, OSPrioCur =
+                        OSPrioHighRdy;
+   69 0000000E         ;              f) Get current ready thread TCB, OSTCBCur
+                        = OSTCBHighRdy;
+   70 0000000E         ;              g) Get new process SP from TCB, SP = OSTC
+                       BHighRdy->OSTCBStkPtr;
+   71 0000000E         ;              h) Restore R4-R11 from new process stack;
+                       
+   72 0000000E         ;              i) Perform exception return which will re
+                       store remaining context.
+   73 0000000E         ;
+   74 0000000E         ;           3) On entry into PendSV handler:
+   75 0000000E         ;              a) The following have been saved on the p
+                       rocess stack (by processor):
+   76 0000000E         ;                 xPSR, PC, LR, R12, R0-R3
+   77 0000000E         ;              b) Processor mode is switched to Handler 
+                       mode (from Thread mode)
+   78 0000000E         ;              c) Stack is Main stack (switched from Pro
+                       cess stack)
+   79 0000000E         ;              d) OSTCBCur      points to the OS_TCB of 
+                       the task to suspend
+   80 0000000E         ;                 OSTCBHighRdy  points to the OS_TCB of 
+                       the task to resume
+   81 0000000E         ;
+   82 0000000E         ;           4) Since PendSV is set to lowest priority in
+                        the system (by OSStartHighRdy() above), we
+   83 0000000E         ;              know that it will only be run when no oth
+                       er exception or interrupt is active, and
+   84 0000000E         ;              therefore safe to assume that context bei
+                       ng switched out was using the process stack (PSP).
+   85 0000000E         ;*******************************************************
+                       *************************************************
+   86 0000000E         
+   87 0000000E         PendSV_Handler
+   88 0000000E         
+   89 0000000E 4770            BX               LR          ; Exception return 
+                                                            will restore remain
+                                                            ing context   
+   90 00000010         
+   91 00000010         
+   92 00000010         
+   93 00000010                 ALIGN
+   94 00000010                 END
+              E000ED04 
+Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4 --apcs=interw
+ork --depend=.\osasm.d -o.\osasm.o -IC:\Keil_v5\ARM\RV31\INC -IC:\Keil_v5\ARM\C
+MSIS\Include -IC:\Keil_v5\ARM\Inc\Luminary --predefine="__EVAL SETA 1" --predef
+ine="__MICROLIB SETA 1" --predefine="__UVISION_VERSION SETA 516" --list=.\osasm
+.lst osasm.s
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+.text 00000000
+
+Symbol: .text
+   Definitions
+      At line 8 in file osasm.s
+   Uses
+      None
+Comment: .text unused
+ContextSwitch 00000004
+
+Symbol: ContextSwitch
+   Definitions
+      At line 45 in file osasm.s
+   Uses
+      At line 16 in file osasm.s
+Comment: ContextSwitch used once
+OSStartHang 00000002
+
+Symbol: OSStartHang
+   Definitions
+      At line 33 in file osasm.s
+   Uses
+      At line 34 in file osasm.s
+Comment: OSStartHang used once
+PendSV_Handler 0000000E
+
+Symbol: PendSV_Handler
+   Definitions
+      At line 87 in file osasm.s
+   Uses
+      At line 17 in file osasm.s
+Comment: PendSV_Handler used once
+StartOS 00000000
+
+Symbol: StartOS
+   Definitions
+      At line 29 in file osasm.s
+   Uses
+      At line 15 in file osasm.s
+Comment: StartOS used once
+5 symbols
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Absolute symbols
+
+NVIC_INT_CTRL E000ED04
+
+Symbol: NVIC_INT_CTRL
+   Definitions
+      At line 20 in file osasm.s
+   Uses
+      At line 46 in file osasm.s
+Comment: NVIC_INT_CTRL used once
+NVIC_LEVEL14 000000EF
+
+Symbol: NVIC_LEVEL14
+   Definitions
+      At line 23 in file osasm.s
+   Uses
+      None
+Comment: NVIC_LEVEL14 unused
+NVIC_LEVEL15 000000FF
+
+Symbol: NVIC_LEVEL15
+   Definitions
+      At line 24 in file osasm.s
+   Uses
+      None
+Comment: NVIC_LEVEL15 unused
+NVIC_PENDSVSET 10000000
+
+Symbol: NVIC_PENDSVSET
+   Definitions
+      At line 25 in file osasm.s
+   Uses
+      At line 47 in file osasm.s
+Comment: NVIC_PENDSVSET used once
+NVIC_SYSPRI14 E000ED22
+
+Symbol: NVIC_SYSPRI14
+   Definitions
+      At line 21 in file osasm.s
+   Uses
+      None
+Comment: NVIC_SYSPRI14 unused
+NVIC_SYSPRI15 E000ED23
+
+Symbol: NVIC_SYSPRI15
+   Definitions
+      At line 22 in file osasm.s
+   Uses
+      None
+Comment: NVIC_SYSPRI15 unused
+6 symbols
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+External symbols
+
+NextThreadPt 00000000
+
+Symbol: NextThreadPt
+   Definitions
+      At line 14 in file osasm.s
+   Uses
+      None
+Comment: NextThreadPt unused
+RunPt 00000000
+
+Symbol: RunPt
+   Definitions
+      At line 13 in file osasm.s
+   Uses
+      None
+Comment: RunPt unused
+2 symbols
+348 symbols in table

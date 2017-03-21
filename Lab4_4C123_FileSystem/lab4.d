@@ -1,0 +1,11 @@
+.\lab4.o: Lab4.c
+.\lab4.o: OS.h
+.\lab4.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\lab4.o: ../inc/tm4c123gh6pm.h
+.\lab4.o: ST7735.h
+.\lab4.o: ADC.h
+.\lab4.o: UART2.h
+.\lab4.o: eDisk.h
+.\lab4.o: eFile.h
+.\lab4.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+.\lab4.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h

@@ -1,0 +1,70 @@
+Dependencies for Project 'Lab4', Target 'Lab4': (DO NOT MODIFY !)
+F (.\startup.s)(0x58D07A29)(--cpu Cortex-M4 --pd "__EVAL SETA 1" -g --apcs=interwork --pd "__MICROLIB SETA 1"-I C:\Keil_v5\ARM\RV31\INC-I C:\Keil_v5\ARM\CMSIS\Include-I C:\Keil_v5\ARM\Inc\Luminary--pd "__UVISION_VERSION SETA 516"--list .\startup.lst --xref -o .\startup.o --depend .\startup.d)
+F (.\PLL.c)(0x58D07BE9)(-c --cpu Cortex-M4 -D__EVAL -D__MICROLIB -g -O0 --apcs=interwork --split_sections --signed_chars -I.. -I..\..\..-I C:\Keil_v5\ARM\RV31\INC-I C:\Keil_v5\ARM\CMSIS\Include-I C:\Keil_v5\ARM\Inc\Luminary-D__UVISION_VERSION="516" -Drvmdk -DPART_LM4F120H5QR-o .\pll.o --omf_browse .\pll.crf --depend .\pll.d)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x55AFACC2)
+I (PLL.h)(0x58D07BAC)
+I (../inc/tm4c123gh6pm.h)(0x58852F6E)
+F (.\ST7735.c)(0x58D07D6E)(-c --cpu Cortex-M4 -D__EVAL -D__MICROLIB -g -O0 --apcs=interwork --split_sections --signed_chars -I.. -I..\..\..-I C:\Keil_v5\ARM\RV31\INC-I C:\Keil_v5\ARM\CMSIS\Include-I C:\Keil_v5\ARM\Inc\Luminary-D__UVISION_VERSION="516" -Drvmdk -DPART_LM4F120H5QR-o .\st7735.o --omf_browse .\st7735.crf --depend .\st7735.d)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x55AFACC2)
+I (ST7735.h)(0x58D08142)
+I (eDisk.h)(0x58D07A28)
+I (..\inc/tm4c123gh6pm.h)(0x58852F6E)
+I (OS.h)(0x58D081EE)
+F (.\UART2.c)(0x58D07FD5)(-c --cpu Cortex-M4 -D__EVAL -D__MICROLIB -g -O0 --apcs=interwork --split_sections --signed_chars -I.. -I..\..\..-I C:\Keil_v5\ARM\RV31\INC-I C:\Keil_v5\ARM\CMSIS\Include-I C:\Keil_v5\ARM\Inc\Luminary-D__UVISION_VERSION="516" -Drvmdk -DPART_LM4F120H5QR-o .\uart2.o --omf_browse .\uart2.crf --depend .\uart2.d)
+I (..\inc/tm4c123gh6pm.h)(0x58852F6E)
+I (UART2.h)(0x58D0810D)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x55AFACC2)
+I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x55AFACC2)
+I (OS.h)(0x58D081EE)
+F (.\OS.c)(0x58D07DD1)(--c99 -c --cpu Cortex-M4 -D__EVAL -D__MICROLIB -g -O0 --apcs=interwork --split_sections --signed_chars -I.. -I..\..\..-I C:\Keil_v5\ARM\RV31\INC-I C:\Keil_v5\ARM\CMSIS\Include-I C:\Keil_v5\ARM\Inc\Luminary-D__UVISION_VERSION="516" -Drvmdk -DPART_LM4F120H5QR-o .\os.o --omf_browse .\os.crf --depend .\os.d)
+I (..\inc/hw_types.h)(0x58852F6E)
+I (PLL.h)(0x58D07BAC)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x55AFACC2)
+I (..\inc/tm4c123gh6pm.h)(0x58852F6E)
+I (UART2.h)(0x58D0810D)
+I (os.h)(0x58D081EE)
+I (adc.h)(0x58D07A28)
+I (ST7735.h)(0x58D08142)
+F (.\osasm.s)(0x58D07A28)(--cpu Cortex-M4 --pd "__EVAL SETA 1" -g --apcs=interwork --pd "__MICROLIB SETA 1"-I C:\Keil_v5\ARM\RV31\INC-I C:\Keil_v5\ARM\CMSIS\Include-I C:\Keil_v5\ARM\Inc\Luminary--pd "__UVISION_VERSION SETA 516"--list .\osasm.lst --xref -o .\osasm.o --depend .\osasm.d)
+F (.\ADC.c)(0x58D080EA)(-c --cpu Cortex-M4 -D__EVAL -D__MICROLIB -g -O0 --apcs=interwork --split_sections --signed_chars -I.. -I..\..\..-I C:\Keil_v5\ARM\RV31\INC-I C:\Keil_v5\ARM\CMSIS\Include-I C:\Keil_v5\ARM\Inc\Luminary-D__UVISION_VERSION="516" -Drvmdk -DPART_LM4F120H5QR-o .\adc.o --omf_browse .\adc.crf --depend .\adc.d)
+I (ADC.h)(0x58D07A28)
+I (..\inc/tm4c123gh6pm.h)(0x58852F6E)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x55AFACC2)
+F (.\cr4_fft_64_stm32.s)(0x58D07A28)(--cpu Cortex-M4 --pd "__EVAL SETA 1" -g --apcs=interwork --pd "__MICROLIB SETA 1"-I C:\Keil_v5\ARM\RV31\INC-I C:\Keil_v5\ARM\CMSIS\Include-I C:\Keil_v5\ARM\Inc\Luminary--pd "__UVISION_VERSION SETA 516"--list .\cr4_fft_64_stm32.lst --xref -o .\cr4_fft_64_stm32.o --depend .\cr4_fft_64_stm32.d)
+F (.\Interpreter.c)(0x58D080EA)(-c --cpu Cortex-M4 -D__EVAL -D__MICROLIB -g -O0 --apcs=interwork --split_sections --signed_chars -I.. -I..\..\..-I C:\Keil_v5\ARM\RV31\INC-I C:\Keil_v5\ARM\CMSIS\Include-I C:\Keil_v5\ARM\Inc\Luminary-D__UVISION_VERSION="516" -Drvmdk -DPART_LM4F120H5QR-o .\interpreter.o --omf_browse .\interpreter.crf --depend .\interpreter.d)
+I (ST7735.h)(0x58D08142)
+I (os.h)(0x58D081EE)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x55AFACC2)
+I (ADC.h)(0x58D07A28)
+I (UART2.h)(0x58D0810D)
+I (efile.h)(0x58D07A28)
+I (eDisk.h)(0x58D07A28)
+I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x55AFACC2)
+I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x55AFACC2)
+I (../inc/tm4c123gh6pm.h)(0x58852F6E)
+F (.\eDisk.c)(0x58D07A28)(-c --cpu Cortex-M4 -D__EVAL -D__MICROLIB -g -O0 --apcs=interwork --split_sections --signed_chars -I.. -I..\..\..-I C:\Keil_v5\ARM\RV31\INC-I C:\Keil_v5\ARM\CMSIS\Include-I C:\Keil_v5\ARM\Inc\Luminary-D__UVISION_VERSION="516" -Drvmdk -DPART_LM4F120H5QR-o .\edisk.o --omf_browse .\edisk.crf --depend .\edisk.d)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x55AFACC2)
+I (../inc/tm4c123gh6pm.h)(0x58852F6E)
+I (edisk.h)(0x58D07A28)
+F (.\efile.c)(0x58D07A28)(-c --cpu Cortex-M4 -D__EVAL -D__MICROLIB -g -O0 --apcs=interwork --split_sections --signed_chars -I.. -I..\..\..-I C:\Keil_v5\ARM\RV31\INC-I C:\Keil_v5\ARM\CMSIS\Include-I C:\Keil_v5\ARM\Inc\Luminary-D__UVISION_VERSION="516" -Drvmdk -DPART_LM4F120H5QR-o .\efile.o --omf_browse .\efile.crf --depend .\efile.d)
+I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x55AFACC2)
+I (edisk.h)(0x58D07A28)
+I (UART2.h)(0x58D0810D)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x55AFACC2)
+I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x55AFACC2)
+F (.\Lab4.c)(0x58D07A28)(-c --cpu Cortex-M4 -D__EVAL -D__MICROLIB -g -O0 --apcs=interwork --split_sections --signed_chars -I.. -I..\..\..-I C:\Keil_v5\ARM\RV31\INC-I C:\Keil_v5\ARM\CMSIS\Include-I C:\Keil_v5\ARM\Inc\Luminary-D__UVISION_VERSION="516" -Drvmdk -DPART_LM4F120H5QR-o .\lab4.o --omf_browse .\lab4.crf --depend .\lab4.d)
+I (OS.h)(0x58D081EE)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x55AFACC2)
+I (../inc/tm4c123gh6pm.h)(0x58852F6E)
+I (ST7735.h)(0x58D08142)
+I (ADC.h)(0x58D07A28)
+I (UART2.h)(0x58D0810D)
+I (eDisk.h)(0x58D07A28)
+I (eFile.h)(0x58D07A28)
+I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x55AFACC2)
+I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x55AFACC2)
+F (.\SysTick.c)(0x58D06741)(-c --cpu Cortex-M4 -D__EVAL -D__MICROLIB -g -O0 --apcs=interwork --split_sections --signed_chars -I.. -I..\..\..-I C:\Keil_v5\ARM\RV31\INC-I C:\Keil_v5\ARM\CMSIS\Include-I C:\Keil_v5\ARM\Inc\Luminary-D__UVISION_VERSION="516" -Drvmdk -DPART_LM4F120H5QR-o .\systick.o --omf_browse .\systick.crf --depend .\systick.d)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x55AFACC2)
+I (OS.h)(0x58D081EE)
+I (../inc/tm4c123gh6pm.h)(0x58852F6E)
+F (.\SysTick.h)(0x58D06742)()
