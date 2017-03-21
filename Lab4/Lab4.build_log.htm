@@ -3,10 +3,302 @@
 <pre>
 <h1>µVision Build Log</h1>
 <h2>Project:</h2>
-C:\Users\valvano\Dropbox\EE345M Class\EE445M\Lab4_4C123_FileSystem\Lab4.uvproj
-Project File Date:  03/09/2017
+C:\Users\clint\OneDrive\Documents\school\445M\EE445M\Lab4\Lab4.uvproj
+Project File Date:  03/20/2017
 
 <h2>Output:</h2>
+Rebuild target 'Lab4'
+assembling startup.s...
+compiling PLL.c...
+compiling ST7735.c...
+compiling UART2.c...
+compiling OS.c...
+OS.c(291): warning:  #177-D: variable "Andrew" was declared but never referenced
+        long Andrew = 0; 
+OS.c(336): warning:  #177-D: variable "Andrew" was declared but never referenced
+        long Andrew = 0; 
+OS.c(381): warning:  #177-D: variable "Andrew" was declared but never referenced
+        long Andrew = 0;
+OS.c: 3 warnings, 0 errors
+assembling osasm.s...
+compiling ADC.c...
+assembling cr4_fft_64_stm32.s...
+compiling Interpreter.c...
+compiling eDisk.c...
+compiling efile.c...
+compiling Lab4.c...
+compiling SysTick.c...
+linking...
+Program Size: Code=5232 RO-data=1540 RW-data=248 ZI-data=11216  
+".\Lab4.axf" - 0 Error(s), 3 Warning(s).
+Load "C:\\Users\\clint\\OneDrive\\Documents\\school\\445M\\EE445M\\Lab4\\Lab4.axf" 
+Connecting: Mode=JTAG, Speed=1000000Hz
+Connection failed!, error code=&d
+Error: Flash Download failed  -  Target DLL has been cancelled
 </pre>
 </body>
 </html>
+atement in block
+        unsigned long jitter;
+OS.c(310): error:  #268: declaration may not appear after executable statement in block
+        unsigned long thisTime = OS_Time();
+OS.c(336): error:  #268: declaration may not appear after executable statement in block
+        long Andrew = 0; 
+OS.c(336): warning:  #177-D: variable "Andrew" was declared but never referenced
+        long Andrew = 0; 
+OS.c(351): error:  #268: declaration may not appear after executable statement in block
+        unsigned static long LastTime;
+OS.c(352): error:  #268: declaration may not appear after executable statement in block
+        unsigned long jitter;
+OS.c(353): error:  #268: declaration may not appear after executable statement in block
+        unsigned long thisTime = OS_Time();
+OS.c(381): error:  #268: declaration may not appear after executable statement in block
+        long Andrew = 0;
+OS.c(381): warning:  #177-D: variable "Andrew" was declared but never referenced
+        long Andrew = 0;
+OS.c(742): error:  #268: declaration may not appear after executable statement in block
+        long sr = StartCritical();
+OS.c(760): error:  #268: declaration may not appear after executable statement in block
+        long sr = StartCritical();
+OS.c(761): error:  #268: declaration may not appear after executable statement in block
+        unsigned long data = Fifo[GetPt];
+OS.c(814): error:  #268: declaration may not appear after executable statement in block
+        unsigned long data = MailBox;
+OS.c(889): error:  #268: declaration may not appear after executable statement in block
+        long status = StartCritical();
+OS.c(895): error:  #29: expected an expression
+                        for (int i = 0; i < NumThreads-1; i++){
+OS.c(895): error:  #20: identifier "i" is undefined
+                        for (int i = 0; i < NumThreads-1; i++){
+OS.c: 3 warnings, 21 errors
+assembling osasm.s...
+compiling ADC.c...
+assembling cr4_fft_64_stm32.s...
+compiling Interpreter.c...
+compiling eDisk.c...
+compiling efile.c...
+compiling Lab4.c...
+compiling SysTick.c...
+".\Lab4.axf" - 21 Error(s), 3 Warning(s).
+Target not created
+             for (int i = 0; i < NumThreads-1; i++){
+OS.c(895): error:  #20: identifier "i" is undefined
+                        for (int i = 0; i < NumThreads-1; i++){
+OS.c: 3 warnings, 21 errors
+assembling osasm.s...
+compiling ADC.c...
+assembling cr4_fft_64_stm32.s...
+compiling Interpreter.c...
+compiling eDisk.c...
+compiling efile.c...
+compiling Lab4.c...
+compiling SysTick.c...
+".\Lab4.axf" - 21 Error(s), 5 Warning(s).
+Target not created
+m4c123gh6pm.h")
+  #define UART0_RIS_R             (*((volatile unsigned long *)0x4000C03C))
+UART2.c(53): warning:  #47-D: incompatible redefinition of macro "UART0_ICR_R" (declared at line 366 of "..\inc/tm4c123gh6pm.h")
+  #define UART0_ICR_R             (*((volatile unsigned long *)0x4000C044))
+UART2.c(75): warning:  #47-D: incompatible redefinition of macro "SYSCTL_RCGC1_R" (declared at line 2058 of "..\inc/tm4c123gh6pm.h")
+  #define SYSCTL_RCGC1_R          (*((volatile unsigned long *)0x400FE104))
+UART2.c(76): warning:  #47-D: incompatible redefinition of macro "SYSCTL_RCGC2_R" (declared at line 2059 of "..\inc/tm4c123gh6pm.h")
+  #define SYSCTL_RCGC2_R          (*((volatile unsigned long *)0x400FE108))
+UART2.c: 18 warnings, 0 errors
+compiling OS.c...
+OS.c(86): error:  #29: expected an expression
+        for(int i=0; i<MAXDONGS; i++){
+OS.c(86): error:  #20: identifier "i" is undefined
+        for(int i=0; i<MAXDONGS; i++){
+OS.c(92): error:  #29: expected an expression
+        for(int i=0; i<MAXDONGS; i++){
+OS.c(92): error:  #20: identifier "i" is undefined
+        for(int i=0; i<MAXDONGS; i++){
+OS.c(275): error:  #268: declaration may not appear after executable statement in block
+        tcbType *curThread = SleepListStart;
+OS.c(291): error:  #268: declaration may not appear after executable statement in block
+        long Andrew = 0; 
+OS.c(291): warning:  #177-D: variable "Andrew" was declared but never referenced
+        long Andrew = 0; 
+OS.c(308): error:  #268: declaration may not appear after executable statement in block
+        unsigned static long LastTime;
+OS.c(309): error:  #268: declaration may not appear after executable statement in block
+        unsigned long jitter;
+OS.c(310): error:  #268: declaration may not appear after executable statement in block
+        unsigned long thisTime = OS_Time();
+OS.c(336): error:  #268: declaration may not appear after executable statement in block
+        long Andrew = 0; 
+OS.c(336): warning:  #177-D: variable "Andrew" was declared but never referenced
+        long Andrew = 0; 
+OS.c(351): error:  #268: declaration may not appear after executable statement in block
+        unsigned static long LastTime;
+OS.c(352): error:  #268: declaration may not appear after executable statement in block
+        unsigned long jitter;
+OS.c(353): error:  #268: declaration may not appear after executable statement in block
+        unsigned long thisTime = OS_Time();
+OS.c(381): error:  #268: declaration may not appear after executable statement in block
+        long Andrew = 0;
+OS.c(381): warning:  #177-D: variable "Andrew" was declared but never referenced
+        long Andrew = 0;
+OS.c(742): error:  #268: declaration may not appear after executable statement in block
+        long sr = StartCritical();
+OS.c(760): error:  #268: declaration may not appear after executable statement in block
+        long sr = StartCritical();
+OS.c(761): error:  #268: declaration may not appear after executable statement in block
+        unsigned long data = Fifo[GetPt];
+OS.c(814): error:  #268: declaration may not appear after executable statement in block
+        unsigned long data = MailBox;
+OS.c(889): error:  #268: declaration may not appear after executable statement in block
+        long status = StartCritical();
+OS.c(895): error:  #29: expected an expression
+                        for (int i = 0; i < NumThreads-1; i++){
+OS.c(895): error:  #20: identifier "i" is undefined
+                        for (int i = 0; i < NumThreads-1; i++){
+OS.c: 3 warnings, 21 errors
+assembling osasm.s...
+compiling ADC.c...
+assembling cr4_fft_64_stm32.s...
+compiling Interpreter.c...
+compiling eDisk.c...
+compiling efile.c...
+compiling Lab4.c...
+compiling SysTick.c...
+".\Lab4.axf" - 21 Error(s), 23 Warning(s).
+Target not created
+x;
+OS.c(889): error:  #268: declaration may not appear after executable statement in block
+        long status = StartCritical();
+OS.c(895): error:  #29: expected an expression
+                        for (int i = 0; i < NumThreads-1; i++){
+OS.c(895): error:  #20: identifier "i" is undefined
+                        for (int i = 0; i < NumThreads-1; i++){
+OS.c: 3 warnings, 21 errors
+assembling osasm.s...
+compiling ADC.c...
+assembling cr4_fft_64_stm32.s...
+compiling Interpreter.c...
+compiling eDisk.c...
+compiling efile.c...
+compiling Lab4.c...
+compiling SysTick.c...
+".\Lab4.axf" - 21 Error(s), 26 Warning(s).
+Target not created
+                       for (int i = 0; i < NumThreads-1; i++){
+OS.c: 4 warnings, 23 errors
+assembling osasm.s...
+compiling ADC.c...
+assembling cr4_fft_64_stm32.s...
+compiling Interpreter.c...
+compiling eDisk.c...
+compiling efile.c...
+compiling Lab4.c...
+compiling SysTick.c...
+".\Lab4.axf" - 23 Error(s), 27 Warning(s).
+Target not created
+
+                        for (int i = 0; i < NumThreads-1; i++){
+OS.c: 5 warnings, 23 errors
+assembling osasm.s...
+compiling ADC.c...
+assembling cr4_fft_64_stm32.s...
+compiling Interpreter.c...
+UART2.h(188): warning:  #1-D: last line of file ends without a newline
+  void UART_InToken(char *bufPt, uint16_t max);
+Interpreter.c: 1 warning, 0 errors
+compiling eDisk.c...
+compiling efile.c...
+UART2.h(188): warning:  #1-D: last line of file ends without a newline
+  void UART_InToken(char *bufPt, uint16_t max);
+UART2.h(188): error:  #20: identifier "uint16_t" is undefined
+  void UART_InToken(char *bufPt, uint16_t max);
+efile.c: 1 warning, 1 error
+compiling Lab4.c...
+UART2.h(188): warning:  #1-D: last line of file ends without a newline
+  void UART_InToken(char *bufPt, uint16_t max);
+Lab4.c: 1 warning, 0 errors
+compiling SysTick.c...
+".\Lab4.axf" - 25 Error(s), 32 Warning(s).
+Target not created
+identifier "uint32_t" is undefined
+        GPIO_PORTE_AMSEL_R |= 0x04; // 6.1) enable analog functionality on PE2
+ADC.c(79): error:  #20: identifier "uint32_t" is undefined
+        GPIO_PORTE_DIR_R &= ~0x02;  // 3.2) make PE1 input
+ADC.c(80): error:  #20: identifier "uint32_t" is undefined
+        GPIO_PORTE_AFSEL_R |= 0x02; // 4.2) enable alternate function on PE1
+ADC.c(81): error:  #20: identifier "uint32_t" is undefined
+        GPIO_PORTE_DEN_R &= ~0x02;  // 5.2) disable digital I/O on PE1
+ADC.c(82): error:  #20: identifier "uint32_t" is undefined
+        GPIO_PORTE_AMSEL_R |= 0x02; // 6.2) enable analog functionality on PE1
+ADC.c(85): error:  #20: identifier "uint32_t" is undefined
+        GPIO_PORTE_DIR_R &= ~0x01;  // 3.3) make PE0 input
+ADC.c(86): error:  #20: identifier "uint32_t" is undefined
+        GPIO_PORTE_AFSEL_R |= 0x01; // 4.3) enable alternate function on PE0
+ADC.c(87): error:  #20: identifier "uint32_t" is undefined
+        GPIO_PORTE_DEN_R &= ~0x01;  // 5.3) disable digital I/O on PE0
+ADC.c(88): error:  #20: identifier "uint32_t" is undefined
+        GPIO_PORTE_AMSEL_R |= 0x01; // 6.3) enable analog functionality on PE0
+ADC.c(91): error:  #20: identifier "uint32_t" is undefined
+        GPIO_PORTD_DIR_R &= ~0x08;  // 3.4) make PD3 input
+ADC.c(92): error:  #20: identifier "uint32_t" is undefined
+        GPIO_PORTD_AFSEL_R |= 0x08; // 4.4) enable alternate function on PD3
+ADC.c(93): error:  #20: identifier "uint32_t" is undefined
+        GPIO_PORTD_DEN_R &= ~0x08;  // 5.4) disable digital I/O on PD3
+ADC.c(94): error:  #20: identifier "uint32_t" is undefined
+        GPIO_PORTD_AMSEL_R |= 0x08; // 6.4) enable analog functionality on PD3
+ADC.c(97): error:  #20: identifier "uint32_t" is undefined
+        GPIO_PORTD_DIR_R &= ~0x04;  // 3.5) make PD2 input
+ADC.c(98): error:  #20: identifier "uint32_t" is undefined
+        GPIO_PORTD_AFSEL_R |= 0x04; // 4.5) enable alternate function on PD2
+ADC.c(99): error:  #20: identifier "uint32_t" is undefined
+        GPIO_PORTD_DEN_R &= ~0x04;  // 5.5) disable digital I/O on PD2
+ADC.c(100): error:  #20: identifier "uint32_t" is undefined
+        GPIO_PORTD_AMSEL_R |= 0x04; // 6.5) enable analog functionality on PD2
+ADC.c(103): error:  #20: identifier "uint32_t" is undefined
+        GPIO_PORTD_DIR_R &= ~0x02;  // 3.6) make PD1 input
+ADC.c(104): error:  #20: identifier "uint32_t" is undefined
+        GPIO_PORTD_AFSEL_R |= 0x02; // 4.6) enable alternate function on PD1
+ADC.c(105): error:  #20: identifier "uint32_t" is undefined
+        GPIO_PORTD_DEN_R &= ~0x02;  // 5.6) disable digital I/O on PD1
+ADC.c(106): error:  #20: identifier "uint32_t" is undefined
+        GPIO_PORTD_AMSEL_R |= 0x02; // 6.6) enable analog functionality on PD1
+ADC.c: 0 warnings, 30 errors
+assembling cr4_fft_64_stm32.s...
+compiling Interpreter.c...
+Interpreter.c(73): warning:  #223-D: function "UART_InToken" declared implicitly
+      UART_InToken(string,19);
+Interpreter.c: 1 warning, 0 errors
+compiling eDisk.c...
+compiling efile.c...
+compiling Lab4.c...
+compiling SysTick.c...
+".\Lab4.axf" - 53 Error(s), 28 Warning(s).
+Target not created
+PIO_PORTD_AFSEL_R |= 0x02; // 4.6) enable alternate function on PD1
+ADC.c(105): error:  #20: identifier "uint32_t" is undefined
+        GPIO_PORTD_DEN_R &= ~0x02;  // 5.6) disable digital I/O on PD1
+ADC.c(106): error:  #20: identifier "uint32_t" is undefined
+        GPIO_PORTD_AMSEL_R |= 0x02; // 6.6) enable analog functionality on PD1
+ADC.c: 0 warnings, 30 errors
+assembling cr4_fft_64_stm32.s...
+compiling Interpreter.c...
+Interpreter.c(73): warning:  #223-D: function "UART_InToken" declared implicitly
+      UART_InToken(string,19);
+Interpreter.c: 1 warning, 0 errors
+compiling eDisk.c...
+compiling efile.c...
+compiling Lab4.c...
+OS.h(20): error:  #20: identifier "int32_t" is undefined
+        int32_t *sp;
+OS.h(23): error:  #20: identifier "int16_t" is undefined
+        int16_t id;
+OS.h(24): error:  #20: identifier "uint16_t" is undefined
+        uint16_t sleep;
+OS.h(25): error:  #20: identifier "uint8_t" is undefined
+        uint8_t priority;
+OS.h(26): error:  #20: identifier "uint8_t" is undefined
+        uint8_t blocked;
+OS.h(276): error:  #20: identifier "uint32_t" is undefined
+  uint32_t OS_ReadPeriodicTime(void);
+Lab4.c: 0 warnings, 6 errors
+compiling SysTick.c...
+".\Lab4.axf" - 67 Error(s), 28 Warning(s).
+Target not created

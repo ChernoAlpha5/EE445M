@@ -35,22 +35,7 @@
 #include "OS.h"
 
 #define NVIC_EN0_INT5           0x00000020  // Interrupt 5 enable
-#define NVIC_EN0_R              (*((volatile unsigned long *)0xE000E100))  // IRQ 0 to 31 Set Enable Register
-#define NVIC_PRI1_R             (*((volatile unsigned long *)0xE000E404))  // IRQ 4 to 7 Priority Register
-#define GPIO_PORTA_AFSEL_R      (*((volatile unsigned long *)0x40004420))
-#define GPIO_PORTA_DEN_R        (*((volatile unsigned long *)0x4000451C))
-#define GPIO_PORTA_AMSEL_R      (*((volatile unsigned long *)0x40004528))
-#define GPIO_PORTA_PCTL_R       (*((volatile unsigned long *)0x4000452C))
-#define UART0_DR_R              (*((volatile unsigned long *)0x4000C000))
-#define UART0_FR_R              (*((volatile unsigned long *)0x4000C018))
-#define UART0_IBRD_R            (*((volatile unsigned long *)0x4000C024))
-#define UART0_FBRD_R            (*((volatile unsigned long *)0x4000C028))
-#define UART0_LCRH_R            (*((volatile unsigned long *)0x4000C02C))
-#define UART0_CTL_R             (*((volatile unsigned long *)0x4000C030))
-#define UART0_IFLS_R            (*((volatile unsigned long *)0x4000C034))
-#define UART0_IM_R              (*((volatile unsigned long *)0x4000C038))
-#define UART0_RIS_R             (*((volatile unsigned long *)0x4000C03C))
-#define UART0_ICR_R             (*((volatile unsigned long *)0x4000C044))
+
 #define UART_FR_RXFF            0x00000040  // UART Receive FIFO Full
 #define UART_FR_TXFF            0x00000020  // UART Transmit FIFO Full
 #define UART_FR_RXFE            0x00000010  // UART Receive FIFO Empty
@@ -72,8 +57,6 @@
 #define UART_ICR_RTIC           0x00000040  // Receive Time-Out Interrupt Clear
 #define UART_ICR_TXIC           0x00000020  // Transmit Interrupt Clear
 #define UART_ICR_RXIC           0x00000010  // Receive Interrupt Clear
-#define SYSCTL_RCGC1_R          (*((volatile unsigned long *)0x400FE104))
-#define SYSCTL_RCGC2_R          (*((volatile unsigned long *)0x400FE108))
 #define SYSCTL_RCGC1_UART0      0x00000001  // UART0 Clock Gating Control
 #define SYSCTL_RCGC2_GPIOA      0x00000001  // port A Clock Gating Control
 
@@ -579,5 +562,29 @@ void UART_Fix2(long number){
   char message[10];
   Fixed_Fix2Str(number,message);
   UART_OutString(message);
+}
+
+void UART_InToken(char *bufPt, uint16_t max) {
+int length=0;
+char character;
+  character = UART_InChar();
+  while(character != ' ' && character != CR){
+		//UART_OutUHex(character);
+    if(character == BS || character == DEL){
+      if(length){
+        bufPt--;
+        length--;
+        UART_OutChar(DEL);
+      }
+    }
+    else if(length < max){
+      *bufPt = character;
+      bufPt++;
+      length++;
+      UART_OutChar(character);
+    }
+    character = UART_InChar();
+  }
+  *bufPt = 0;
 }
 

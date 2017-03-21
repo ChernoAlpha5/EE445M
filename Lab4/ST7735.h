@@ -137,4 +137,15 @@ void ST7735_SetRotation(unsigned char m);
 
 void ST7735_InvertDisplay(int i);
 
+void Output_Init(void);
+
+// Clear display
+void Output_Clear(void);
+
+// Turn off display (low power)
+void Output_Off(void);
+
+// Turn on display
+void Output_On(void);
+
 #endif
