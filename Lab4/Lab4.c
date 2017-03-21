@@ -272,7 +272,7 @@ extern void Interpreter(void);
 // execute   eFile_Init();  after periodic interrupts have started
 
 //*******************lab 4 main **********
-int main(void){        // lab 4 real main
+int realmain(void){        // lab 4 real main
   OS_Init();           // initialize, disable interrupts
   Running = 0;         // robot not running
   DataLost = 0;        // lost data between producer and consumer
@@ -339,7 +339,7 @@ void Thread3(void){
   }
 }
 
-int Testmain0(void){  // Testmain0
+int main(void){  // Testmain0
   OS_Init();          // initialize, disable interrupts
   PortD_Init();       // profile user threads
   NumCreated = 0 ;

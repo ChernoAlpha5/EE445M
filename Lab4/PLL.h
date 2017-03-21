@@ -44,7 +44,7 @@
  * @brief  Configure the system to get its clock from the PLL.
  */
 void PLL_Init(void);
-
+#define Bus80MHz     4
 
 /*
 SYSDIV2  Divisor  Clock (MHz)

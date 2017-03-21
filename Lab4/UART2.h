@@ -29,6 +29,8 @@
  For more information about my classes, my research, and my books, see
  http://users.ece.utexas.edu/~valvano/
  */
+ 
+ #include <stdint.h>
 
 // U0Rx (VCP receive) connected to PA0
 // U0Tx (VCP transmit) connected to PA1
@@ -185,3 +187,4 @@ void UART_InString(char *bufPt, unsigned short max);
  */
 void UART_Fix2(long number);
 
+void UART_InToken(char *bufPt, uint16_t max);

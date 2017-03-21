@@ -1,47 +1,47 @@
-/**
- * @file      OS.h
- * @brief     Real Time Operating System for Labs 2, 3 and 4
- * @details   EE445M/EE380L.6
- * @version   V1.0
- * @author    Valvano
- * @copyright Copyright 2017 by Jonathan W. Valvano, valvano@mail.utexas.edu,
- * @warning   AS-IS
- * @note      For more information see  http://users.ece.utexas.edu/~valvano/
- * @date      March 9, 2017
+// filename **********OS.H***********
+// Real Time Operating System for Labs 2 and 3 
+// Jonathan W. Valvano 1/27/14, valvano@mail.utexas.edu
+// EE445M/EE380L.6 
+// You may use, edit, run or distribute this file 
+// You are free to change the syntax/organization of this file
+// You are required to implement the spirit of this OS
 
- ******************************************************************************/
-
-
-
+#include <stdint.h>
  
 #ifndef __OS_H
 #define __OS_H  1
 
-/**
- * \brief Times assuming a 80 MHz
- */      
+// edit these depending on your clock        
 #define TIME_1MS    80000          
 #define TIME_2MS    (2*TIME_1MS)  
 #define TIME_500US  (TIME_1MS/2)  
 #define TIME_250US  (TIME_1MS/5)  
 
-/**
- * \brief Semaphore structure. Feel free to change the type of semaphore, there are lots of good solutions
- */  
+
+struct tcb{
+	int32_t *sp;
+	struct tcb *next;
+	struct tcb *prev;
+	int16_t id;
+	uint16_t sleep;
+	uint8_t priority;
+	uint8_t blocked;
+};
+typedef struct tcb tcbType;
+// feel free to change the type of semaphore, there are lots of good solutions
 struct  Sema4{
-  long Value;   // >0 means free, otherwise means busy        
+  long Value;   // >0 means free, otherwise means busy  
+	tcbType *BlockedListStart;
+	tcbType *BlockedListEnd;
 // add other components here, if necessary to implement blocking
 };
 typedef struct Sema4 Sema4Type;
 
-/**
- * @details  Initialize operating system, disable interrupts until OS_Launch.
- * Initialize OS controlled I/O: serial, ADC, systick, LaunchPad I/O and timers.
- * Interrupts not yet enabled.
- * @param  none
- * @return none
- * @brief  Initialize OS
- */
+// ******** OS_Init ************
+// initialize operating system, disable interrupts until OS_Launch
+// initialize OS controlled I/O: serial, ADC, systick, LaunchPad I/O and timers 
+// input:  none
+// output: none
 void OS_Init(void); 
 
 // ******** OS_InitSemaphore ************
@@ -272,5 +272,15 @@ unsigned long OS_MsTime(void);
 // In Lab 3, you should implement the user-defined TimeSlice field
 // It is ok to limit the range of theTimeSlice to match the 24-bit SysTick
 void OS_Launch(unsigned long theTimeSlice);
+
+void OS_KillTask(void);
+void OS_ClearPeriodicTime(void);
+uint32_t OS_ReadPeriodicTime(void);
+
+void OS_SelectNextThread(void);
+void OS_SwitchThread(void);
+void OS_DumpDongs(void);
+void OS_ClearDongs(void);
+void OS_ResetDongs(void);
 
 #endif

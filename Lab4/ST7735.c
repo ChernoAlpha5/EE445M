@@ -58,6 +58,7 @@
 #include "OS.h"
 #define SDC_CS_PB0 1
 #define SDC_CS_PD7 0
+uint16_t StTextColor = ST7735_YELLOW;
 #if SDC_CS_PD7
 // CS is PD7  
 // to change CS to another GPIO, change SDC_CS and CS_Init
@@ -111,8 +112,6 @@
 #define SSI_CC_CS_SYSPLL        0x00000000  // Either the system clock (if the
                                             // PLL bypass is in effect) or the
                                             // PLL output (default)
-#define SYSCTL_RCGC1_R          (*((volatile unsigned long *)0x400FE104))
-#define SYSCTL_RCGC2_R          (*((volatile unsigned long *)0x400FE108))
 #define SYSCTL_RCGC1_SSI0       0x00000010  // SSI0 Clock Gating Control
 #define SYSCTL_RCGC2_GPIOA      0x00000001  // port A Clock Gating Control
 #define ST7735_TFTWIDTH  128
@@ -1218,4 +1217,30 @@ void ST7735_InvertDisplay(int i) {
   } else{
     writecommand(ST7735_INVOFF);
   }
+}
+
+Sema4Type Semi;
+
+// *************** Output_Init ********************
+// Standard device driver initialization function for printf
+// Initialize ST7735 LCD
+// Inputs: none
+// Outputs: none
+void Output_Init(void){
+	OS_InitSemaphore(&Semi, 1);
+  ST7735_InitR(INITR_REDTAB);
+  ST7735_FillScreen(0);                 // set screen to black
+}
+
+// Clear display
+void Output_Clear(void){ // Clears the display
+  ST7735_FillScreen(0);    // set screen to black
+}
+// Turn off display (low power)
+void Output_Off(void){   // Turns off the display
+  Output_Clear();  // not implemented
+}
+// Turn on display
+void Output_On(void){ // Turns on the display
+  Output_Init();      // reinitialize
 }

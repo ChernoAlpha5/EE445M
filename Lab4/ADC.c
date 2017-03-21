@@ -23,7 +23,7 @@
  http://users.ece.utexas.edu/~valvano/
  */
 
-
+#include <stdint.h>
 #include "ADC.h"
 #include "inc/tm4c123gh6pm.h"
 #define NVIC_EN0_INT14          0x00004000  // Interrupt 14 enable
