@@ -1,14 +1,7 @@
 .\interpreter.o: Interpreter.c
-.\interpreter.o: ST7735.h
-.\interpreter.o: os.h
 .\interpreter.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
-.\interpreter.o: ADC.h
-.\interpreter.o: UART2.h
-.\interpreter.o: efile.h
-.\interpreter.o: eDisk.h
-.\interpreter.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
-.\interpreter.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
 .\interpreter.o: UART2.h
 .\interpreter.o: ADC.h
+.\interpreter.o: ST7735.h
 .\interpreter.o: OS.h
 .\interpreter.o: ../inc/tm4c123gh6pm.h

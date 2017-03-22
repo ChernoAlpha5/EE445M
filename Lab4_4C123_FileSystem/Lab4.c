@@ -272,7 +272,7 @@ extern void Interpreter(void);
 // execute   eFile_Init();  after periodic interrupts have started
 
 //*******************lab 4 main **********
-int main(void){        // lab 4 real main
+int theRealmain(void){        // lab 4 real main
   OS_Init();           // initialize, disable interrupts
   Running = 0;         // robot not running
   DataLost = 0;        // lost data between producer and consumer
@@ -358,6 +358,46 @@ void diskError(char* errtype, unsigned long n){
   printf(" disk error %u",n);
   OS_Kill();
 }
+
+//testmainW - measure the writing bandwidth of SD card using the eDisk functions
+//int testmainW(void){
+int main(void){
+	OS_Init();
+	unsigned long n;
+	ST7735_OutString(0, 1, "Write Test    ", ST7735_WHITE);
+			for(uint8_t block = 0; block < MAXBLOCKS; block++){
+			for(int i=0; i<512; i++){
+				n = (16807*n)%2147483647; // pseudo random sequence
+				buffer[i] = 0xFF&n;        
+			}
+			PD3 = 0x08;     // PD3 high for 100 block writes
+			if(eDisk_WriteBlock(buffer,block))diskError("eDisk_WriteBlock",block); // save to disk
+			PD3 = 0x00;      
+	}
+			return 0;
+}
+
+//testmainW - measure the writing bandwidth of SD card using the eDisk functions
+int testmainR(void){
+//int main(void){
+	OS_Init();
+	unsigned long n;
+	ST7735_OutString(0, 1, "Read Test     ", ST7735_WHITE);
+	 n = 1;  // reseed, start over to get the same sequence
+  for(uint8_t block = 0; block < MAXBLOCKS; block++){
+    PD2 = 0x04;     // PF2 high for one block read
+    if(eDisk_ReadBlock(buffer,block))diskError("eDisk_ReadBlock",block); // read from disk
+    PD2 = 0x00;
+    for(int i=0;i<512;i++){
+      n = (16807*n)%2147483647; // pseudo random sequence
+      if(buffer[i] != (0xFF&n)){
+        printf("Read data not correct, block=%u, i=%u, expected %u, read %u\n\r",block,i,(0xFF&n),buffer[i]);
+      }      
+    }
+  }
+	return 0;
+}
+	
 void TestDisk(void){  DSTATUS result;  unsigned short block;  int i; unsigned long n;
   // simple test of eDisk
   ST7735_OutString(0, 1, "eDisk test      ", ST7735_WHITE);
@@ -412,6 +452,7 @@ void SW1Push1(void){
 int testmain1(void){   // testmain1
   OS_Init();           // initialize, disable interrupts
   PortD_Init();
+	//ADC_Init(3);
 //*******attach background tasks***********
   OS_AddPeriodicThread(&disk_timerproc,10*TIME_1MS,0);   // time out routines for disk
   OS_AddSW1Task(&SW1Push1,2);

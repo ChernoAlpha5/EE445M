@@ -1,19 +1,3 @@
-// *************Interpreter.c**************
-// EE445M/EE380L.6 Lab 4 solution
-// high level OS functions
-// 
-// Runs on LM4F120/TM4C123
-// Jonathan W. Valvano 3/9/17, valvano@mail.utexas.edu
-#include "ST7735.h"
-#include "os.h"
-#include "ADC.h"
-#include "UART2.h"
-#include "efile.h"
-#include "eDisk.h"
-#include <string.h> 
-#include <stdio.h>
-
-
 // UARTIntsTestMain.c
 // Runs on LM4F120/TM4C123
 // Tests the UART0 to implement bidirectional data transfer to and from a
@@ -77,44 +61,49 @@ void toggleLed(void){
 	PF2^=0x04;
 }
 //debug code
+extern unsigned long MaxDITime;
+extern unsigned long TotalDITime;
 void Interpreter(void){
   char string[20];  // global to assist in debugging
-	heartBeatInit();
-  UART_Init();              // initialize UART
+	//heartBeatInit();
 	//Output_Init();
 	
   while(1){
     UART_OutString("> ");
     UART_InToken(string,19);
 		switch(string[0]){
-			case 'A':
-			case 'a':
-				if(string[3] =='t' || string[3] == 'T'){
-					ADC_Init(0);
-					UART_OutString(" ");
-					UART_OutUDec(ADC_In());
-				}
-				break;
-			case 'U':
-			case 'u':
+			case 'M':
+			case 'm':
 				UART_OutString(" ");
-				UART_InString(string,19);
-				ST7735_Message(ST7735_UP, 0, string, 0);
+				UART_OutUDec(MaxDITime);
+				break;
+			case 'P':
+			case 'p':
+				UART_OutString(" ");
+				UART_OutUDec(TotalDITime*1000/OS_Time());
+				break;
+			case 'T':
+			case 't':
+				UART_OutString(" ");
+				UART_OutUDec(OS_Time());
 				break;
 			case 'D':
 			case 'd':
-				UART_OutString(" ");
-				UART_InString(string,19);
-				ST7735_Message(ST7735_DOWN, 0, string, 0);
+				if(string[1] == 'T' || string[1] == 't'){
+					UART_OutString(" ");
+					UART_OutUDec(TotalDITime);
+				}
+				else{
+					OS_DumpDongs();
+				}
 				break;
-			case 'O':
-			case 'o':
-				if(string[2] == 'a' || string[2] == 'A'){
-					OS_AddPeriodicThread(toggleLed, 1000, 2);
-				}
-				else if(string[2] == 'k' || string[2] == 'K'){
-					OS_KillTask();
-				}
+			case 'C':
+			case 'c':
+				OS_ClearDongs();
+				break;
+			case 'R':
+			case 'r':
+				OS_ResetDongs();
 				break;
 			default:
 				UART_OutString("Error");
@@ -122,4 +111,3 @@ void Interpreter(void){
 		OutCRLF();
   }
 }
-

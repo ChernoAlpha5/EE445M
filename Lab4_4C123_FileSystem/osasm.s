@@ -15,7 +15,9 @@
         EXPORT  StartOS
         EXPORT  ContextSwitch
         EXPORT  PendSV_Handler
-
+		EXTERN  NextPt
+		EXTERN  RecordDongs
+		EXTERN  OS_Id
 
 NVIC_INT_CTRL   EQU     0xE000ED04                              ; Interrupt control state register.
 NVIC_SYSPRI14   EQU     0xE000ED22                              ; PendSV priority register (position 14).
@@ -27,7 +29,16 @@ NVIC_PENDSVSET  EQU     0x10000000                              ; Value to trigg
 
 
 StartOS
-
+	LDR     R0, =RunPt         ; currently running thread
+    LDR     R2, [R0]           ; R2 = value of RunPt
+    LDR     SP, [R2]           ; new thread SP; SP = RunPt->stackPointer;
+    POP     {R4-R11}           ; restore regs r4-11
+    POP     {R0-R3}            ; restore regs r0-3
+    POP     {R12}
+    POP     {LR}               ; discard LR from initial stack
+    POP     {LR}               ; start location
+    POP     {R1}               ; discard PSR
+    CPSIE   I                  ; Enable interrupts at processor level
     BX      LR                 ; start first thread
 
 OSStartHang
@@ -85,10 +96,22 @@ ContextSwitch
 ;********************************************************************************************************
 
 PendSV_Handler
-
-    BX      LR                 ; Exception return will restore remaining context   
+	CPSID I
+	PUSH {LR}
+	BL OS_Id
+	BL RecordDongs
+	POP {LR}
+	PUSH {R4 - R11}
+	LDR R0, =RunPt
+	LDR R1, [R0]
+	STR SP, [R1]
+	LDR R1, =NextPt
+	LDR R2, [R1]
+	STR R2, [R0]
+	LDR SP, [R2]
+	POP {R4 - R11}
+	CPSIE I
+    BX  LR                 ; Exception return will restore remaining context   
     
-
-
     ALIGN
     END

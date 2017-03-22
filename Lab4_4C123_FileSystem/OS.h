@@ -17,9 +17,21 @@
 #define TIME_500US  (TIME_1MS/2)  
 #define TIME_250US  (TIME_1MS/5)  
 
+struct tcb{
+	int32_t *sp;
+	struct tcb *next;
+	struct tcb *prev;
+	int16_t id;
+	uint16_t sleep;
+	uint8_t priority;
+	uint8_t blocked;
+};
+typedef struct tcb tcbType;
 // feel free to change the type of semaphore, there are lots of good solutions
 struct  Sema4{
-  long Value;   // >0 means free, otherwise means busy        
+  long Value;   // >0 means free, otherwise means busy  
+	tcbType *BlockedListStart;
+	tcbType *BlockedListEnd;
 // add other components here, if necessary to implement blocking
 };
 typedef struct Sema4 Sema4Type;
@@ -265,5 +277,8 @@ void OS_ClearPeriodicTime(void);
 uint32_t OS_ReadPeriodicTime(void);
 
 void OS_SelectNextThread(void);
-
+void OS_SwitchThread(void);
+void OS_DumpDongs(void);
+void OS_ClearDongs(void);
+void OS_ResetDongs(void);
 #endif
