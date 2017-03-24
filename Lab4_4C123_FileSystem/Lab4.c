@@ -361,7 +361,7 @@ void diskError(char* errtype, unsigned long n){
 
 //testmainW - measure the writing bandwidth of SD card using the eDisk functions
 //int testmainW(void){
-int main(void){
+int testmainW(void){
 	OS_Init();
 	unsigned long n;
 	ST7735_OutString(0, 1, "Write Test    ", ST7735_WHITE);
@@ -513,7 +513,7 @@ void SW1Push2(void){
 //******************* test main2 **********
 // SYSTICK interrupts, period established by OS_Launch
 // Timer interrupts, period established by first call to OS_AddPeriodicThread
-int testmain2(void){ 
+int main(void){ 
   OS_Init();           // initialize, disable interrupts
   PortD_Init();
   Running = 1; 
