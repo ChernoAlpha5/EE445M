@@ -2,23 +2,102 @@
 // High-level routines to implement a solid-state disk 
 // Jonathan W. Valvano 3/9/17
 
-#include <string.h>
 #include "edisk.h"
 #include "UART2.h"
 #include <stdio.h>
 
 #define SUCCESS 0
 #define FAIL 1
-                             
 
+#define MAXNUMBLOCKS 2048
+#define NUMFATBLOCKS 8
+#define NUMDIRBLOCKS 1
+
+struct dir{
+	char name[8];
+	uint16_t bytesLeft;
+	uint16_t blockNum;
+};
+typedef struct dir dirType;
+
+#define To16Bit(X) (Hi ## X<<8) | Lo ## X
+
+
+dirType directory[NUMDIRBLOCKS*42];	//42 file directory entries fit into a single block
+uint8_t fileBuffer[512];
+uint8_t FAT[NUMFATBLOCKS*512];
+
+#define HiBytesLeft curBufEntry[8]
+#define LoBytesLeft curBufEntry[9]
+#define HiBlockNum curBufEntry[10]
+#define LoBlockNum curBufEntry[11]
+
+void LoadDirectory(){
+	for(int k=0; k<NUMDIRBLOCKS; k++){
+		eDisk_ReadBlock(fileBuffer, k);
+		uint8_t *curBufEntry = fileBuffer;
+		for(int i=0; i< 42; i++){
+			for(int j=0; j<8; j++){
+				directory[42*k+i].name[j] = curBufEntry[j];
+			}
+			directory[42*k+i].bytesLeft = To16Bit(BytesLeft);
+			directory[42*k+i].blockNum  = To16Bit(BlockNum);
+			curBufEntry+=12;
+		}
+	}
+}
+void LoadFAT(){
+	eDisk_Read(0, FAT, NUMDIRBLOCKS, NUMFATBLOCKS);
+	/*for(int i = 0; i<NUMFATBLOCKS; i++){
+		eDisk_ReadBlock(FAT + 512*i, 0);
+	}*/
+}
 
 //---------- eFile_Init-----------------
 // Activate the file system, without formating
 // Input: none
 // Output: 0 if successful and 1 on failure (already initialized)
 int eFile_Init(void){ // initialize file system
-
+	eDisk_Init(0);
+	LoadDirectory();
+	LoadFAT();
   return SUCCESS;
+}
+
+void ClearDir(){
+	for(int i=0; i<42; i++){
+		directory[i].name[0] = 0;
+	}
+	directory[0].name[0] = '*';//'*' reserved for free space filename
+	directory[0].blockNum = NUMDIRBLOCKS + NUMFATBLOCKS;
+}
+void ClearFAT(){
+	for(int i=0; i<NUMDIRBLOCKS + NUMFATBLOCKS; i++){
+		FAT[i] = 0;
+	}
+	for(int i=NUMDIRBLOCKS + NUMFATBLOCKS; i<MAXNUMBLOCKS; i++){
+		FAT[i] = i+1;
+	}
+	FAT[MAXNUMBLOCKS-1] = 0;
+}
+void StoreDir(){
+	for(int k=0; k<NUMDIRBLOCKS; k++){
+		uint8_t *curBufEntry = fileBuffer;
+		for(int i=0; i< 42; i++){
+			for(int j=0; j<8; j++){
+				curBufEntry[j] = directory[42*k+i].name[j];
+			}
+			HiBytesLeft = (directory[42*k+i].bytesLeft&0xFF00)>>8;
+			LoBytesLeft = (directory[42*k+i].bytesLeft&0x00FF);
+			HiBlockNum = (directory[42*k+i].blockNum&0xFF00)>>8;
+			LoBlockNum = (directory[42*k+i].blockNum&0x00FF);
+			curBufEntry+=12;
+		}
+		eDisk_WriteBlock(fileBuffer, k);
+	}
+}
+void StoreFAT(){
+	eDisk_Write(0,FAT,NUMDIRBLOCKS,NUMFATBLOCKS);
 }
 
 //---------- eFile_Format-----------------
@@ -26,7 +105,10 @@ int eFile_Init(void){ // initialize file system
 // Input: none
 // Output: 0 if successful and 1 on failure (e.g., trouble writing to flash)
 int eFile_Format(void){ // erase disk, add format
-
+	ClearDir();
+	ClearFAT();
+	StoreDir();
+	StoreFAT();
   return SUCCESS;   // OK
 }
 
