@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\Lab4.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Lab4.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5.03 [Build 76]: Last Updated: Sun Mar 26 20:46:05 2017
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5.03 [Build 76]: Last Updated: Mon Mar 27 15:26:27 2017
 <BR><P>
 <H3>Maximum Stack Usage =        232 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -1633,11 +1633,11 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[86]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Interpreter
 </UL>
 
-<P><STRONG><a name="[10b]"></a>eFile_RClose</STRONG> (Thumb, 20 bytes, Stack size 0 bytes, efile.o(i.eFile_RClose))
+<P><STRONG><a name="[10b]"></a>eFile_RClose</STRONG> (Thumb, 32 bytes, Stack size 0 bytes, efile.o(i.eFile_RClose))
 <BR><BR>[Called By]<UL><LI><a href="#[a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;eFile_Print
 </UL>
 
-<P><STRONG><a name="[109]"></a>eFile_ROpen</STRONG> (Thumb, 80 bytes, Stack size 8 bytes, efile.o(i.eFile_ROpen))
+<P><STRONG><a name="[109]"></a>eFile_ROpen</STRONG> (Thumb, 86 bytes, Stack size 8 bytes, efile.o(i.eFile_ROpen))
 <BR><BR>[Stack]<UL><LI>Max Depth = 104<LI>Call Chain = eFile_ROpen &rArr; eDisk_ReadBlock &rArr; eDisk_Read &rArr; send_cmd &rArr;  send_cmd (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[101]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;findFileName
@@ -1646,7 +1646,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;eFile_Print
 </UL>
 
-<P><STRONG><a name="[10a]"></a>eFile_ReadNext</STRONG> (Thumb, 126 bytes, Stack size 8 bytes, efile.o(i.eFile_ReadNext))
+<P><STRONG><a name="[10a]"></a>eFile_ReadNext</STRONG> (Thumb, 148 bytes, Stack size 8 bytes, efile.o(i.eFile_ReadNext))
 <BR><BR>[Stack]<UL><LI>Max Depth = 104<LI>Call Chain = eFile_ReadNext &rArr; eDisk_ReadBlock &rArr; eDisk_Read &rArr; send_cmd &rArr;  send_cmd (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;eDisk_ReadBlock
@@ -1663,7 +1663,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[7f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Robot
 </UL>
 
-<P><STRONG><a name="[105]"></a>eFile_WClose</STRONG> (Thumb, 58 bytes, Stack size 8 bytes, efile.o(i.eFile_WClose))
+<P><STRONG><a name="[105]"></a>eFile_WClose</STRONG> (Thumb, 70 bytes, Stack size 8 bytes, efile.o(i.eFile_WClose))
 <BR><BR>[Stack]<UL><LI>Max Depth = 120<LI>Call Chain = eFile_WClose &rArr; StoreDir &rArr; eDisk_WriteBlock &rArr; eDisk_Write &rArr; send_cmd &rArr;  send_cmd (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[e3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StoreFAT
@@ -1673,7 +1673,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[cf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;eFile_EndRedirectToFile
 </UL>
 
-<P><STRONG><a name="[10c]"></a>eFile_WOpen</STRONG> (Thumb, 66 bytes, Stack size 16 bytes, efile.o(i.eFile_WOpen))
+<P><STRONG><a name="[10c]"></a>eFile_WOpen</STRONG> (Thumb, 72 bytes, Stack size 16 bytes, efile.o(i.eFile_WOpen))
 <BR><BR>[Stack]<UL><LI>Max Depth = 112<LI>Call Chain = eFile_WOpen &rArr; eDisk_ReadBlock &rArr; eDisk_Read &rArr; send_cmd &rArr;  send_cmd (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[102]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;findLastBlock
@@ -1683,7 +1683,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;eFile_RedirectToFile
 </UL>
 
-<P><STRONG><a name="[10d]"></a>eFile_Write</STRONG> (Thumb, 148 bytes, Stack size 16 bytes, efile.o(i.eFile_Write))
+<P><STRONG><a name="[10d]"></a>eFile_Write</STRONG> (Thumb, 170 bytes, Stack size 16 bytes, efile.o(i.eFile_Write))
 <BR><BR>[Stack]<UL><LI>Max Depth = 112<LI>Call Chain = eFile_Write &rArr; eDisk_WriteBlock &rArr; eDisk_Write &rArr; send_cmd &rArr;  send_cmd (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[e2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;eDisk_WriteBlock

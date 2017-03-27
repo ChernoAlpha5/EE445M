@@ -176,6 +176,7 @@ int findFileName(char *name){
 
 int OpenFile = 0;
 int FileBlock;
+int Reading;
 //---------- eFile_WOpen-----------------
 // Open the file, read into RAM last block
 // Input: file name is an ASCII string up to seven characters
@@ -184,6 +185,7 @@ int eFile_WOpen(char name[]){      // open a file for writing
 	if(OpenFile){
 		return FAIL;
 	}
+	Reading = 0;
 	OpenFile = findFileName(name);
 	if(!OpenFile) return FAIL;
 	int curBlock = findLastBlock(OpenFile);
@@ -198,6 +200,7 @@ int eFile_WOpen(char name[]){      // open a file for writing
 // Input: data to be saved
 // Output: 0 if successful and 1 on failure (e.g., trouble writing to flash)
 int eFile_Write(char data){
+	if(!OpenFile || (OpenFile && Reading)) return FAIL;
 	if(directory[OpenFile].bytesWritten == 512){
 		if(eDisk_WriteBlock(fileBuffer, FileBlock)) return FAIL;	//save block to SD card
 
@@ -226,6 +229,7 @@ int eFile_Close(void){
 	if(StoreDir()) return FAIL;
 	if(StoreFAT()) return FAIL;
 	eFile_RClose();
+	eFile_WClose();
   return SUCCESS;     
 }
 
@@ -234,9 +238,7 @@ int eFile_Close(void){
 // Input: none
 // Output: 0 if successful and 1 on failure (e.g., trouble writing to flash)
 int eFile_WClose(void){ // close the file for writing
-  if(!OpenFile){
-		return FAIL;
-	}
+  if(!OpenFile || (OpenFile && Reading)) return FAIL;
 	else{
 		OpenFile = 0;
 		if(eDisk_WriteBlock(fileBuffer, FileBlock)) return FAIL;	//save block to SD card
@@ -252,9 +254,8 @@ int ReadDataIndex = 0;
 // Input: file name is a single ASCII letter
 // Output: 0 if successful and 1 on failure (e.g., trouble read to flash)
 int eFile_ROpen( char name[]){      // open a file for reading 
-	if(OpenFile){
-		return FAIL;
-	}
+	if(OpenFile) return FAIL;
+	Reading = 1;
 	OpenFile = findFileName(name);
 	if(!OpenFile) return FAIL;
 	FileBlock = directory[OpenFile].blockNum;	//first block in OpenFile
@@ -269,6 +270,7 @@ int eFile_ROpen( char name[]){      // open a file for reading
 // Output: return by reference data
 //         0 if successful and 1 on failure (e.g., end of file)
 int eFile_ReadNext( char *pt){       // get next byte 
+	if(!OpenFile || (OpenFile && !Reading)) return FAIL;
 	if(ReadDataIndex == 512){
 		if(FAT[FileBlock] == 0) return FAIL;
 		FileBlock = FAT[FileBlock]; //FileBlock points to next block
@@ -287,7 +289,7 @@ int eFile_ReadNext( char *pt){       // get next byte
 // Input: none
 // Output: 0 if successful and 1 on failure (e.g., wasn't open)
 int eFile_RClose(void){ // close the file for writing
-	if(!OpenFile){
+	if(!OpenFile || (OpenFile && !Reading)){
 		return FAIL;
 	}
 	else{
