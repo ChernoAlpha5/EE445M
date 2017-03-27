@@ -133,3 +133,5 @@ int eFile_RedirectToFile(char *name);
  * @brief  Stop streaming printf to file
  */
 int eFile_EndRedirectToFile(void);
+
+int eFile_Print(char name[], void(*fp)(char));

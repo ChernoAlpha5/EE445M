@@ -615,5 +615,9 @@ char character;
     }
     character = UART_InChar();
   }
+	if(character == CR){
+		UART_OutChar('\n');
+	}
+	UART_OutChar(character);
   *bufPt = 0;
 }

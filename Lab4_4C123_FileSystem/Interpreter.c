@@ -31,6 +31,9 @@
 #include "ADC.h"
 #include "ST7735.h"
 #include "OS.h"
+#include "string.h"
+#include "eFile.h"
+
 #include "../inc/tm4c123gh6pm.h"
 
 #define PF2             (*((volatile uint32_t *)0x40025010))
@@ -63,6 +66,26 @@ void toggleLed(void){
 //debug code
 extern unsigned long MaxDITime;
 extern unsigned long TotalDITime;
+
+
+#define MAXCMDLENGTH 20
+
+enum cmds{DITime, TotalDITimePercent, Time, TDiTime, DumpDongs, ClearDongs, ResetDongs,
+					Format, Directory, PrintFile, DeleteFile, NUMCOMMANDS};
+
+char* commands[NUMCOMMANDS] = {"DITime", "TotalDITimePercent", "Time", "TotalDITime", "DumpDongs", "ClearDongs", "ResetDongs",
+															 "Format", "Directory", "PrintFile", "DeleteFile"};
+
+
+int findCommand(char* command){
+	for(int i=0; i<NUMCOMMANDS; i++){
+		if(strncasecmp(command,commands[i], MAXCMDLENGTH) == 0){
+			return i;
+		}
+	}
+	return -1;
+}
+
 void Interpreter(void){
   char string[20];  // global to assist in debugging
 	//heartBeatInit();
@@ -71,42 +94,46 @@ void Interpreter(void){
   while(1){
     UART_OutString("> ");
     UART_InToken(string,19);
-		switch(string[0]){
-			case 'M':
-			case 'm':
-				UART_OutString(" ");
+		switch(findCommand(string)){
+			case DITime:
 				UART_OutUDec(MaxDITime);
 				break;
-			case 'P':
-			case 'p':
-				UART_OutString(" ");
+			case TotalDITimePercent:
 				UART_OutUDec(TotalDITime*1000/OS_Time());
 				break;
-			case 'T':
-			case 't':
-				UART_OutString(" ");
+			case Time:
 				UART_OutUDec(OS_Time());
 				break;
-			case 'D':
-			case 'd':
-				if(string[1] == 'T' || string[1] == 't'){
-					UART_OutString(" ");
-					UART_OutUDec(TotalDITime);
-				}
-				else{
-					OS_DumpDongs();
-				}
+			case TDiTime:
+				UART_OutUDec(TotalDITime);
 				break;
-			case 'C':
-			case 'c':
+			case DumpDongs:
+				OS_DumpDongs();
+				break;
+			case ClearDongs:
 				OS_ClearDongs();
 				break;
-			case 'R':
-			case 'r':
+			case ResetDongs:
 				OS_ResetDongs();
 				break;
+			case Format:
+				eFile_Format();
+				break;
+			case Directory:
+				OutCRLF();
+				eFile_Directory(UART_OutChar);
+				break;
+			case PrintFile:
+				UART_InToken(string,8);
+				OutCRLF();
+				eFile_Print(string, UART_OutChar);
+				break;
+			case DeleteFile:
+				UART_InToken(string,8);
+				eFile_Delete(string);
+				break;
 			default:
-				UART_OutString("Error");
+				UART_OutString("Errorection");
 		}
 		OutCRLF();
   }

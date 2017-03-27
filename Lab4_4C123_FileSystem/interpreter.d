@@ -4,4 +4,6 @@
 .\interpreter.o: ADC.h
 .\interpreter.o: ST7735.h
 .\interpreter.o: OS.h
+.\interpreter.o: C:\Keil\ARM\ARMCC\bin\..\include\string.h
+.\interpreter.o: eFile.h
 .\interpreter.o: ../inc/tm4c123gh6pm.h

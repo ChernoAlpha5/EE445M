@@ -272,7 +272,7 @@ extern void Interpreter(void);
 // execute   eFile_Init();  after periodic interrupts have started
 
 //*******************lab 4 main **********
-int theRealmain(void){        // lab 4 real main
+int main(void){        // lab 4 real main
   OS_Init();           // initialize, disable interrupts
   Running = 0;         // robot not running
   DataLost = 0;        // lost data between producer and consumer
@@ -289,6 +289,8 @@ int theRealmain(void){        // lab 4 real main
   OS_AddSW1Task(&SW1Push,2);    // PF4, SW1
   OS_AddSW2Task(&SW2Push,3);   // PF0
   OS_AddPeriodicThread(disk_timerproc,10*TIME_1MS,5);
+	
+	eFile_Init();
 
   NumCreated = 0 ;
 // create initial foreground threads
@@ -471,7 +473,7 @@ int testmain1(void){   // testmain1
 //*****************test project 2*************************
 
 void TestFile(void){   int i; char data; 
-  printf("\n\rEE445M/EE380L, Lab 4 eFile test\n\r");
+  printf("\n\rEE445M/EE380L, xLab 4 eFile test\n\r");
   ST7735_OutString(0, 1, "eFile test      ", ST7735_WHITE);
   // simple test of eFile
   if(eFile_Init())              diskError("eFile_Init",0); 
@@ -479,7 +481,7 @@ void TestFile(void){   int i; char data;
   eFile_Directory(&UART_OutChar);
   if(eFile_Create("file1"))     diskError("eFile_Create",0);
   if(eFile_WOpen("file1"))      diskError("eFile_WOpen",0);
-  for(i=0;i<1000;i++){
+  for(i=0;i<2000;i++){
     if(eFile_Write('a'+i%26))   diskError("eFile_Write",i);
     if(i%52==51){
       if(eFile_Write('\n'))     diskError("eFile_Write",i);  
@@ -489,8 +491,8 @@ void TestFile(void){   int i; char data;
   if(eFile_WClose())            diskError("eFile_WClose",0);
   eFile_Directory(&UART_OutChar);
   if(eFile_ROpen("file1"))      diskError("eFile_ROpen",0);
-  for(i=0;i<1000;i++){
-    if(eFile_ReadNext(&data))   diskError("eFile_ReadNext",i);
+  for(i=0;i<2000;i++){
+    if(eFile_ReadNext(&data) == 1)   diskError("eFile_ReadNext",i);
     UART_OutChar(data);
   }
   if(eFile_Delete("file1"))     diskError("eFile_Delete",0);
@@ -513,7 +515,7 @@ void SW1Push2(void){
 //******************* test main2 **********
 // SYSTICK interrupts, period established by OS_Launch
 // Timer interrupts, period established by first call to OS_AddPeriodicThread
-int main(void){ 
+int testmain2(void){ 
   OS_Init();           // initialize, disable interrupts
   PortD_Init();
   Running = 1; 

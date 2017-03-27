@@ -9,6 +9,7 @@
 
 #define SUCCESS 0
 #define FAIL 1
+#define DONE 2
 
 #define MAXNUMBLOCKS 2048
 #define NUMFATBLOCKS 8
@@ -33,9 +34,9 @@ uint8_t FAT[NUMFATBLOCKS*512];
 #define HiBlockNum curBufEntry[10]
 #define LoBlockNum curBufEntry[11]
 
-void LoadDirectory(){
+int LoadDir(){
 	for(int k=0; k<NUMDIRBLOCKS; k++){
-		eDisk_ReadBlock(fileBuffer, k);
+		if(eDisk_ReadBlock(fileBuffer, k)) return FAIL;
 		uint8_t *curBufEntry = fileBuffer;
 		for(int i=0; i< 42; i++){
 			for(int j=0; j<8; j++){
@@ -46,9 +47,11 @@ void LoadDirectory(){
 			curBufEntry+=12;
 		}
 	}
+	return SUCCESS;
 }
-void LoadFAT(){
-	eDisk_Read(0, FAT, NUMDIRBLOCKS, NUMFATBLOCKS);
+int LoadFAT(){
+	if(eDisk_Read(0, FAT, NUMDIRBLOCKS, NUMFATBLOCKS)) return FAIL;
+	return SUCCESS;
 	/*for(int i = 0; i<NUMFATBLOCKS; i++){
 		eDisk_ReadBlock(FAT + 512*i, 0);
 	}*/
@@ -59,9 +62,9 @@ void LoadFAT(){
 // Input: none
 // Output: 0 if successful and 1 on failure (already initialized)
 int eFile_Init(void){ // initialize file system
-	eDisk_Init(0);
-	LoadDirectory();
-	LoadFAT();
+	if(eDisk_Init(0)) return FAIL;
+	if(LoadDir()) return FAIL;
+	if(LoadFAT()) return FAIL;
   return SUCCESS;
 }
 
@@ -81,7 +84,7 @@ void ClearFAT(){
 	}
 	FAT[MAXNUMBLOCKS-1] = 0;
 }
-void StoreDir(){
+int StoreDir(){
 	for(int k=0; k<NUMDIRBLOCKS; k++){
 		uint8_t *curBufEntry = fileBuffer;
 		for(int i=0; i< 42; i++){
@@ -94,12 +97,14 @@ void StoreDir(){
 			LoBlockNum = (directory[42*k+i].blockNum&0x00FF);
 			curBufEntry+=12;
 		}
-		eDisk_WriteBlock(fileBuffer, k);
+		if(eDisk_WriteBlock(fileBuffer, k)) return FAIL;
 	}
+	return SUCCESS;
 }
 
-void StoreFAT(){
-	eDisk_Write(0,FAT,NUMDIRBLOCKS,NUMFATBLOCKS);
+int StoreFAT(){
+	if(eDisk_Write(0,FAT,NUMDIRBLOCKS,NUMFATBLOCKS)) return FAIL;
+	return SUCCESS;
 }
 
 //---------- eFile_Format-----------------
@@ -109,8 +114,8 @@ void StoreFAT(){
 int eFile_Format(void){ // erase disk, add format
 	ClearDir();
 	ClearFAT();
-	StoreDir();
-	StoreFAT();
+	if(StoreDir()) return FAIL;
+	if(StoreFAT()) return FAIL;
   return SUCCESS;   // OK
 }
 
@@ -123,6 +128,7 @@ int eFile_Format(void){ // erase disk, add format
 int eFile_Create( char name[]){  // create new file, make it empty 
 	int curDirEntry;
 	for(curDirEntry = 1; curDirEntry < 42*NUMDIRBLOCKS; curDirEntry++){	//skip file 0 - free space manager
+		if(strncmp(name, directory[curDirEntry].name, 8) == 0) return FAIL;
 		if(directory[curDirEntry].name[0] == 0){
 			break;
 		}
@@ -136,10 +142,12 @@ int eFile_Create( char name[]){  // create new file, make it empty
 	directory[curDirEntry].bytesWritten = 0;	
 	directory[0].blockNum = FAT[freeSpaceBlockNum];
 	FAT[freeSpaceBlockNum] = 0;
+	if(StoreFAT()) return FAIL;
+	if(StoreDir()) return FAIL;
   return SUCCESS;     
 }
 
-int FindLastBlock(int dirEntry){
+int findLastBlock(int dirEntry){
 	int curBlock = directory[dirEntry].blockNum;
 	while(FAT[curBlock] != 0){
 		curBlock = FAT[curBlock];
@@ -147,9 +155,18 @@ int FindLastBlock(int dirEntry){
 	return curBlock;
 }
 
+int numBlocks(int dirEntry){
+	int blockCount = 1;
+	int curBlock = directory[dirEntry].blockNum;
+	while(FAT[curBlock] != 0){
+		curBlock = FAT[curBlock];
+		blockCount++;
+	}
+	return blockCount;
+}
+
 int findFileName(char *name){
-	int curDirEntry;
-	for(curDirEntry = 1; curDirEntry < 42*NUMDIRBLOCKS; curDirEntry++){ //skip file 0 - free space manager
+	for(int curDirEntry = 1; curDirEntry < 42*NUMDIRBLOCKS; curDirEntry++){ //skip file 0 - free space manager
 		if(strncmp(directory[curDirEntry].name,name,8) == 0){	//equal
 			return curDirEntry;
 		}
@@ -163,14 +180,14 @@ int FileBlock;
 // Open the file, read into RAM last block
 // Input: file name is an ASCII string up to seven characters
 // Output: 0 if successful and 1 on failure (e.g., trouble writing to flash)
-int eFile_WOpen(char name[]){      // open a file for writing 
+int eFile_WOpen(char name[]){      // open a file for writing	
 	if(OpenFile){
 		return FAIL;
 	}
 	OpenFile = findFileName(name);
 	if(!OpenFile) return FAIL;
-	int curBlock = FindLastBlock(OpenFile);
-	eDisk_ReadBlock(fileBuffer,curBlock);
+	int curBlock = findLastBlock(OpenFile);
+	if(eDisk_ReadBlock(fileBuffer,curBlock)) return FAIL;
 	FileBlock = curBlock;
 	return SUCCESS;  
 }
@@ -181,29 +198,34 @@ int eFile_WOpen(char name[]){      // open a file for writing
 // Input: data to be saved
 // Output: 0 if successful and 1 on failure (e.g., trouble writing to flash)
 int eFile_Write(char data){
-	if(directory[OpenFile].bytesWritten == 512 - 1){		
-		eDisk_WriteBlock(fileBuffer, directory[OpenFile].blockNum);	//save block to SD card
+	if(directory[OpenFile].bytesWritten == 512){
+		if(eDisk_WriteBlock(fileBuffer, FileBlock)) return FAIL;	//save block to SD card
 
 		//allocate new block
 		int freeSpaceBlockNum = directory[0].blockNum;
-		FAT[directory[OpenFile].blockNum] = freeSpaceBlockNum;
+		FAT[FileBlock] = freeSpaceBlockNum;
+		FileBlock = freeSpaceBlockNum;	
 		directory[0].blockNum = FAT[freeSpaceBlockNum];
 		FAT[freeSpaceBlockNum] = 0;
 		directory[OpenFile].bytesWritten = 0;
 	}
+	
 	fileBuffer[directory[OpenFile].bytesWritten] = data;
 	directory[OpenFile].bytesWritten++;
   return SUCCESS;  
 }
 
+int eFile_WClose(void);
+int eFile_RClose(void);
 
 //---------- eFile_Close-----------------
 // Deactivate the file system
 // Input: none
 // Output: 0 if successful and 1 on failure (not currently open)
 int eFile_Close(void){ 
-	StoreDir();
-	StoreFAT();
+	if(StoreDir()) return FAIL;
+	if(StoreFAT()) return FAIL;
+	eFile_RClose();
   return SUCCESS;     
 }
 
@@ -216,8 +238,10 @@ int eFile_WClose(void){ // close the file for writing
 		return FAIL;
 	}
 	else{
-		eDisk_WriteBlock(fileBuffer, directory[OpenFile].blockNum);	//save block to SD card
 		OpenFile = 0;
+		if(eDisk_WriteBlock(fileBuffer, FileBlock)) return FAIL;	//save block to SD card
+		if(StoreDir()) return FAIL;
+		if(StoreFAT()) return FAIL;
 	}
   return SUCCESS;     
 }
@@ -233,7 +257,8 @@ int eFile_ROpen( char name[]){      // open a file for reading
 	}
 	OpenFile = findFileName(name);
 	if(!OpenFile) return FAIL;
-	eDisk_ReadBlock(fileBuffer,directory[OpenFile].blockNum);
+	FileBlock = directory[OpenFile].blockNum;	//first block in OpenFile
+	if(eDisk_ReadBlock(fileBuffer,FileBlock)) return FAIL;
 	ReadDataIndex = 0;
   return SUCCESS;     
 }
@@ -244,9 +269,13 @@ int eFile_ROpen( char name[]){      // open a file for reading
 // Output: return by reference data
 //         0 if successful and 1 on failure (e.g., end of file)
 int eFile_ReadNext( char *pt){       // get next byte 
-	if(ReadDataIndex == 512 - 1){
-		eDisk_ReadBlock(fileBuffer, directory[OpenFile].
+	if(ReadDataIndex == 512){
+		if(FAT[FileBlock] == 0) return FAIL;
+		FileBlock = FAT[FileBlock]; //FileBlock points to next block
+		if(eDisk_ReadBlock(fileBuffer, FileBlock)) return FAIL;
+		ReadDataIndex = 0;
 	}
+	if(FAT[FileBlock] == 0 && ReadDataIndex >= directory[OpenFile].bytesWritten) return DONE;
 	*pt = fileBuffer[ReadDataIndex];
 	ReadDataIndex++;
   return SUCCESS; 
@@ -267,6 +296,20 @@ int eFile_RClose(void){ // close the file for writing
   return SUCCESS;
 }
 
+void Andrew(char *pt, void(*fp)(char)){
+	while(*pt){
+    fp(*pt);
+    pt++;
+  }
+}
+
+void Clint(unsigned long n, void(*fp)(char)){
+	if(n >= 10){
+    Clint(n/10, fp);
+    n = n%10;
+  }
+  fp(n+'0');
+}
 
 //---------- eFile_Directory-----------------
 // Display the directory with filenames and sizes
@@ -274,15 +317,35 @@ int eFile_RClose(void){ // close the file for writing
 // Output: none
 //         0 if successful and 1 on failure (e.g., trouble reading from flash)
 int eFile_Directory(void(*fp)(char)){   
+	//if(LoadDir()) return FAIL;
+	//if(LoadFAT()) return FAIL;
+	int numFiles = 0;
+	for(int i=1; i<42*NUMDIRBLOCKS; i++){
+		if(directory[i].name[0]){
+			numFiles++;
+		}
+	}
+	Andrew("Number of Files: ", fp);
+	Clint(numFiles,fp);
+	Andrew("\n\r", fp);
+	Andrew("FileName   FileSize\n\r", fp);
 	for(int i = 1; i<42*NUMDIRBLOCKS; i++){ //skip file 0 - free space manager
 		if(directory[i].name[0]){
-			for(int j=0; j<8; j++){
-				if(!directory[i].name[j]){
+			int nameSize;
+			for(nameSize=0; nameSize<8; nameSize++){
+				if(!directory[i].name[nameSize]){
 					break;
 				}
-				fp(directory[i].name[j]);
+				fp(directory[i].name[nameSize]);
 			}
+			for(int i = nameSize; i<8; i++){
+				fp('.');
+			}
+			Andrew("...",fp);
+			Clint((numBlocks(i) - 1)*512 + directory[i].bytesWritten,fp);
+			Andrew(" Bytes", fp);
 			fp('\n');
+			fp('\r');
 		}
 	}
   return SUCCESS;
@@ -293,8 +356,28 @@ int eFile_Directory(void(*fp)(char)){
 // Input: file name is a single ASCII letter
 // Output: 0 if successful and 1 on failure (e.g., trouble writing to flash)
 int eFile_Delete( char name[]){  // remove this file 
-
+	int curDirEntry = findFileName(name);											//curDirEntry points to starting block of file
+	directory[curDirEntry].name[0] = 0;												//delete directory entry
+	int prevFreeSpace = directory[0].blockNum;								//prevFreeSpace points to first free block
+	directory[0].blockNum = directory[curDirEntry].blockNum;	//free space file starts with start of file to be deleted
+	curDirEntry = findLastBlock(curDirEntry);									//curDirEntry points to ending block of file
+	FAT[curDirEntry] = prevFreeSpace;		//link last block in file to free space list
+	if(StoreFAT()) return FAIL;
+	if(StoreDir()) return FAIL;
   return SUCCESS;    // restore directory back to flash
+}
+
+int eFile_Print(char name[], void(*fp)(char)){
+	if(eFile_ROpen(name)) return FAIL;
+	char data;
+	int status;
+	do{
+		status = eFile_ReadNext(&data);
+		fp(data);
+	}while(status == SUCCESS);
+	if(status == FAIL) return FAIL;
+	eFile_RClose();
+	return SUCCESS;
 }
 
 int StreamToFile=0;                // 0=UART, 1=stream to file
