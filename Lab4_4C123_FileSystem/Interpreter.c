@@ -71,12 +71,21 @@ extern unsigned long TotalDITime;
 #define MAXCMDLENGTH 20
 
 enum cmds{DITime, TotalDITimePercent, Time, TDiTime, DumpDongs, ClearDongs, ResetDongs,
-					Format, Directory, PrintFile, DeleteFile, NUMCOMMANDS};
+					Format, Directory, PrintFile, DeleteFile, Help, About, NUMCOMMANDS};
 
 char* commands[NUMCOMMANDS] = {"DITime", "TotalDITimePercent", "Time", "TotalDITime", "DumpDongs", "ClearDongs", "ResetDongs",
-															 "Format", "Directory", "PrintFile", "DeleteFile"};
+															 "Format", "Directory", "PrintFile", "DeleteFile", "Help", "About"};
 
-
+void about(){
+	UART_OutString("LPOS (C) 2017");
+}
+void help(){
+	for(int i=0; i<NUMCOMMANDS; i++){
+		UART_OutString(commands[i]);
+		OutCRLF();
+	}
+}
+															 
 int findCommand(char* command){
 	for(int i=0; i<NUMCOMMANDS; i++){
 		if(strncasecmp(command,commands[i], MAXCMDLENGTH) == 0){
@@ -131,6 +140,12 @@ void Interpreter(void){
 			case DeleteFile:
 				UART_InToken(string,8);
 				eFile_Delete(string);
+				break;
+			case Help:
+				help();
+				break;
+			case About:
+				about();
 				break;
 			default:
 				UART_OutString("Errorection");

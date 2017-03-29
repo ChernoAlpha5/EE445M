@@ -365,17 +365,23 @@ void diskError(char* errtype, unsigned long n){
 //int testmainW(void){
 int testmainW(void){
 	OS_Init();
+	PortD_Init();
 	unsigned long n;
 	ST7735_OutString(0, 1, "Write Test    ", ST7735_WHITE);
+	while(1){
+	PD3 ^= 0x08;     // PD3 high for 100 block writes
 			for(uint8_t block = 0; block < MAXBLOCKS; block++){
 			for(int i=0; i<512; i++){
 				n = (16807*n)%2147483647; // pseudo random sequence
 				buffer[i] = 0xFF&n;        
 			}
-			PD3 = 0x08;     // PD3 high for 100 block writes
+			
 			if(eDisk_WriteBlock(buffer,block))diskError("eDisk_WriteBlock",block); // save to disk
-			PD3 = 0x00;      
+			    
 	}
+		PD3 ^= 0x08;  
+		PD3 ^= 0x08;
+}
 			return 0;
 }
 
