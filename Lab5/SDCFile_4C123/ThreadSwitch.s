@@ -5,10 +5,15 @@
 ;		EXPORT SysTick_Handler
 		EXPORT StartOS
 		EXPORT SVC_Handler
+			
 		EXTERN RunPt
 		EXTERN NextPt
 		EXTERN RecordDongs
 		EXTERN OS_Id
+		EXTERN OS_Kill
+		EXTERN OS_Sleep
+		EXTERN OS_Time
+		EXTERN OS_AddThread
 
 			
 ;Round-Robin Switching			
@@ -25,8 +30,37 @@
 ;	CPSIE I
 ;	BX LR
 
+SVCJump
+	B OS_Id
+	B OS_Kill
+	B OS_Sleep
+	B OS_Time
+	B OS_AddThread
+
 SVC_Handler
-	BX LR
+	LDR R12, [SP, #24]
+	LDRH R12, [R12, #-2]
+	BIC R12, #0xFF00
+	CMP R12, #5
+	BHI EndSVC
+	LDM SP, {R0 -  R3}
+	PUSH {LR}
+	LDR LR, =Done
+	CMP R12, #0
+	BEQ OS_Id
+	CMP R12, #1
+	BEQ OS_Kill
+	CMP R12, #2
+	BEQ OS_Sleep
+	CMP R12, #3
+	BEQ OS_Time
+	CMP R12, #4
+	BEQ OS_AddThread
+Done POP {LR}
+	STR R0, [SP]
+EndSVC BX LR
+
+
 
 ;switch using chosen NextPt
 PendSV_Handler

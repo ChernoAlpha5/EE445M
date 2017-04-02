@@ -23,11 +23,21 @@ struct tcb{
 	struct tcb *next;
 	struct tcb *prev;
 	int16_t id;
+	uint16_t pid;
 	uint16_t sleep;
 	uint8_t priority;
 	uint8_t blocked;
 };
 typedef struct tcb tcbType;
+
+struct pcb{
+	int32_t *data;
+	int32_t *code;
+	uint16_t pid;
+	uint8_t numThreads;
+};
+typedef struct pcb pcbType;
+
 // feel free to change the type of semaphore, there are lots of good solutions
 struct  Sema4{
   long Value;   // >0 means free, otherwise means busy  

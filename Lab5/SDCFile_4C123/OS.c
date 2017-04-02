@@ -41,6 +41,12 @@ void ContextSwitch(void);
 void StartOS(void);
 void PendSV_Handler(void);
 
+
+uint8_t NumProcesses;
+#define MAXNUMPROCESSES 5
+pcbType pcbs[MAXNUMPROCESSES];
+int16_t CurrentPID;
+
 uint8_t NumThreads;
 #define MAXNUMTHREADS 10
 #define STACKSIZE 200
@@ -422,6 +428,7 @@ void OS_Init(void){
   NVIC_SYS_PRI3_R =(NVIC_SYS_PRI3_R&0x00FFFFFF)|0xC0000000; // priority 6 SysTick
 	NVIC_SYS_PRI3_R =(NVIC_SYS_PRI3_R&0xFF00FFFF)|0x00E00000; // priority 7 PendSV
 	CurrentID = 4;
+	CurrentPID = 2;
 	NumThreads = 0;
 	IsInit = 1;
 }
@@ -510,7 +517,7 @@ void OS_bSignal(Sema4Type *semaPt){
 }
 		
 
-void SetInitialStack(int i){
+void SetInitialStack(int i, int32_t *data){
   tcbs[i].sp = &Stacks[i][STACKSIZE-16]; // thread stack pointer
   Stacks[i][STACKSIZE-1] = 0x01000000;   // thumb bit
   Stacks[i][STACKSIZE-3] = 0x14141414;   // R14
@@ -521,12 +528,21 @@ void SetInitialStack(int i){
   Stacks[i][STACKSIZE-8] = 0x00000000;   // R0
   Stacks[i][STACKSIZE-9] = 0x11111111;   // R11
   Stacks[i][STACKSIZE-10] = 0x10101010;  // R10
-  Stacks[i][STACKSIZE-11] = 0x09090909;  // R9
+  Stacks[i][STACKSIZE-11] = (int32_t)data;  			 // R9
   Stacks[i][STACKSIZE-12] = 0x08080808;  // R8
   Stacks[i][STACKSIZE-13] = 0x07070707;  // R7
   Stacks[i][STACKSIZE-14] = 0x06060606;  // R6
   Stacks[i][STACKSIZE-15] = 0x05050505;  // R5
   Stacks[i][STACKSIZE-16] = 0x04040404;  // R4
+}
+
+pcbType *getProcess(int16_t pid){
+	for(int i=0; i<MAXNUMPROCESSES; i++){
+		if(pcbs[i].pid == pid){
+			return &pcbs[i];
+		}
+	}
+	return 0;
 }
 
 //******** OS_AddThread *************** 
@@ -553,15 +569,78 @@ int OS_AddThread(void(*task)(void), unsigned long stackSize, unsigned long prior
 	}
 	unusedThread = &tcbs[numThread];
 	unusedThread->id = CurrentID;	//Current ID is incremented forever for different IDs
+	if(RunPt == 0) unusedThread->pid = 0;	
+	else unusedThread->pid = RunPt->pid;
 	unusedThread->priority = priority;
 	unusedThread->sleep = 0;
 	LinkThread(unusedThread);
-	SetInitialStack(numThread);		//initialize stack
+	if(unusedThread->pid){
+		pcbType *parentPCB = getProcess(unusedThread->pid);
+		if(parentPCB)	SetInitialStack(numThread, parentPCB->data);		//initialize stack
+		else return 0;
+	}
+	else{
+		SetInitialStack(numThread, (int32_t*)0x09090909);						//initialize stack for system threads
+	}
 	Stacks[numThread][STACKSIZE-2] = (int32_t)(task); //  set PC for Task
 	CurrentID+=1;
 	EndCritical(status);
   return 1;
 }
+
+int addFirstThread(void(*task)(void), unsigned long stackSize, unsigned long priority, uint16_t parentID){
+	long status = StartCritical();
+	tcbType *unusedThread;
+	int numThread;
+	for(numThread = 0; numThread < MAXNUMTHREADS; numThread++){
+		if(tcbs[numThread].id == 0){
+			break;
+		}
+	}
+	if(numThread == MAXNUMTHREADS){
+		EndCritical(status);
+		return 0;
+	}
+	unusedThread = &tcbs[numThread];
+	unusedThread->id = CurrentID;	//Current ID is incremented forever for different IDs
+	unusedThread->pid = parentID;
+	unusedThread->priority = priority;
+	unusedThread->sleep = 0;
+	LinkThread(unusedThread);
+	pcbType *parentPCB = getProcess(unusedThread->pid);
+	if(parentPCB)	SetInitialStack(numThread, parentPCB->data);		//initialize stack
+	else return 0;
+	Stacks[numThread][STACKSIZE-2] = (int32_t)(task); //  set PC for Task
+	CurrentID+=1;
+	EndCritical(status);
+  return 1;
+}
+
+
+int OS_AddProcess(void(*entry)(void), void *text, void *data, unsigned long stackSize, unsigned long priority){
+	long status = StartCritical();
+	pcbType *unusedProcess;
+	int numProcess;
+	for(numProcess = 0; numProcess < MAXNUMPROCESSES; numProcess++){
+		if(pcbs[numProcess].pid == 0){
+			break;
+		}
+	}
+	if(numProcess == MAXNUMPROCESSES){
+		EndCritical(status);
+		return 0;
+	}
+	unusedProcess = &pcbs[numProcess];
+	unusedProcess->pid = CurrentPID;	//Current ID is incremented forever for different IDs
+	unusedProcess->code = text;
+	unusedProcess->data = data;
+	unusedProcess->numThreads = 1;
+	CurrentPID+=1;
+	EndCritical(status);
+	addFirstThread(entry, stackSize, priority, unusedProcess->pid);
+	return 0;
+}
+
 
 //******** OS_Id *************** 
 // returns the thread ID for the currently running thread
@@ -927,7 +1006,4 @@ void OS_EITime(void){
 }
 
 
-int OS_AddProcess(void(*entry)(void), void *text, void *data, unsigned long stackSize, unsigned long priority){
-	OS_AddThread(entry, stackSize, priority);
-	return 0;
-}
+
