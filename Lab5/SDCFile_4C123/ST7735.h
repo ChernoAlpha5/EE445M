@@ -441,5 +441,7 @@ void Output_On(void);
 // Input:  16-bit packed color
 // Output: none
 void Output_Color(uint32_t newColor);
+void ST7735_Message (int device, int line, char *string, int32_t value);
+void ST7735_ColoredMessage (int device, int line, char *string, int32_t value, int32_t color);
 
 #endif

@@ -78,6 +78,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include "ST7735.h"
+#include "os.h"
 
 // 16 rows (0 to 15) and 21 characters (0 to 20)
 // Requires (11 + size*size*6*8) bytes of transmission for each character
@@ -1138,6 +1139,7 @@ void ST7735_DrawCharS(int16_t x, int16_t y, char c, int16_t textColor, int16_t b
   }
 }
 
+#define _charHeight 10
 
 //------------ST7735_DrawChar------------
 // Advanced character draw function.  This is similar to the function
@@ -1646,12 +1648,14 @@ int ferror(FILE *f){
 // Abstraction of general output device
 // Volume 2 section 3.4.5
 
+Sema4Type Semi;
 // *************** Output_Init ********************
 // Standard device driver initialization function for printf
 // Initialize ST7735 LCD
 // Inputs: none
 // Outputs: none
 void Output_Init(void){
+	OS_InitSemaphore(&Semi, 1);
   ST7735_InitR(INITR_REDTAB);
   ST7735_FillScreen(0);                 // set screen to black
 }
@@ -1674,4 +1678,26 @@ void Output_On(void){ // Turns on the display
 // Output: none
 void Output_Color(uint32_t newColor){ // Set color of future output
   ST7735_SetTextColor(newColor);
+}
+
+void ST7735_ColoredMessage (int device, int line, char *string, int32_t value, int32_t color){
+	OS_bWait(&Semi);
+	ST7735_FillRect(0, (device*_height)/2, _width, _height/2, color);
+	ST7735_SetCursor(0, line + device*8);
+	ST7735_OutString(string);
+	ST7735_OutString(" ");
+	//ST7735_DrawString(0, line + device*8, string, ST7735_YELLOW);
+	ST7735_OutUDec(value);
+	OS_bSignal(&Semi);
+}
+
+void ST7735_Message (int device, int line, char *string, int32_t value){
+	OS_bWait(&Semi);
+	ST7735_SetCursor(0, line + device*8);
+	ST7735_OutString(string);
+	ST7735_OutString(" ");
+	//ST7735_DrawString(0, line + device*8, string, ST7735_YELLOW);
+	ST7735_OutUDec(value);
+	ST7735_FillRect(StX*6, (device*_height)/2 + (line)*_charHeight, _width - StX*6, _charHeight, ST7735_BLACK);
+	OS_bSignal(&Semi);
 }

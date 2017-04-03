@@ -6,3 +6,4 @@
 .\os.o: SysTick.h
 .\os.o: PLL.h
 .\os.o: ST7735.h
+.\os.o: heap.h

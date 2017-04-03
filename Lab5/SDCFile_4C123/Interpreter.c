@@ -115,7 +115,7 @@ char* dummyBuffer;
 long bufSize;
 
 static const ELFSymbol_t symtab[] = {
-	{"ST7735_Message", ST7735_DrawString }
+	{"ST7735_Message", ST7735_Message }
 };
 
 ELFEnv_t env = {symtab, 1};

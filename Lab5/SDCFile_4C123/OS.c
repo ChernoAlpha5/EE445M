@@ -5,6 +5,7 @@
 #include "SysTick.h"
 #include "PLL.h"
 #include "ST7735.h"
+#include "heap.h"
 
 #define PRISCHED 1
 
@@ -109,8 +110,8 @@ void OS_DumpDongs(void){
 }
 
 void Jitter(void){
-	ST7735_DrawString(0,0,"Jitter 0.1us=",MaxJitter);
-	ST7735_DrawString(0,1,"Jitter 0.1us=",MaxJitter2);
+	ST7735_Message(0,0,"Jitter 0.1us=",MaxJitter);
+	ST7735_Message(0,1,"Jitter 0.1us=",MaxJitter2);
 }
 
 //Adds thread to circular linked list of active threads
@@ -270,7 +271,7 @@ void Timer4A_Init(void){ //Sleep
   TIMER4_TAMR_R = 0x00000002;   // configure for periodic mode, default down-count settings
   TIMER4_TAPR_R = 0;            // prescale value for trigger
 	TIMER4_ICR_R = 0x00000001;    // 6) clear TIMER4A timeout flag
-	TIMER4_TAILR_R = (1*(BUSCLK/1000))-1;    // start value for trigger
+	TIMER4_TAILR_R = TIME_1MS-1;    // start value for trigger
 	NVIC_PRI17_R = (NVIC_PRI17_R&0xFF00FFFF)|0x00000000; // 8) priority 0
   NVIC_EN2_R = 0x00000040;        // 9) enable interrupt 70 in NVIC
   TIMER4_IMR_R = 0x00000001;    // enable timeout interrupts
@@ -428,7 +429,7 @@ void OS_Init(void){
   NVIC_SYS_PRI3_R =(NVIC_SYS_PRI3_R&0x00FFFFFF)|0xC0000000; // priority 6 SysTick
 	NVIC_SYS_PRI3_R =(NVIC_SYS_PRI3_R&0xFF00FFFF)|0x00E00000; // priority 7 PendSV
 	CurrentID = 4;
-	CurrentPID = 2;
+	CurrentPID = 1;
 	NumThreads = 0;
 	IsInit = 1;
 }
@@ -576,8 +577,12 @@ int OS_AddThread(void(*task)(void), unsigned long stackSize, unsigned long prior
 	LinkThread(unusedThread);
 	if(unusedThread->pid){
 		pcbType *parentPCB = getProcess(unusedThread->pid);
+		parentPCB->numThreads++;
 		if(parentPCB)	SetInitialStack(numThread, parentPCB->data);		//initialize stack
-		else return 0;
+		else{
+			EndCritical(status);
+			return 0;
+		}
 	}
 	else{
 		SetInitialStack(numThread, (int32_t*)0x09090909);						//initialize stack for system threads
@@ -760,6 +765,13 @@ void OS_Sleep(unsigned long sleepTime){
 // output: none
 void OS_Kill(void){
 	long status = StartCritical();
+	pcbType *curProcess = getProcess(RunPt->pid);
+	curProcess->numThreads--;
+	if(curProcess->numThreads == 0){
+		Heap_Free(curProcess->data);
+		Heap_Free(curProcess->code);
+		curProcess->pid = 0;
+	}
 	RunPt->id = 0; //set id to dead
 	UnlinkThread(RunPt);
 	EndCritical(status);
