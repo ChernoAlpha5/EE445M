@@ -1,0 +1,10 @@
+.\robot.o: Robot.c
+.\robot.o: C:\Keil\ARM\ARMCC\bin\..\include\string.h
+.\robot.o: C:\Keil\ARM\ARMCC\bin\..\include\stdio.h
+.\robot.o: C:\Keil\ARM\ARMCC\bin\..\include\stdint.h
+.\robot.o: OS.h
+.\robot.o: ..\inc/tm4c123gh6pm.h
+.\robot.o: ADC.h
+.\robot.o: can0.h
+.\robot.o: usonic.h
+.\robot.o: PWM.h

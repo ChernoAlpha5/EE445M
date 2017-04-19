@@ -1,0 +1,778 @@
+ARM Linker, 5.03 [Build 76] [MDK-ARM Lite]
+
+==============================================================================
+
+Section Cross References
+
+    startup.o(RESET) refers to startup.o(STACK) for StackMem
+    startup.o(RESET) refers to threadswitch.o(.text) for PendSV_Handler
+    startup.o(RESET) refers to systick.o(i.SysTick_Handler) for SysTick_Handler
+    startup.o(RESET) refers to adc.o(i.ADC0Seq2_Handler) for ADC0Seq2_Handler
+    startup.o(RESET) refers to usonic.o(i.Timer0A_Handler) for Timer0A_Handler
+    startup.o(RESET) refers to usonic.o(i.Timer1A_Handler) for Timer1A_Handler
+    startup.o(RESET) refers to os.o(i.GPIOPortF_Handler) for GPIOPortF_Handler
+    startup.o(RESET) refers to usonic.o(i.Timer3A_Handler) for Timer3A_Handler
+    startup.o(RESET) refers to can0.o(i.CAN0_Handler) for CAN0_Handler
+    startup.o(RESET) refers to wtimer0a.o(i.WideTimer0A_Handler) for WideTimer0A_Handler
+    startup.o(RESET) refers to wtimer0b.o(i.WideTimer0B_Handler) for WideTimer0B_Handler
+    startup.o(RESET) refers to wtimer5a.o(i.WideTimer5A_Handler) for WideTimer5A_Handler
+    startup.o(RESET) refers to __main.o(!!!main) for __main
+    st7735.o(i.Output_Clear) refers to st7735.o(i.ST7735_FillScreen) for ST7735_FillScreen
+    st7735.o(i.Output_Color) refers to st7735.o(i.ST7735_SetTextColor) for ST7735_SetTextColor
+    st7735.o(i.Output_Init) refers to os.o(i.OS_InitSemaphore) for OS_InitSemaphore
+    st7735.o(i.Output_Init) refers to st7735.o(i.ST7735_InitR) for ST7735_InitR
+    st7735.o(i.Output_Init) refers to st7735.o(i.ST7735_FillScreen) for ST7735_FillScreen
+    st7735.o(i.Output_Init) refers to st7735.o(.bss) for Semi
+    st7735.o(i.Output_Off) refers to st7735.o(i.Output_Clear) for Output_Clear
+    st7735.o(i.Output_On) refers to st7735.o(i.Output_Init) for Output_Init
+    st7735.o(i.ST7735_ColoredMessage) refers to os.o(i.OS_bWait) for OS_bWait
+    st7735.o(i.ST7735_ColoredMessage) refers to st7735.o(i.ST7735_FillRect) for ST7735_FillRect
+    st7735.o(i.ST7735_ColoredMessage) refers to st7735.o(i.ST7735_SetCursor) for ST7735_SetCursor
+    st7735.o(i.ST7735_ColoredMessage) refers to st7735.o(i.ST7735_OutString) for ST7735_OutString
+    st7735.o(i.ST7735_ColoredMessage) refers to st7735.o(i.ST7735_OutUDec) for ST7735_OutUDec
+    st7735.o(i.ST7735_ColoredMessage) refers to os.o(i.OS_bSignal) for OS_bSignal
+    st7735.o(i.ST7735_ColoredMessage) refers to st7735.o(.bss) for Semi
+    st7735.o(i.ST7735_ColoredMessage) refers to st7735.o(.data) for _height
+    st7735.o(i.ST7735_DrawBitmap) refers to st7735.o(i.setAddrWindow) for setAddrWindow
+    st7735.o(i.ST7735_DrawBitmap) refers to st7735.o(i.writedata) for writedata
+    st7735.o(i.ST7735_DrawBitmap) refers to st7735.o(.data) for _width
+    st7735.o(i.ST7735_DrawChar) refers to st7735.o(i.setAddrWindow) for setAddrWindow
+    st7735.o(i.ST7735_DrawChar) refers to st7735.o(i.pushColor) for pushColor
+    st7735.o(i.ST7735_DrawChar) refers to st7735.o(.data) for _width
+    st7735.o(i.ST7735_DrawChar) refers to st7735.o(.constdata) for Font
+    st7735.o(i.ST7735_DrawCharS) refers to st7735.o(i.ST7735_DrawPixel) for ST7735_DrawPixel
+    st7735.o(i.ST7735_DrawCharS) refers to st7735.o(i.ST7735_FillRect) for ST7735_FillRect
+    st7735.o(i.ST7735_DrawCharS) refers to st7735.o(.data) for _width
+    st7735.o(i.ST7735_DrawCharS) refers to st7735.o(.constdata) for Font
+    st7735.o(i.ST7735_DrawFastHLine) refers to st7735.o(i.setAddrWindow) for setAddrWindow
+    st7735.o(i.ST7735_DrawFastHLine) refers to st7735.o(i.writedata) for writedata
+    st7735.o(i.ST7735_DrawFastHLine) refers to st7735.o(.data) for _width
+    st7735.o(i.ST7735_DrawFastVLine) refers to st7735.o(i.setAddrWindow) for setAddrWindow
+    st7735.o(i.ST7735_DrawFastVLine) refers to st7735.o(i.writedata) for writedata
+    st7735.o(i.ST7735_DrawFastVLine) refers to st7735.o(.data) for _width
+    st7735.o(i.ST7735_DrawPixel) refers to st7735.o(i.setAddrWindow) for setAddrWindow
+    st7735.o(i.ST7735_DrawPixel) refers to st7735.o(i.pushColor) for pushColor
+    st7735.o(i.ST7735_DrawPixel) refers to st7735.o(.data) for _width
+    st7735.o(i.ST7735_DrawString) refers to st7735.o(i.ST7735_DrawCharS) for ST7735_DrawCharS
+    st7735.o(i.ST7735_FillRect) refers to st7735.o(i.setAddrWindow) for setAddrWindow
+    st7735.o(i.ST7735_FillRect) refers to st7735.o(i.writedata) for writedata
+    st7735.o(i.ST7735_FillRect) refers to st7735.o(.data) for _width
+    st7735.o(i.ST7735_FillScreen) refers to st7735.o(i.ST7735_FillRect) for ST7735_FillRect
+    st7735.o(i.ST7735_FillScreen) refers to st7735.o(.data) for _height
+    st7735.o(i.ST7735_InitB) refers to st7735.o(i.commonInit) for commonInit
+    st7735.o(i.ST7735_InitB) refers to st7735.o(i.ST7735_SetCursor) for ST7735_SetCursor
+    st7735.o(i.ST7735_InitB) refers to st7735.o(i.ST7735_FillScreen) for ST7735_FillScreen
+    st7735.o(i.ST7735_InitB) refers to st7735.o(.constdata) for Bcmd
+    st7735.o(i.ST7735_InitB) refers to st7735.o(.data) for StTextColor
+    st7735.o(i.ST7735_InitR) refers to st7735.o(i.commonInit) for commonInit
+    st7735.o(i.ST7735_InitR) refers to st7735.o(i.commandList) for commandList
+    st7735.o(i.ST7735_InitR) refers to st7735.o(i.writecommand) for writecommand
+    st7735.o(i.ST7735_InitR) refers to st7735.o(i.writedata) for writedata
+    st7735.o(i.ST7735_InitR) refers to st7735.o(i.ST7735_SetCursor) for ST7735_SetCursor
+    st7735.o(i.ST7735_InitR) refers to st7735.o(i.ST7735_FillScreen) for ST7735_FillScreen
+    st7735.o(i.ST7735_InitR) refers to st7735.o(.constdata) for Rcmd1
+    st7735.o(i.ST7735_InitR) refers to st7735.o(.data) for ColStart
+    st7735.o(i.ST7735_InvertDisplay) refers to st7735.o(i.writecommand) for writecommand
+    st7735.o(i.ST7735_Message) refers to os.o(i.OS_bWait) for OS_bWait
+    st7735.o(i.ST7735_Message) refers to st7735.o(i.ST7735_SetCursor) for ST7735_SetCursor
+    st7735.o(i.ST7735_Message) refers to st7735.o(i.ST7735_OutString) for ST7735_OutString
+    st7735.o(i.ST7735_Message) refers to st7735.o(i.ST7735_OutUDec) for ST7735_OutUDec
+    st7735.o(i.ST7735_Message) refers to st7735.o(i.ST7735_FillRect) for ST7735_FillRect
+    st7735.o(i.ST7735_Message) refers to os.o(i.OS_bSignal) for OS_bSignal
+    st7735.o(i.ST7735_Message) refers to st7735.o(.bss) for Semi
+    st7735.o(i.ST7735_Message) refers to st7735.o(.data) for _height
+    st7735.o(i.ST7735_OutChar) refers to st7735.o(i.ST7735_DrawString) for ST7735_DrawString
+    st7735.o(i.ST7735_OutChar) refers to st7735.o(i.ST7735_DrawCharS) for ST7735_DrawCharS
+    st7735.o(i.ST7735_OutChar) refers to st7735.o(.data) for StY
+    st7735.o(i.ST7735_OutString) refers to st7735.o(i.ST7735_OutChar) for ST7735_OutChar
+    st7735.o(i.ST7735_OutUDec) refers to st7735.o(i.fillmessage) for fillmessage
+    st7735.o(i.ST7735_OutUDec) refers to st7735.o(i.ST7735_DrawString) for ST7735_DrawString
+    st7735.o(i.ST7735_OutUDec) refers to st7735.o(i.ST7735_DrawCharS) for ST7735_DrawCharS
+    st7735.o(i.ST7735_OutUDec) refers to st7735.o(.data) for Messageindex
+    st7735.o(i.ST7735_OutUDec) refers to st7735.o(.bss) for Message
+    st7735.o(i.ST7735_PlotBar) refers to st7735.o(i.ST7735_DrawFastVLine) for ST7735_DrawFastVLine
+    st7735.o(i.ST7735_PlotBar) refers to st7735.o(.data) for Ymin
+    st7735.o(i.ST7735_PlotClear) refers to st7735.o(i.ST7735_Color565) for ST7735_Color565
+    st7735.o(i.ST7735_PlotClear) refers to st7735.o(i.ST7735_FillRect) for ST7735_FillRect
+    st7735.o(i.ST7735_PlotClear) refers to st7735.o(.data) for Ymax
+    st7735.o(i.ST7735_PlotLine) refers to st7735.o(i.ST7735_DrawPixel) for ST7735_DrawPixel
+    st7735.o(i.ST7735_PlotLine) refers to st7735.o(.data) for Ymin
+    st7735.o(i.ST7735_PlotNext) refers to st7735.o(.data) for X
+    st7735.o(i.ST7735_PlotNextErase) refers to st7735.o(i.ST7735_Color565) for ST7735_Color565
+    st7735.o(i.ST7735_PlotNextErase) refers to st7735.o(i.ST7735_DrawFastVLine) for ST7735_DrawFastVLine
+    st7735.o(i.ST7735_PlotNextErase) refers to st7735.o(.data) for X
+    st7735.o(i.ST7735_PlotPoint) refers to st7735.o(i.ST7735_DrawPixel) for ST7735_DrawPixel
+    st7735.o(i.ST7735_PlotPoint) refers to st7735.o(.data) for Ymin
+    st7735.o(i.ST7735_PlotPoints) refers to st7735.o(i.ST7735_DrawPixel) for ST7735_DrawPixel
+    st7735.o(i.ST7735_PlotPoints) refers to st7735.o(.data) for Ymin
+    st7735.o(i.ST7735_PlotdBfs) refers to st7735.o(i.ST7735_DrawFastVLine) for ST7735_DrawFastVLine
+    st7735.o(i.ST7735_PlotdBfs) refers to st7735.o(.constdata) for dBfs
+    st7735.o(i.ST7735_PlotdBfs) refers to st7735.o(.data) for X
+    st7735.o(i.ST7735_SetCursor) refers to st7735.o(.data) for StX
+    st7735.o(i.ST7735_SetRotation) refers to st7735.o(i.writecommand) for writecommand
+    st7735.o(i.ST7735_SetRotation) refers to st7735.o(i.writedata) for writedata
+    st7735.o(i.ST7735_SetRotation) refers to st7735.o(.data) for Rotation
+    st7735.o(i.ST7735_SetTextColor) refers to st7735.o(.data) for StTextColor
+    st7735.o(i.commandList) refers to st7735.o(i.writecommand) for writecommand
+    st7735.o(i.commandList) refers to st7735.o(i.writedata) for writedata
+    st7735.o(i.commandList) refers to st7735.o(i.Delay1ms) for Delay1ms
+    st7735.o(i.commonInit) refers to st7735.o(i.Delay1ms) for Delay1ms
+    st7735.o(i.commonInit) refers to st7735.o(i.commandList) for commandList
+    st7735.o(i.commonInit) refers to st7735.o(.data) for RowStart
+    st7735.o(i.fillmessage) refers to st7735.o(.bss) for Message
+    st7735.o(i.fillmessage) refers to st7735.o(.data) for Messageindex
+    st7735.o(i.fputc) refers to st7735.o(i.ST7735_OutChar) for ST7735_OutChar
+    st7735.o(i.pushColor) refers to st7735.o(i.writedata) for writedata
+    st7735.o(i.setAddrWindow) refers to st7735.o(i.writecommand) for writecommand
+    st7735.o(i.setAddrWindow) refers to st7735.o(i.writedata) for writedata
+    st7735.o(i.setAddrWindow) refers to st7735.o(.data) for ColStart
+    adc.o(i.ADC0Seq2_Handler) refers to adc.o(i.ADCFilter0) for ADCFilter0
+    adc.o(i.ADC0Seq2_Handler) refers to adc.o(i.ADCFilter1) for ADCFilter1
+    adc.o(i.ADC0Seq2_Handler) refers to adc.o(i.ADCFilter2) for ADCFilter2
+    adc.o(i.ADC0Seq2_Handler) refers to adc.o(i.ADCFilter3) for ADCFilter3
+    adc.o(i.ADC0Seq2_Handler) refers to os.o(i.OS_bSignal) for OS_bSignal
+    adc.o(i.ADC0Seq2_Handler) refers to adc.o(.data) for ADCValues
+    adc.o(i.ADC0Seq2_Handler) refers to adc.o(.bss) for adcDataReady
+    adc.o(i.ADC0_SS3_4Channels_TimerTriggered_Init) refers to os.o(i.OS_InitSemaphore) for OS_InitSemaphore
+    adc.o(i.ADC0_SS3_4Channels_TimerTriggered_Init) refers to adc.o(.bss) for adcDataReady
+    adc.o(i.ADCFilter0) refers to adc.o(.data) for n0
+    adc.o(i.ADCFilter0) refers to adc.o(.bss) for x0
+    adc.o(i.ADCFilter1) refers to adc.o(.data) for n1
+    adc.o(i.ADCFilter1) refers to adc.o(.bss) for x1
+    adc.o(i.ADCFilter2) refers to adc.o(.data) for n2
+    adc.o(i.ADCFilter2) refers to adc.o(.bss) for x2
+    adc.o(i.ADCFilter3) refers to adc.o(.data) for n3
+    adc.o(i.ADCFilter3) refers to adc.o(.bss) for x3
+    os.o(i.Block) refers to os.o(i.UnlinkThread) for UnlinkThread
+    os.o(i.Block) refers to os.o(i.AddToPriorityList) for AddToPriorityList
+    os.o(i.DecrementSleep) refers to os.o(i.RemoveFromList) for RemoveFromList
+    os.o(i.DecrementSleep) refers to os.o(i.LinkThread) for LinkThread
+    os.o(i.DecrementSleep) refers to os.o(.data) for OSMsCount
+    os.o(i.GPIOPortF_Handler) refers to os.o(.data) for SW1Task
+    os.o(i.LinkThread) refers to startup.o(.text) for StartCritical
+    os.o(i.LinkThread) refers to os.o(.data) for NumThreads
+    os.o(i.OS_AddPeriodicThread) refers to startup.o(.text) for StartCritical
+    os.o(i.OS_AddPeriodicThread) refers to wtimer0a.o(i.WTimer0A_Init) for WTimer0A_Init
+    os.o(i.OS_AddPeriodicThread) refers to wtimer0b.o(i.WTimer0B_Init) for WTimer0B_Init
+    os.o(i.OS_AddPeriodicThread) refers to os.o(.data) for NumPeriodicThreads
+    os.o(i.OS_AddSW1Task) refers to os.o(.data) for SW1Task
+    os.o(i.OS_AddSW2Task) refers to os.o(.data) for SW2Task
+    os.o(i.OS_AddThread) refers to startup.o(.text) for StartCritical
+    os.o(i.OS_AddThread) refers to os.o(i.LinkThread) for LinkThread
+    os.o(i.OS_AddThread) refers to os.o(i.SetInitialStack) for SetInitialStack
+    os.o(i.OS_AddThread) refers to os.o(.bss) for tcbs
+    os.o(i.OS_AddThread) refers to os.o(.data) for CurrentID
+    os.o(i.OS_ClearMsTime) refers to os.o(.data) for OSMsCount
+    os.o(i.OS_Fifo_Get) refers to os.o(i.OS_Wait) for OS_Wait
+    os.o(i.OS_Fifo_Get) refers to startup.o(.text) for StartCritical
+    os.o(i.OS_Fifo_Get) refers to os.o(.bss) for DataAvailable
+    os.o(i.OS_Fifo_Get) refers to os.o(.data) for GetPt
+    os.o(i.OS_Fifo_Init) refers to startup.o(.text) for StartCritical
+    os.o(i.OS_Fifo_Init) refers to os.o(i.OS_InitSemaphore) for OS_InitSemaphore
+    os.o(i.OS_Fifo_Init) refers to os.o(.bss) for DataAvailable
+    os.o(i.OS_Fifo_Init) refers to os.o(.data) for PutPt
+    os.o(i.OS_Fifo_Put) refers to startup.o(.text) for StartCritical
+    os.o(i.OS_Fifo_Put) refers to os.o(i.OS_Signal) for OS_Signal
+    os.o(i.OS_Fifo_Put) refers to os.o(.data) for FifoNumElements
+    os.o(i.OS_Fifo_Put) refers to os.o(.bss) for Fifo
+    os.o(i.OS_Fifo_Size) refers to os.o(.bss) for DataAvailable
+    os.o(i.OS_Id) refers to os.o(.data) for RunPt
+    os.o(i.OS_Init) refers to startup.o(.text) for DisableInterrupts
+    os.o(i.OS_Init) refers to pll.o(i.PLL_Init) for PLL_Init
+    os.o(i.OS_Init) refers to st7735.o(i.Output_Init) for Output_Init
+    os.o(i.OS_Init) refers to wtimer5a.o(i.WTimer5A_Init) for WTimer5A_Init
+    os.o(i.OS_Init) refers to os.o(i.PortF_Init) for PortF_Init
+    os.o(i.OS_Init) refers to os.o(i.DecrementSleep) for DecrementSleep
+    os.o(i.OS_Init) refers to os.o(.data) for CurrentID
+    os.o(i.OS_InitSemaphore) refers to startup.o(.text) for StartCritical
+    os.o(i.OS_Kill) refers to startup.o(.text) for StartCritical
+    os.o(i.OS_Kill) refers to os.o(i.UnlinkThread) for UnlinkThread
+    os.o(i.OS_Kill) refers to os.o(.data) for RunPt
+    os.o(i.OS_Launch) refers to threadswitch.o(.text) for StartOS
+    os.o(i.OS_MailBox_Init) refers to os.o(i.OS_InitSemaphore) for OS_InitSemaphore
+    os.o(i.OS_MailBox_Init) refers to os.o(.bss) for BoxFree
+    os.o(i.OS_MailBox_Recv) refers to os.o(i.OS_bWait) for OS_bWait
+    os.o(i.OS_MailBox_Recv) refers to os.o(i.OS_bSignal) for OS_bSignal
+    os.o(i.OS_MailBox_Recv) refers to os.o(.bss) for DataValid
+    os.o(i.OS_MailBox_Recv) refers to os.o(.data) for MailBox
+    os.o(i.OS_MailBox_Send) refers to os.o(i.OS_bWait) for OS_bWait
+    os.o(i.OS_MailBox_Send) refers to os.o(i.OS_bSignal) for OS_bSignal
+    os.o(i.OS_MailBox_Send) refers to os.o(.bss) for BoxFree
+    os.o(i.OS_MailBox_Send) refers to os.o(.data) for MailBox
+    os.o(i.OS_MsTime) refers to os.o(.data) for OSMsCount
+    os.o(i.OS_SelectNextThread) refers to startup.o(.text) for StartCritical
+    os.o(i.OS_SelectNextThread) refers to os.o(.data) for NumThreads
+    os.o(i.OS_Signal) refers to startup.o(.text) for StartCritical
+    os.o(i.OS_Signal) refers to os.o(i.WakeUp) for WakeUp
+    os.o(i.OS_Sleep) refers to startup.o(.text) for StartCritical
+    os.o(i.OS_Sleep) refers to os.o(i.UnlinkThread) for UnlinkThread
+    os.o(i.OS_Sleep) refers to os.o(i.PushToList) for PushToList
+    os.o(i.OS_Sleep) refers to os.o(.data) for RunPt
+    os.o(i.OS_Wait) refers to startup.o(.text) for StartCritical
+    os.o(i.OS_Wait) refers to os.o(i.Block) for Block
+    os.o(i.OS_Wait) refers to os.o(.data) for RunPt
+    os.o(i.OS_bSignal) refers to startup.o(.text) for StartCritical
+    os.o(i.OS_bSignal) refers to os.o(i.WakeUp) for WakeUp
+    os.o(i.OS_bWait) refers to startup.o(.text) for StartCritical
+    os.o(i.OS_bWait) refers to os.o(i.Block) for Block
+    os.o(i.OS_bWait) refers to os.o(.data) for RunPt
+    os.o(i.PortF_Init) refers to os.o(.data) for delay
+    os.o(i.SetInitialStack) refers to os.o(.bss) for Stacks
+    os.o(i.UnlinkThread) refers to startup.o(.text) for StartCritical
+    os.o(i.UnlinkThread) refers to os.o(i.OS_SelectNextThread) for OS_SelectNextThread
+    os.o(i.UnlinkThread) refers to os.o(i.OS_SwitchThread) for OS_SwitchThread
+    os.o(i.UnlinkThread) refers to os.o(.data) for NumThreads
+    os.o(i.WakeUp) refers to os.o(i.PopFromList) for PopFromList
+    os.o(i.WakeUp) refers to os.o(i.LinkThread) for LinkThread
+    threadswitch.o(.text) refers to os.o(.data) for RunPt
+    systick.o(i.SysTick_Handler) refers to os.o(i.OS_SelectNextThread) for OS_SelectNextThread
+    wtimer5a.o(i.WTimer5A_Init) refers to startup.o(.text) for StartCritical
+    wtimer5a.o(i.WTimer5A_Init) refers to wtimer5a.o(.data) for WTimer5APeriodicTask
+    wtimer5a.o(i.WideTimer5A_Handler) refers to wtimer5a.o(.data) for WTimer5APeriodicTask
+    wtimer0b.o(i.WTimer0B_Init) refers to startup.o(.text) for StartCritical
+    wtimer0b.o(i.WTimer0B_Init) refers to wtimer0b.o(.data) for WTimer0BPeriodicTask
+    wtimer0b.o(i.WideTimer0B_Handler) refers to wtimer0b.o(.data) for WTimer0BPeriodicTask
+    wtimer0a.o(i.WTimer0A_Init) refers to startup.o(.text) for StartCritical
+    wtimer0a.o(i.WTimer0A_Init) refers to wtimer0a.o(.data) for WTimer0APeriodicTask
+    wtimer0a.o(i.WideTimer0A_Handler) refers to wtimer0a.o(.data) for WTimer0APeriodicTask
+    can.o(i.CANBitRateSet) refers to can.o(i.CANRegRead) for CANRegRead
+    can.o(i.CANBitRateSet) refers to can.o(i.CANRegWrite) for CANRegWrite
+    can.o(i.CANBitRateSet) refers to can.o(.constdata) for g_usCANBitValues
+    can.o(i.CANDataRegRead) refers to can.o(i.CANRegRead) for CANRegRead
+    can.o(i.CANDataRegWrite) refers to can.o(i.CANRegWrite) for CANRegWrite
+    can.o(i.CANDisable) refers to can.o(i.CANRegRead) for CANRegRead
+    can.o(i.CANDisable) refers to can.o(i.CANRegWrite) for CANRegWrite
+    can.o(i.CANEnable) refers to can.o(i.CANRegRead) for CANRegRead
+    can.o(i.CANEnable) refers to can.o(i.CANRegWrite) for CANRegWrite
+    can.o(i.CANErrCntrGet) refers to can.o(i.CANRegRead) for CANRegRead
+    can.o(i.CANInit) refers to can.o(i.CANRegWrite) for CANRegWrite
+    can.o(i.CANInit) refers to can.o(i.CANRegRead) for CANRegRead
+    can.o(i.CANIntClear) refers to can.o(i.CANRegRead) for CANRegRead
+    can.o(i.CANIntClear) refers to can.o(i.CANRegWrite) for CANRegWrite
+    can.o(i.CANIntDisable) refers to can.o(i.CANRegRead) for CANRegRead
+    can.o(i.CANIntDisable) refers to can.o(i.CANRegWrite) for CANRegWrite
+    can.o(i.CANIntEnable) refers to can.o(i.CANRegRead) for CANRegRead
+    can.o(i.CANIntEnable) refers to can.o(i.CANRegWrite) for CANRegWrite
+    can.o(i.CANIntRegister) refers to can.o(i.CANIntNumberGet) for CANIntNumberGet
+    can.o(i.CANIntRegister) refers to interrupt.o(i.IntRegister) for IntRegister
+    can.o(i.CANIntRegister) refers to interrupt.o(i.IntEnable) for IntEnable
+    can.o(i.CANIntStatus) refers to can.o(i.CANRegRead) for CANRegRead
+    can.o(i.CANIntUnregister) refers to can.o(i.CANIntNumberGet) for CANIntNumberGet
+    can.o(i.CANIntUnregister) refers to interrupt.o(i.IntUnregister) for IntUnregister
+    can.o(i.CANIntUnregister) refers to interrupt.o(i.IntDisable) for IntDisable
+    can.o(i.CANMessageClear) refers to can.o(i.CANRegRead) for CANRegRead
+    can.o(i.CANMessageClear) refers to can.o(i.CANRegWrite) for CANRegWrite
+    can.o(i.CANMessageGet) refers to can.o(i.CANRegWrite) for CANRegWrite
+    can.o(i.CANMessageGet) refers to can.o(i.CANRegRead) for CANRegRead
+    can.o(i.CANMessageGet) refers to can.o(i.CANDataRegRead) for CANDataRegRead
+    can.o(i.CANMessageSet) refers to can.o(i.CANRegRead) for CANRegRead
+    can.o(i.CANMessageSet) refers to can.o(i.CANDataRegWrite) for CANDataRegWrite
+    can.o(i.CANMessageSet) refers to can.o(i.CANRegWrite) for CANRegWrite
+    can.o(i.CANRegRead) refers to can.o(i.CANIntNumberGet) for CANIntNumberGet
+    can.o(i.CANRegRead) refers to interrupt.o(i.IntDisable) for IntDisable
+    can.o(i.CANRegRead) refers to interrupt.o(i.IntEnable) for IntEnable
+    can.o(i.CANRetryGet) refers to can.o(i.CANRegRead) for CANRegRead
+    can.o(i.CANRetrySet) refers to can.o(i.CANRegRead) for CANRegRead
+    can.o(i.CANRetrySet) refers to can.o(i.CANRegWrite) for CANRegWrite
+    can.o(i.CANStatusGet) refers to can.o(i.CANRegRead) for CANRegRead
+    can.o(i.CANStatusGet) refers to can.o(i.CANRegWrite) for CANRegWrite
+    can0.o(i.CAN0_CheckMail) refers to can0.o(.data) for MailFlag
+    can0.o(i.CAN0_GetMail) refers to can0.o(.data) for MailFlag
+    can0.o(i.CAN0_GetMail) refers to can0.o(.bss) for Messages
+    can0.o(i.CAN0_GetMailNonBlock) refers to can0.o(.data) for MailFlag
+    can0.o(i.CAN0_GetMailNonBlock) refers to can0.o(.bss) for Messages
+    can0.o(i.CAN0_Handler) refers to can.o(i.CANIntStatus) for CANIntStatus
+    can0.o(i.CAN0_Handler) refers to can.o(i.CANStatusGet) for CANStatusGet
+    can0.o(i.CAN0_Handler) refers to can.o(i.CANMessageGet) for CANMessageGet
+    can0.o(i.CAN0_Handler) refers to can.o(i.CANIntClear) for CANIntClear
+    can0.o(i.CAN0_Handler) refers to can0.o(.bss) for Messages
+    can0.o(i.CAN0_Handler) refers to can0.o(.data) for MailFlag
+    can0.o(i.CAN0_Open) refers to can.o(i.CANInit) for CANInit
+    can0.o(i.CAN0_Open) refers to can.o(i.CANBitRateSet) for CANBitRateSet
+    can0.o(i.CAN0_Open) refers to can.o(i.CANEnable) for CANEnable
+    can0.o(i.CAN0_Open) refers to can.o(i.CANIntEnable) for CANIntEnable
+    can0.o(i.CAN0_Open) refers to can0.o(i.CAN0_Setup_Message_Object) for CAN0_Setup_Message_Object
+    can0.o(i.CAN0_Open) refers to can0.o(.data) for MailFlag
+    can0.o(i.CAN0_SendData) refers to can0.o(i.CAN0_Setup_Message_Object) for CAN0_Setup_Message_Object
+    can0.o(i.CAN0_Setup_Message_Object) refers to can.o(i.CANMessageSet) for CANMessageSet
+    fifo.o(i.RxFifo_Get) refers to fifo.o(.data) for RxPutPt
+    fifo.o(i.RxFifo_Get) refers to fifo.o(.bss) for RxFifo
+    fifo.o(i.RxFifo_Init) refers to startup.o(.text) for StartCritical
+    fifo.o(i.RxFifo_Init) refers to fifo.o(.bss) for RxFifo
+    fifo.o(i.RxFifo_Init) refers to fifo.o(.data) for RxGetPt
+    fifo.o(i.RxFifo_Put) refers to fifo.o(.data) for RxPutPt
+    fifo.o(i.RxFifo_Put) refers to fifo.o(.bss) for RxFifo
+    fifo.o(i.RxFifo_Size) refers to fifo.o(.data) for RxPutPt
+    fifo.o(i.TxFifo_Get) refers to fifo.o(.data) for TxPutI
+    fifo.o(i.TxFifo_Get) refers to fifo.o(.bss) for TxFifo
+    fifo.o(i.TxFifo_Init) refers to startup.o(.text) for StartCritical
+    fifo.o(i.TxFifo_Init) refers to fifo.o(.data) for TxGetI
+    fifo.o(i.TxFifo_Put) refers to fifo.o(.data) for TxPutI
+    fifo.o(i.TxFifo_Put) refers to fifo.o(.bss) for TxFifo
+    fifo.o(i.TxFifo_Size) refers to fifo.o(.data) for TxPutI
+    interrupt.o(i.IntPriorityGet) refers to interrupt.o(.constdata) for g_pulRegs
+    interrupt.o(i.IntPriorityGroupingGet) refers to interrupt.o(.constdata) for g_pulPriority
+    interrupt.o(i.IntPriorityGroupingSet) refers to interrupt.o(.constdata) for g_pulPriority
+    interrupt.o(i.IntPrioritySet) refers to interrupt.o(.constdata) for g_pulRegs
+    interrupt.o(i.IntRegister) refers to interrupt.o(vtable) for g_pfnRAMVectors
+    interrupt.o(i.IntUnregister) refers to interrupt.o(i.IntDefaultHandler) for IntDefaultHandler
+    interrupt.o(i.IntUnregister) refers to interrupt.o(vtable) for g_pfnRAMVectors
+    robot.o(i.IRSensors) refers to adc.o(i.ADC0_SS3_4Channels_TimerTriggered_Init) for ADC0_SS3_4Channels_TimerTriggered_Init
+    robot.o(i.IRSensors) refers to os.o(i.OS_Wait) for OS_Wait
+    robot.o(i.IRSensors) refers to can0.o(i.CAN0_SendData) for CAN0_SendData
+    robot.o(i.IRSensors) refers to adc.o(.bss) for adcDataReady
+    robot.o(i.IRSensors) refers to adc.o(.data) for ADCValues
+    robot.o(i.IdleTask) refers to robot.o(.data) for Idlecount
+    robot.o(i.USSensors) refers to os.o(i.OS_Wait) for OS_Wait
+    robot.o(i.USSensors) refers to can0.o(i.CAN0_SendData) for CAN0_SendData
+    robot.o(i.main) refers to os.o(i.OS_Init) for OS_Init
+    robot.o(i.main) refers to robot.o(i.PortD_Init) for PortD_Init
+    robot.o(i.main) refers to pwm.o(i.Servo_Init) for Servo_Init
+    robot.o(i.main) refers to can0.o(i.CAN0_Open) for CAN0_Open
+    robot.o(i.main) refers to os.o(i.OS_Fifo_Init) for OS_Fifo_Init
+    robot.o(i.main) refers to os.o(i.OS_AddSW1Task) for OS_AddSW1Task
+    robot.o(i.main) refers to os.o(i.OS_AddSW2Task) for OS_AddSW2Task
+    robot.o(i.main) refers to os.o(i.OS_AddPeriodicThread) for OS_AddPeriodicThread
+    robot.o(i.main) refers to os.o(i.OS_AddThread) for OS_AddThread
+    robot.o(i.main) refers to os.o(i.OS_Launch) for OS_Launch
+    robot.o(i.main) refers to robot.o(i.SW1Push) for SW1Push
+    robot.o(i.main) refers to robot.o(i.SW2Push) for SW2Push
+    robot.o(i.main) refers to robot.o(i.usonic) for usonic
+    robot.o(i.main) refers to robot.o(i.USSensors) for USSensors
+    robot.o(i.main) refers to robot.o(.data) for NumCreated
+    robot.o(i.main) refers to robot.o(i.IdleTask) for IdleTask
+    robot.o(i.main) refers to robot.o(i.IRSensors) for IRSensors
+    robot.o(i.usonic) refers to usonic.o(i.Timer3_StartHCSR04) for Timer3_StartHCSR04
+    usonic.o(i.Timer0A_Handler) refers to usonic.o(.data) for Timer0First
+    usonic.o(i.Timer0_Init) refers to usonic.o(.data) for Timer0Pulse
+    usonic.o(i.Timer0_Read) refers to usonic.o(.data) for Timer0Done
+    usonic.o(i.Timer0_StartHCSR04) refers to usonic.o(i.DelayWait10us) for DelayWait10us
+    usonic.o(i.Timer0_StartHCSR04) refers to usonic.o(.data) for Timer0Done
+    usonic.o(i.Timer0_StartPing) refers to usonic.o(i.DelayWait5us) for DelayWait5us
+    usonic.o(i.Timer0_StartPing) refers to usonic.o(.data) for Timer0Done
+    usonic.o(i.Timer1A_Handler) refers to usonic.o(.data) for Timer1First
+    usonic.o(i.Timer1_Init) refers to usonic.o(.data) for Timer1Pulse
+    usonic.o(i.Timer1_Read) refers to usonic.o(.data) for Timer1Done
+    usonic.o(i.Timer1_StartHCSR04) refers to usonic.o(i.DelayWait10us) for DelayWait10us
+    usonic.o(i.Timer1_StartHCSR04) refers to usonic.o(.data) for Timer1Done
+    usonic.o(i.Timer1_StartPing) refers to usonic.o(i.DelayWait5us) for DelayWait5us
+    usonic.o(i.Timer1_StartPing) refers to usonic.o(.data) for Timer1Done
+    usonic.o(i.Timer3A_Handler) refers to usonic.o(.data) for Timer3First
+    usonic.o(i.Timer3_Init) refers to usonic.o(.data) for Timer3Pulse
+    usonic.o(i.Timer3_Read) refers to usonic.o(.data) for Timer3Done
+    usonic.o(i.Timer3_StartHCSR04) refers to usonic.o(i.DelayWait10us) for DelayWait10us
+    usonic.o(i.Timer3_StartHCSR04) refers to usonic.o(.data) for Timer3Done
+    usonic.o(i.Timer3_StartPing) refers to usonic.o(i.DelayWait5us) for DelayWait5us
+    usonic.o(i.Timer3_StartPing) refers to usonic.o(.data) for Timer3Done
+    pwm.o(i.Servo_Direction) refers to pwm.o(i.Servo_Duty) for Servo_Duty
+    __main.o(!!!main) refers to rtentry.o(.ARM.Collect$$rtentry$$00000000) for __rt_entry
+    rtentry.o(.ARM.Collect$$rtentry$$00000000) refers (Special) to rtentry2.o(.ARM.Collect$$rtentry$$0000000A) for __rt_entry_li
+    rtentry.o(.ARM.Collect$$rtentry$$00000000) refers (Special) to rtentry2.o(.ARM.Collect$$rtentry$$0000000D) for __rt_entry_main
+    rtentry.o(.ARM.Collect$$rtentry$$00000000) refers (Special) to rtentry2.o(.ARM.Collect$$rtentry$$0000000C) for __rt_entry_postli_1
+    rtentry.o(.ARM.Collect$$rtentry$$00000000) refers (Special) to rtentry2.o(.ARM.Collect$$rtentry$$00000009) for __rt_entry_postsh_1
+    rtentry.o(.ARM.Collect$$rtentry$$00000000) refers (Special) to rtentry2.o(.ARM.Collect$$rtentry$$00000002) for __rt_entry_presh_1
+    rtentry.o(.ARM.Collect$$rtentry$$00000000) refers (Special) to rtentry5.o(.ARM.Collect$$rtentry$$00000005) for __rt_entry_sh
+    rtentry2.o(.ARM.Collect$$rtentry$$00000008) refers to boardinit2.o(.text) for _platform_post_stackheap_init
+    rtentry2.o(.ARM.Collect$$rtentry$$0000000A) refers to libinit.o(.ARM.Collect$$libinit$$00000000) for __rt_lib_init
+    rtentry2.o(.ARM.Collect$$rtentry$$0000000B) refers to boardinit3.o(.text) for _platform_post_lib_init
+    rtentry2.o(.ARM.Collect$$rtentry$$0000000D) refers to robot.o(i.main) for main
+    rtentry2.o(.ARM.Collect$$rtentry$$0000000D) refers to exit.o(.text) for exit
+    rtentry2.o(.ARM.exidx) refers to rtentry2.o(.ARM.Collect$$rtentry$$00000001) for .ARM.Collect$$rtentry$$00000001
+    rtentry2.o(.ARM.exidx) refers to rtentry2.o(.ARM.Collect$$rtentry$$00000008) for .ARM.Collect$$rtentry$$00000008
+    rtentry2.o(.ARM.exidx) refers to rtentry2.o(.ARM.Collect$$rtentry$$0000000A) for .ARM.Collect$$rtentry$$0000000A
+    rtentry2.o(.ARM.exidx) refers to rtentry2.o(.ARM.Collect$$rtentry$$0000000B) for .ARM.Collect$$rtentry$$0000000B
+    rtentry2.o(.ARM.exidx) refers to rtentry2.o(.ARM.Collect$$rtentry$$0000000D) for .ARM.Collect$$rtentry$$0000000D
+    rtentry4.o(.ARM.Collect$$rtentry$$00000004) refers to sys_stackheap_outer.o(.text) for __user_setup_stackheap
+    rtentry4.o(.ARM.exidx) refers to rtentry4.o(.ARM.Collect$$rtentry$$00000004) for .ARM.Collect$$rtentry$$00000004
+    rtentry5.o(.ARM.Collect$$rtentry$$00000005) refers to rtentry5.o(.ARM.Collect$$rtentry$$00002716) for __lit__00000000
+    rtentry5.o(.ARM.Collect$$rtentry$$00002716) refers to startup.o(STACK) for __initial_sp
+    rtentry5.o(__vectab_stack_and_reset_sym_area) refers to startup.o(STACK) for __initial_sp
+    rtentry5.o(__vectab_stack_and_reset_sym_area) refers to __main.o(!!!main) for __main
+    rtentry5.o(.ARM.exidx) refers to rtentry5.o(.ARM.Collect$$rtentry$$00000005) for .ARM.Collect$$rtentry$$00000005
+    rtentry5.o(.ARM.exidx) refers to rtentry5.o(.ARM.Collect$$rtentry$$00002716) for .ARM.Collect$$rtentry$$00002716
+    sys_stackheap_outer.o(.text) refers to libspace.o(.text) for __user_perproc_libspace
+    sys_stackheap_outer.o(.text) refers to sys_stackheap.o(.text) for __user_initial_stackheap
+    exit.o(.text) refers to rtexit.o(.ARM.Collect$$rtexit$$00000000) for __rt_exit
+    libinit.o(.ARM.Collect$$libinit$$00000000) refers (Special) to libinit2.o(.ARM.Collect$$libinit$$0000002C) for __rt_lib_init_alloca_1
+    libinit.o(.ARM.Collect$$libinit$$00000000) refers (Special) to libinit2.o(.ARM.Collect$$libinit$$0000002A) for __rt_lib_init_argv_1
+    libinit.o(.ARM.Collect$$libinit$$00000000) refers (Special) to libinit2.o(.ARM.Collect$$libinit$$00000019) for __rt_lib_init_atexit_1
+    libinit.o(.ARM.Collect$$libinit$$00000000) refers (Special) to libinit2.o(.ARM.Collect$$libinit$$0000001F) for __rt_lib_init_clock_1
+    libinit.o(.ARM.Collect$$libinit$$00000000) refers (Special) to libinit2.o(.ARM.Collect$$libinit$$00000030) for __rt_lib_init_cpp_1
+    libinit.o(.ARM.Collect$$libinit$$00000000) refers (Special) to libinit2.o(.ARM.Collect$$libinit$$0000002E) for __rt_lib_init_exceptions_1
+    libinit.o(.ARM.Collect$$libinit$$00000000) refers (Special) to libinit2.o(.ARM.Collect$$libinit$$00000002) for __rt_lib_init_fp_1
+    libinit.o(.ARM.Collect$$libinit$$00000000) refers (Special) to libinit2.o(.ARM.Collect$$libinit$$0000001D) for __rt_lib_init_fp_trap_1
+    libinit.o(.ARM.Collect$$libinit$$00000000) refers (Special) to libinit2.o(.ARM.Collect$$libinit$$00000021) for __rt_lib_init_getenv_1
+    libinit.o(.ARM.Collect$$libinit$$00000000) refers (Special) to libinit2.o(.ARM.Collect$$libinit$$00000008) for __rt_lib_init_heap_1
+    libinit.o(.ARM.Collect$$libinit$$00000000) refers (Special) to libinit2.o(.ARM.Collect$$libinit$$0000000F) for __rt_lib_init_lc_collate_1
+    libinit.o(.ARM.Collect$$libinit$$00000000) refers (Special) to libinit2.o(.ARM.Collect$$libinit$$00000011) for __rt_lib_init_lc_ctype_1
+    libinit.o(.ARM.Collect$$libinit$$00000000) refers (Special) to libinit2.o(.ARM.Collect$$libinit$$00000013) for __rt_lib_init_lc_monetary_1
+    libinit.o(.ARM.Collect$$libinit$$00000000) refers (Special) to libinit2.o(.ARM.Collect$$libinit$$00000015) for __rt_lib_init_lc_numeric_1
+    libinit.o(.ARM.Collect$$libinit$$00000000) refers (Special) to libinit2.o(.ARM.Collect$$libinit$$00000017) for __rt_lib_init_lc_time_1
+    libinit.o(.ARM.Collect$$libinit$$00000000) refers (Special) to libinit2.o(.ARM.Collect$$libinit$$0000000C) for __rt_lib_init_rand_1
+    libinit.o(.ARM.Collect$$libinit$$00000000) refers (Special) to libinit2.o(.ARM.Collect$$libinit$$00000031) for __rt_lib_init_return
+    libinit.o(.ARM.Collect$$libinit$$00000000) refers (Special) to libinit2.o(.ARM.Collect$$libinit$$0000001B) for __rt_lib_init_signal_1
+    libinit.o(.ARM.Collect$$libinit$$00000000) refers (Special) to libinit2.o(.ARM.Collect$$libinit$$00000023) for __rt_lib_init_stdio_1
+    libinit.o(.ARM.Collect$$libinit$$00000000) refers (Special) to libinit2.o(.ARM.Collect$$libinit$$0000000A) for __rt_lib_init_user_alloc_1
+    libspace.o(.text) refers to libspace.o(.bss) for __libspace_start
+    sys_stackheap.o(.text) refers (Special) to indicate_semi.o(.text) for __semihosting_library_function
+    sys_stackheap.o(.text) refers to use_no_semi.o(.text) for __I$use$semihosting
+    rtexit.o(.ARM.Collect$$rtexit$$00000000) refers (Special) to rtexit2.o(.ARM.Collect$$rtexit$$00000004) for __rt_exit_exit
+    rtexit.o(.ARM.Collect$$rtexit$$00000000) refers (Special) to rtexit2.o(.ARM.Collect$$rtexit$$00000003) for __rt_exit_ls
+    rtexit.o(.ARM.Collect$$rtexit$$00000000) refers (Special) to rtexit2.o(.ARM.Collect$$rtexit$$00000002) for __rt_exit_prels_1
+    rtexit.o(.ARM.exidx) refers (Special) to rtexit2.o(.ARM.Collect$$rtexit$$00000004) for __rt_exit_exit
+    rtexit.o(.ARM.exidx) refers (Special) to rtexit2.o(.ARM.Collect$$rtexit$$00000003) for __rt_exit_ls
+    rtexit.o(.ARM.exidx) refers (Special) to rtexit2.o(.ARM.Collect$$rtexit$$00000002) for __rt_exit_prels_1
+    rtexit.o(.ARM.exidx) refers to rtexit.o(.ARM.Collect$$rtexit$$00000000) for .ARM.Collect$$rtexit$$00000000
+    libinit2.o(.ARM.Collect$$libinit$$0000000E) refers to libinit2.o(.ARM.Collect$$libinit$$0000000D) for .ARM.Collect$$libinit$$0000000D
+    libinit2.o(.ARM.Collect$$libinit$$00000010) refers to libinit2.o(.ARM.Collect$$libinit$$0000000D) for .ARM.Collect$$libinit$$0000000D
+    libinit2.o(.ARM.Collect$$libinit$$00000012) refers to libinit2.o(.ARM.Collect$$libinit$$0000000D) for .ARM.Collect$$libinit$$0000000D
+    libinit2.o(.ARM.Collect$$libinit$$00000014) refers to libinit2.o(.ARM.Collect$$libinit$$0000000D) for .ARM.Collect$$libinit$$0000000D
+    libinit2.o(.ARM.Collect$$libinit$$00000016) refers to libinit2.o(.ARM.Collect$$libinit$$0000000D) for .ARM.Collect$$libinit$$0000000D
+    libinit2.o(.ARM.Collect$$libinit$$00000024) refers to argv_veneer.o(.emb_text) for __ARM_argv_veneer
+    libinit2.o(.ARM.Collect$$libinit$$00000025) refers to argv_veneer.o(.emb_text) for __ARM_argv_veneer
+    libinit3.o(.ARM.Collect$$libinit$$00000004) refers to libinit3.o(.ARM.Collect$$libinit$$00002715) for __lit__00000000
+    libinit3.o(.ARM.Collect$$libinit$$00002715) refers to startup.o(HEAP) for __heap_base
+    libinit3.o(.ARM.Collect$$libinit$$00000026) refers to libinit3.o(.ARM.Collect$$libinit$$00002737) for __lit__00000002
+    libinit3.o(.ARM.Collect$$libinit$$00000026) refers to argv_veneer.o(.emb_text) for __ARM_argv_veneer
+    libinit3.o(.ARM.Collect$$libinit$$00002737) refers to startup.o(HEAP) for __heap_base
+    rtexit2.o(.ARM.Collect$$rtexit$$00000003) refers to libshutdown.o(.ARM.Collect$$libshutdown$$00000000) for __rt_lib_shutdown
+    rtexit2.o(.ARM.Collect$$rtexit$$00000004) refers to sys_exit.o(.text) for _sys_exit
+    rtexit2.o(.ARM.exidx) refers to rtexit2.o(.ARM.Collect$$rtexit$$00000001) for .ARM.Collect$$rtexit$$00000001
+    rtexit2.o(.ARM.exidx) refers to rtexit2.o(.ARM.Collect$$rtexit$$00000003) for .ARM.Collect$$rtexit$$00000003
+    rtexit2.o(.ARM.exidx) refers to rtexit2.o(.ARM.Collect$$rtexit$$00000004) for .ARM.Collect$$rtexit$$00000004
+    argv_veneer.o(.emb_text) refers to no_argv.o(.text) for __ARM_get_argv
+    sys_exit.o(.text) refers (Special) to use_no_semi.o(.text) for __I$use$semihosting
+    sys_exit.o(.text) refers (Special) to indicate_semi.o(.text) for __semihosting_library_function
+    _get_argv_nomalloc.o(.text) refers (Special) to hrguard.o(.text) for __heap_region$guard
+    _get_argv_nomalloc.o(.text) refers to defsig_rtmem_outer.o(.text) for __rt_SIGRTMEM
+    _get_argv_nomalloc.o(.text) refers to sys_command.o(.text) for _sys_command_string
+    libshutdown.o(.ARM.Collect$$libshutdown$$00000000) refers (Special) to libshutdown2.o(.ARM.Collect$$libshutdown$$00000006) for __rt_lib_shutdown_fp_trap_1
+    libshutdown.o(.ARM.Collect$$libshutdown$$00000000) refers (Special) to libshutdown2.o(.ARM.Collect$$libshutdown$$0000000E) for __rt_lib_shutdown_heap_1
+    libshutdown.o(.ARM.Collect$$libshutdown$$00000000) refers (Special) to libshutdown2.o(.ARM.Collect$$libshutdown$$0000000F) for __rt_lib_shutdown_return
+    libshutdown.o(.ARM.Collect$$libshutdown$$00000000) refers (Special) to libshutdown2.o(.ARM.Collect$$libshutdown$$00000009) for __rt_lib_shutdown_signal_1
+    libshutdown.o(.ARM.Collect$$libshutdown$$00000000) refers (Special) to libshutdown2.o(.ARM.Collect$$libshutdown$$00000003) for __rt_lib_shutdown_stdio_1
+    libshutdown.o(.ARM.Collect$$libshutdown$$00000000) refers (Special) to libshutdown2.o(.ARM.Collect$$libshutdown$$0000000B) for __rt_lib_shutdown_user_alloc_1
+    sys_command.o(.text) refers (Special) to use_no_semi.o(.text) for __I$use$semihosting
+    sys_command.o(.text) refers (Special) to indicate_semi.o(.text) for __semihosting_library_function
+    defsig_rtmem_outer.o(.text) refers to defsig_rtmem_inner.o(.text) for __rt_SIGRTMEM_inner
+    defsig_rtmem_outer.o(.text) refers to defsig_exit.o(.text) for __sig_exit
+    defsig_rtmem_formal.o(.text) refers to rt_raise.o(.text) for __rt_raise
+    rt_raise.o(.text) refers to __raise.o(.text) for __raise
+    rt_raise.o(.text) refers to sys_exit.o(.text) for _sys_exit
+    defsig_exit.o(.text) refers to sys_exit.o(.text) for _sys_exit
+    defsig_rtmem_inner.o(.text) refers to defsig_general.o(.text) for __default_signal_display
+    __raise.o(.text) refers to defsig.o(CL$$defsig) for __default_signal_handler
+    defsig_general.o(.text) refers to sys_wrch.o(.text) for _ttywrch
+    sys_wrch.o(.text) refers (Special) to use_no_semi.o(.text) for __I$use$semihosting
+    sys_wrch.o(.text) refers (Special) to indicate_semi.o(.text) for __semihosting_library_function
+    defsig.o(CL$$defsig) refers to defsig_rtmem_inner.o(.text) for __rt_SIGRTMEM_inner
+    defsig_abrt_inner.o(.text) refers to defsig_general.o(.text) for __default_signal_display
+    defsig_fpe_inner.o(.text) refers to defsig_general.o(.text) for __default_signal_display
+    defsig_rtred_inner.o(.text) refers to defsig_general.o(.text) for __default_signal_display
+    defsig_stak_inner.o(.text) refers to defsig_general.o(.text) for __default_signal_display
+    defsig_pvfn_inner.o(.text) refers to defsig_general.o(.text) for __default_signal_display
+    defsig_cppl_inner.o(.text) refers to defsig_general.o(.text) for __default_signal_display
+    defsig_segv_inner.o(.text) refers to defsig_general.o(.text) for __default_signal_display
+    defsig_other.o(.text) refers to defsig_general.o(.text) for __default_signal_display
+
+
+==============================================================================
+
+Removing Unused input sections from the image.
+
+    Removing startup.o(HEAP), (0 bytes).
+    Removing st7735.o(i.Output_Clear), (10 bytes).
+    Removing st7735.o(i.Output_Color), (12 bytes).
+    Removing st7735.o(i.Output_Off), (8 bytes).
+    Removing st7735.o(i.Output_On), (8 bytes).
+    Removing st7735.o(i.ST7735_Color565), (24 bytes).
+    Removing st7735.o(i.ST7735_ColoredMessage), (124 bytes).
+    Removing st7735.o(i.ST7735_DrawBitmap), (288 bytes).
+    Removing st7735.o(i.ST7735_DrawChar), (268 bytes).
+    Removing st7735.o(i.ST7735_DrawCharS), (244 bytes).
+    Removing st7735.o(i.ST7735_DrawFastHLine), (124 bytes).
+    Removing st7735.o(i.ST7735_DrawFastVLine), (124 bytes).
+    Removing st7735.o(i.ST7735_DrawPixel), (72 bytes).
+    Removing st7735.o(i.ST7735_DrawString), (86 bytes).
+    Removing st7735.o(i.ST7735_InitB), (40 bytes).
+    Removing st7735.o(i.ST7735_InvertDisplay), (22 bytes).
+    Removing st7735.o(i.ST7735_Message), (148 bytes).
+    Removing st7735.o(i.ST7735_OutChar), (212 bytes).
+    Removing st7735.o(i.ST7735_OutString), (24 bytes).
+    Removing st7735.o(i.ST7735_OutUDec), (140 bytes).
+    Removing st7735.o(i.ST7735_PlotBar), (88 bytes).
+    Removing st7735.o(i.ST7735_PlotClear), (92 bytes).
+    Removing st7735.o(i.ST7735_PlotLine), (264 bytes).
+    Removing st7735.o(i.ST7735_PlotNext), (32 bytes).
+    Removing st7735.o(i.ST7735_PlotNextErase), (64 bytes).
+    Removing st7735.o(i.ST7735_PlotPoint), (152 bytes).
+    Removing st7735.o(i.ST7735_PlotPoints), (172 bytes).
+    Removing st7735.o(i.ST7735_PlotdBfs), (60 bytes).
+    Removing st7735.o(i.ST7735_SetRotation), (212 bytes).
+    Removing st7735.o(i.ST7735_SetTextColor), (12 bytes).
+    Removing st7735.o(i.ST7735_SwapColor), (18 bytes).
+    Removing st7735.o(i.ferror), (8 bytes).
+    Removing st7735.o(i.fgetc), (6 bytes).
+    Removing st7735.o(i.fillmessage), (72 bytes).
+    Removing st7735.o(i.fputc), (16 bytes).
+    Removing st7735.o(i.pushColor), (18 bytes).
+    Removing os.o(i.OS_ClearMsTime), (12 bytes).
+    Removing os.o(i.OS_Fifo_Get), (88 bytes).
+    Removing os.o(i.OS_Fifo_Put), (104 bytes).
+    Removing os.o(i.OS_Fifo_Size), (12 bytes).
+    Removing os.o(i.OS_Id), (16 bytes).
+    Removing os.o(i.OS_Kill), (36 bytes).
+    Removing os.o(i.OS_MailBox_Init), (28 bytes).
+    Removing os.o(i.OS_MailBox_Recv), (36 bytes).
+    Removing os.o(i.OS_MailBox_Send), (36 bytes).
+    Removing os.o(i.OS_MsTime), (12 bytes).
+    Removing os.o(i.OS_Signal), (36 bytes).
+    Removing os.o(i.OS_Sleep), (52 bytes).
+    Removing os.o(i.OS_Suspend), (24 bytes).
+    Removing os.o(i.OS_Time), (12 bytes).
+    Removing os.o(i.OS_TimeDifference), (12 bytes).
+    Removing os.o(i.OS_bWait), (44 bytes).
+    Removing os.o(i.PushToList), (22 bytes).
+    Removing systick.o(i.SysTick_Init), (24 bytes).
+    Removing can.o(i.CANDisable), (36 bytes).
+    Removing can.o(i.CANErrCntrGet), (58 bytes).
+    Removing can.o(i.CANIntDisable), (56 bytes).
+    Removing can.o(i.CANIntRegister), (46 bytes).
+    Removing can.o(i.CANIntUnregister), (38 bytes).
+    Removing can.o(i.CANMessageClear), (96 bytes).
+    Removing can.o(i.CANRetryGet), (36 bytes).
+    Removing can.o(i.CANRetrySet), (52 bytes).
+    Removing can0.o(i.CAN0_CheckMail), (16 bytes).
+    Removing can0.o(i.CAN0_GetMail), (52 bytes).
+    Removing can0.o(i.CAN0_GetMailNonBlock), (60 bytes).
+    Removing cpu.o(.emb_text), (38 bytes).
+    Removing fifo.o(i.RxFifo_Get), (68 bytes).
+    Removing fifo.o(i.RxFifo_Init), (40 bytes).
+    Removing fifo.o(i.RxFifo_Put), (56 bytes).
+    Removing fifo.o(i.RxFifo_Size), (52 bytes).
+    Removing fifo.o(i.TxFifo_Get), (60 bytes).
+    Removing fifo.o(i.TxFifo_Init), (36 bytes).
+    Removing fifo.o(i.TxFifo_Put), (60 bytes).
+    Removing fifo.o(i.TxFifo_Size), (24 bytes).
+    Removing fifo.o(.bss), (26 bytes).
+    Removing fifo.o(.data), (16 bytes).
+    Removing interrupt.o(i.IntDefaultHandler), (4 bytes).
+    Removing interrupt.o(i.IntPendClear), (108 bytes).
+    Removing interrupt.o(i.IntPendSet), (128 bytes).
+    Removing interrupt.o(i.IntPriorityGet), (48 bytes).
+    Removing interrupt.o(i.IntPriorityGroupingGet), (44 bytes).
+    Removing interrupt.o(i.IntPriorityGroupingSet), (48 bytes).
+    Removing interrupt.o(i.IntPrioritySet), (72 bytes).
+    Removing interrupt.o(i.IntRegister), (104 bytes).
+    Removing interrupt.o(i.IntUnregister), (40 bytes).
+    Removing interrupt.o(.constdata), (104 bytes).
+    Removing interrupt.o(vtable), (284 bytes).
+    Removing robot.o(i.ADC2millimeter), (32 bytes).
+    Removing robot.o(i.median), (46 bytes).
+    Removing usonic.o(i.Cycles2milliInch), (20 bytes).
+    Removing usonic.o(i.Cycles2millimeter), (20 bytes).
+    Removing usonic.o(i.DelayWait5us), (22 bytes).
+    Removing usonic.o(i.Timer0_Init), (272 bytes).
+    Removing usonic.o(i.Timer0_Read), (24 bytes).
+    Removing usonic.o(i.Timer0_StartHCSR04), (56 bytes).
+    Removing usonic.o(i.Timer0_StartPing), (144 bytes).
+    Removing usonic.o(i.Timer1_Init), (272 bytes).
+    Removing usonic.o(i.Timer1_Read), (24 bytes).
+    Removing usonic.o(i.Timer1_StartHCSR04), (52 bytes).
+    Removing usonic.o(i.Timer1_StartPing), (136 bytes).
+    Removing usonic.o(i.Timer3_Init), (272 bytes).
+    Removing usonic.o(i.Timer3_Read), (24 bytes).
+    Removing usonic.o(i.Timer3_StartPing), (136 bytes).
+    Removing pwm.o(i.Left_Duty), (32 bytes).
+    Removing pwm.o(i.Left_DutyB), (32 bytes).
+    Removing pwm.o(i.Left_Init), (268 bytes).
+    Removing pwm.o(i.Left_InitB), (268 bytes).
+    Removing pwm.o(i.Right_Duty), (32 bytes).
+    Removing pwm.o(i.Right_DutyB), (32 bytes).
+    Removing pwm.o(i.Right_Init), (240 bytes).
+    Removing pwm.o(i.Right_InitB), (244 bytes).
+    Removing pwm.o(i.Servo_Direction), (60 bytes).
+    Removing pwm.o(i.Servo_Duty), (12 bytes).
+
+113 unused section(s) (total 8648 bytes) removed from the image.
+
+==============================================================================
+
+Memory Map of the image
+
+  Image Entry point : 0x00000000
+
+  Load Region LR_1 (Base: 0x00000000, Size: 0x00002de8, Max: 0xffffffff, ABSOLUTE)
+
+    Execution Region ER_RO (Base: 0x00000000, Size: 0x00002d10, Max: 0xffffffff, ABSOLUTE)
+
+    Base Addr    Size         Type   Attr      Idx    E Section Name        Object
+
+    0x00000000   0x00000284   Code   RO            3  * RESET               startup.o
+    0x00000284   0x00000008   Code   RO         1357  * !!!main             c_w.l(__main.o)
+    0x0000028c   0x00000002   Code   RO         1389    .ARM.Collect$$libinit$$00000000  c_w.l(libinit.o)
+    0x0000028e   0x00000000   Code   RO         1398    .ARM.Collect$$libinit$$00000002  c_w.l(libinit2.o)
+    0x0000028e   0x00000000   Code   RO         1401    .ARM.Collect$$libinit$$00000008  c_w.l(libinit2.o)
+    0x0000028e   0x00000000   Code   RO         1403    .ARM.Collect$$libinit$$0000000A  c_w.l(libinit2.o)
+    0x0000028e   0x00000000   Code   RO         1405    .ARM.Collect$$libinit$$0000000C  c_w.l(libinit2.o)
+    0x0000028e   0x00000000   Code   RO         1408    .ARM.Collect$$libinit$$0000000F  c_w.l(libinit2.o)
+    0x0000028e   0x00000000   Code   RO         1410    .ARM.Collect$$libinit$$00000011  c_w.l(libinit2.o)
+    0x0000028e   0x00000000   Code   RO         1412    .ARM.Collect$$libinit$$00000013  c_w.l(libinit2.o)
+    0x0000028e   0x00000000   Code   RO         1414    .ARM.Collect$$libinit$$00000015  c_w.l(libinit2.o)
+    0x0000028e   0x00000000   Code   RO         1416    .ARM.Collect$$libinit$$00000017  c_w.l(libinit2.o)
+    0x0000028e   0x00000000   Code   RO         1418    .ARM.Collect$$libinit$$00000019  c_w.l(libinit2.o)
+    0x0000028e   0x00000000   Code   RO         1420    .ARM.Collect$$libinit$$0000001B  c_w.l(libinit2.o)
+    0x0000028e   0x00000000   Code   RO         1422    .ARM.Collect$$libinit$$0000001D  c_w.l(libinit2.o)
+    0x0000028e   0x00000000   Code   RO         1424    .ARM.Collect$$libinit$$0000001F  c_w.l(libinit2.o)
+    0x0000028e   0x00000000   Code   RO         1426    .ARM.Collect$$libinit$$00000021  c_w.l(libinit2.o)
+    0x0000028e   0x00000000   Code   RO         1428    .ARM.Collect$$libinit$$00000023  c_w.l(libinit2.o)
+    0x0000028e   0x00000000   Code   RO         1432    .ARM.Collect$$libinit$$0000002A  c_w.l(libinit2.o)
+    0x0000028e   0x00000000   Code   RO         1434    .ARM.Collect$$libinit$$0000002C  c_w.l(libinit2.o)
+    0x0000028e   0x00000000   Code   RO         1436    .ARM.Collect$$libinit$$0000002E  c_w.l(libinit2.o)
+    0x0000028e   0x00000000   Code   RO         1438    .ARM.Collect$$libinit$$00000030  c_w.l(libinit2.o)
+    0x0000028e   0x00000002   Code   RO         1439    .ARM.Collect$$libinit$$00000031  c_w.l(libinit2.o)
+    0x00000290   0x00000002   Code   RO         1466    .ARM.Collect$$libshutdown$$00000000  c_w.l(libshutdown.o)
+    0x00000292   0x00000000   Code   RO         1477    .ARM.Collect$$libshutdown$$00000003  c_w.l(libshutdown2.o)
+    0x00000292   0x00000000   Code   RO         1480    .ARM.Collect$$libshutdown$$00000006  c_w.l(libshutdown2.o)
+    0x00000292   0x00000000   Code   RO         1483    .ARM.Collect$$libshutdown$$00000009  c_w.l(libshutdown2.o)
+    0x00000292   0x00000000   Code   RO         1485    .ARM.Collect$$libshutdown$$0000000B  c_w.l(libshutdown2.o)
+    0x00000292   0x00000000   Code   RO         1488    .ARM.Collect$$libshutdown$$0000000E  c_w.l(libshutdown2.o)
+    0x00000292   0x00000002   Code   RO         1489    .ARM.Collect$$libshutdown$$0000000F  c_w.l(libshutdown2.o)
+    0x00000294   0x00000000   Code   RO         1359    .ARM.Collect$$rtentry$$00000000  c_w.l(rtentry.o)
+    0x00000294   0x00000000   Code   RO         1361    .ARM.Collect$$rtentry$$00000002  c_w.l(rtentry2.o)
+    0x00000294   0x00000004   Code   RO         1375    .ARM.Collect$$rtentry$$00000005  c_w.l(rtentry5.o)
+    0x00000298   0x00000000   Code   RO         1363    .ARM.Collect$$rtentry$$00000009  c_w.l(rtentry2.o)
+    0x00000298   0x00000004   Code   RO         1364    .ARM.Collect$$rtentry$$0000000A  c_w.l(rtentry2.o)
+    0x0000029c   0x00000000   Code   RO         1366    .ARM.Collect$$rtentry$$0000000C  c_w.l(rtentry2.o)
+    0x0000029c   0x00000008   Code   RO         1367    .ARM.Collect$$rtentry$$0000000D  c_w.l(rtentry2.o)
+    0x000002a4   0x00000004   Code   RO         1376    .ARM.Collect$$rtentry$$00002716  c_w.l(rtentry5.o)
+    0x000002a8   0x00000002   Code   RO         1395    .ARM.Collect$$rtexit$$00000000  c_w.l(rtexit.o)
+    0x000002aa   0x00000000   Code   RO         1448    .ARM.Collect$$rtexit$$00000002  c_w.l(rtexit2.o)
+    0x000002aa   0x00000004   Code   RO         1449    .ARM.Collect$$rtexit$$00000003  c_w.l(rtexit2.o)
+    0x000002ae   0x00000006   Code   RO         1450    .ARM.Collect$$rtexit$$00000004  c_w.l(rtexit2.o)
+    0x000002b4   0x0000001c   Code   RO            4    .text               startup.o
+    0x000002d0   0x00000048   Code   RO          639    .text               threadswitch.o
+    0x00000318   0x0000000c   Code   RO         1382    .text               c_w.l(exit.o)
+    0x00000324   0x00000002   Code   RO         1444    .text               c_w.l(use_no_semi.o)
+    0x00000326   0x00000000   Code   RO         1446    .text               c_w.l(indicate_semi.o)
+    0x00000326   0x00000002   PAD
+    0x00000328   0x0000000c   Code   RO         1458    .text               c_w.l(sys_exit.o)
+    0x00000334   0x00000064   Code   RO          325    i.ADC0Seq2_Handler  adc.o
+    0x00000398   0x00000164   Code   RO          326    i.ADC0_SS3_4Channels_TimerTriggered_Init  adc.o
+    0x000004fc   0x000000c8   Code   RO          327    i.ADCFilter0        adc.o
+    0x000005c4   0x000000c8   Code   RO          328    i.ADCFilter1        adc.o
+    0x0000068c   0x000000c8   Code   RO          329    i.ADCFilter2        adc.o
+    0x00000754   0x000000c8   Code   RO          330    i.ADCFilter3        adc.o
+    0x0000081c   0x00000046   Code   RO          380    i.AddToPriorityList  os.o
+    0x00000862   0x0000001a   Code   RO          381    i.Block             os.o
+    0x0000087c   0x0000008c   Code   RO          882    i.CAN0_Handler      can0.o
+    0x00000908   0x000000e0   Code   RO          883    i.CAN0_Open         can0.o
+    0x000009e8   0x0000001a   Code   RO          884    i.CAN0_SendData     can0.o
+    0x00000a02   0x00000002   PAD
+    0x00000a04   0x00000030   Code   RO          885    i.CAN0_Setup_Message_Object  can0.o
+    0x00000a34   0x000000c8   Code   RO          723    i.CANBitRateSet     can.o
+    0x00000afc   0x00000036   Code   RO          724    i.CANDataRegRead    can.o
+    0x00000b32   0x00000036   Code   RO          725    i.CANDataRegWrite   can.o
+    0x00000b68   0x00000024   Code   RO          727    i.CANEnable         can.o
+    0x00000b8c   0x000000a0   Code   RO          729    i.CANInit           can.o
+    0x00000c2c   0x00000070   Code   RO          730    i.CANIntClear       can.o
+    0x00000c9c   0x00000038   Code   RO          732    i.CANIntEnable      can.o
+    0x00000cd4   0x00000030   Code   RO          733    i.CANIntNumberGet   can.o
+    0x00000d04   0x0000004c   Code   RO          735    i.CANIntStatus      can.o
+    0x00000d50   0x000001d2   Code   RO          738    i.CANMessageGet     can.o
+    0x00000f22   0x0000020c   Code   RO          739    i.CANMessageSet     can.o
+    0x0000112e   0x00000002   PAD
+    0x00001130   0x00000060   Code   RO          740    i.CANRegRead        can.o
+    0x00001190   0x00000018   Code   RO          741    i.CANRegWrite       can.o
+    0x000011a8   0x0000008c   Code   RO          744    i.CANStatusGet      can.o
+    0x00001234   0x00000044   Code   RO          382    i.DecrementSleep    os.o
+    0x00001278   0x00000020   Code   RO           34    i.Delay1ms          st7735.o
+    0x00001298   0x00000016   Code   RO         1162    i.DelayWait10us     usonic.o
+    0x000012ae   0x00000002   PAD
+    0x000012b0   0x00000040   Code   RO          383    i.GPIOPortF_Handler  os.o
+    0x000012f0   0x0000009c   Code   RO         1081    i.IRSensors         robot.o
+    0x0000138c   0x00000014   Code   RO         1082    i.IdleTask          robot.o
+    0x000013a0   0x00000094   Code   RO         1007    i.IntDisable        interrupt.o
+    0x00001434   0x00000094   Code   RO         1008    i.IntEnable         interrupt.o
+    0x000014c8   0x00000054   Code   RO          384    i.LinkThread        os.o
+    0x0000151c   0x00000058   Code   RO          385    i.OS_AddPeriodicThread  os.o
+    0x00001574   0x00000034   Code   RO          386    i.OS_AddSW1Task     os.o
+    0x000015a8   0x00000034   Code   RO          387    i.OS_AddSW2Task     os.o
+    0x000015dc   0x00000094   Code   RO          388    i.OS_AddThread      os.o
+    0x00001670   0x00000044   Code   RO          391    i.OS_Fifo_Init      os.o
+    0x000016b4   0x00000068   Code   RO          395    i.OS_Init           os.o
+    0x0000171c   0x0000001c   Code   RO          396    i.OS_InitSemaphore  os.o
+    0x00001738   0x00000016   Code   RO          398    i.OS_Launch         os.o
+    0x0000174e   0x00000002   PAD
+    0x00001750   0x00000058   Code   RO          403    i.OS_SelectNextThread  os.o
+    0x000017a8   0x00000010   Code   RO          407    i.OS_SwitchThread   os.o
+    0x000017b8   0x0000002c   Code   RO          410    i.OS_Wait           os.o
+    0x000017e4   0x00000024   Code   RO          411    i.OS_bSignal        os.o
+    0x00001808   0x0000001c   Code   RO           37    i.Output_Init       st7735.o
+    0x00001824   0x0000007c   Code   RO           12    i.PLL_Init          pll.o
+    0x000018a0   0x00000012   Code   RO          413    i.PopFromList       os.o
+    0x000018b2   0x00000002   PAD
+    0x000018b4   0x0000006c   Code   RO         1083    i.PortD_Init        robot.o
+    0x00001920   0x000000dc   Code   RO          414    i.PortF_Init        os.o
+    0x000019fc   0x00000024   Code   RO          416    i.RemoveFromList    os.o
+    0x00001a20   0x000000ac   Code   RO           49    i.ST7735_FillRect   st7735.o
+    0x00001acc   0x00000024   Code   RO           50    i.ST7735_FillScreen  st7735.o
+    0x00001af0   0x0000007c   Code   RO           52    i.ST7735_InitR      st7735.o
+    0x00001b6c   0x00000020   Code   RO           66    i.ST7735_SetCursor  st7735.o
+    0x00001b8c   0x00000002   Code   RO         1084    i.SW1Push           robot.o
+    0x00001b8e   0x00000002   Code   RO         1085    i.SW2Push           robot.o
+    0x00001b90   0x000000d4   Code   RO         1293    i.Servo_Init        pwm.o
+    0x00001c64   0x00000150   Code   RO          417    i.SetInitialStack   os.o
+    0x00001db4   0x00000014   Code   RO          642    i.SysTick_Handler   systick.o
+    0x00001dc8   0x00000048   Code   RO         1164    i.Timer0A_Handler   usonic.o
+    0x00001e10   0x00000048   Code   RO         1169    i.Timer1A_Handler   usonic.o
+    0x00001e58   0x00000048   Code   RO         1174    i.Timer3A_Handler   usonic.o
+    0x00001ea0   0x00000030   Code   RO         1177    i.Timer3_StartHCSR04  usonic.o
+    0x00001ed0   0x0000007c   Code   RO         1086    i.USSensors         robot.o
+    0x00001f4c   0x0000004c   Code   RO          418    i.UnlinkThread      os.o
+    0x00001f98   0x00000090   Code   RO          702    i.WTimer0A_Init     wtimer0a.o
+    0x00002028   0x00000090   Code   RO          681    i.WTimer0B_Init     wtimer0b.o
+    0x000020b8   0x0000008c   Code   RO          660    i.WTimer5A_Init     wtimer5a.o
+    0x00002144   0x00000016   Code   RO          419    i.WakeUp            os.o
+    0x0000215a   0x00000002   PAD
+    0x0000215c   0x00000020   Code   RO          703    i.WideTimer0A_Handler  wtimer0a.o
+    0x0000217c   0x00000020   Code   RO          682    i.WideTimer0B_Handler  wtimer0b.o
+    0x0000219c   0x00000020   Code   RO          661    i.WideTimer5A_Handler  wtimer5a.o
+    0x000021bc   0x00000056   Code   RO           70    i.commandList       st7735.o
+    0x00002212   0x00000002   PAD
+    0x00002214   0x00000184   Code   RO           71    i.commonInit        st7735.o
+    0x00002398   0x000000a8   Code   RO         1087    i.main              robot.o
+    0x00002440   0x00000074   Code   RO           77    i.setAddrWindow     st7735.o
+    0x000024b4   0x00000018   Code   RO         1089    i.usonic            robot.o
+    0x000024cc   0x00000030   Code   RO           78    i.writecommand      st7735.o
+    0x000024fc   0x00000020   Code   RO           79    i.writedata         st7735.o
+    0x0000251c   0x000007e2   Data   RO           81    .constdata          st7735.o
+    0x00002cfe   0x00000012   Data   RO          745    .constdata          can.o
+    0x00002d10   0x00000000   Data   RO         1520    Region$$Table       anon$$obj.o
+
+
+    Execution Region ER_RW (Base: 0x20000000, Size: 0x000000d8, Max: 0xffffffff, ABSOLUTE)
+
+    Base Addr    Size         Type   Attr      Idx    E Section Name        Object
+
+    0x20000000   0x0000002c   Data   RW           82    .data               st7735.o
+    0x2000002c   0x00000018   Data   RW          332    .data               adc.o
+    0x20000044   0x0000004c   Data   RW          421    .data               os.o
+    0x20000090   0x00000004   Data   RW          662    .data               wtimer5a.o
+    0x20000094   0x00000004   Data   RW          683    .data               wtimer0b.o
+    0x20000098   0x00000004   Data   RW          704    .data               wtimer0a.o
+    0x2000009c   0x00000008   Data   RW          887    .data               can0.o
+    0x200000a4   0x00000010   Data   RW         1090    .data               robot.o
+    0x200000b4   0x00000024   Data   RW         1179    .data               usonic.o
+
+
+    Execution Region ER_ZI (Base: 0x200000d8, Size: 0x00002738, Max: 0xffffffff, ABSOLUTE)
+
+    Base Addr    Size         Type   Attr      Idx    E Section Name        Object
+
+    0x200000d8   0x00000018   Zero   RW           80    .bss                st7735.o
+    0x200000f0   0x000000cc   Zero   RW          331    .bss                adc.o
+    0x200001bc   0x00002244   Zero   RW          420    .bss                os.o
+    0x20002400   0x00000010   Zero   RW          886    .bss                can0.o
+    0x20002410   0x00000400   Zero   RW            1    STACK               startup.o
+
