@@ -132,7 +132,7 @@ void CAN0_Open(void){uint32_t volatile delay;
 		// Set up filter to receive these IDs
 		// in this case there is just one type, but you could accept multiple ID types
 		for(int i = 0; i<NUM_SENSORBOARDS; i++){
-			for(int j = 1; j<=NUMMSGS; j++){
+			for(int j = 0; j<NUMMSGS; j++){
 				CAN0_Setup_Message_Object((i*NUMMSGS)+j, MSG_OBJ_RX_INT_ENABLE, MSGLENGTH, NULL, (i*NUMMSGS)+j, MSG_OBJ_TYPE_RX);
 			}
 		}

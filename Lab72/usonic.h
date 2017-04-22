@@ -41,9 +41,9 @@
 #ifndef __USONIC_H
 #define __USONIC_H  1
 
-#define USE3USONIC 1
+//#define USE3USONIC 1
 //#define USE2USONIC 1
-//#define USE1USONIC 1
+#define USE1USONIC 1
 
 #ifdef USE1USONIC
 	#define NUM_USONIC 1

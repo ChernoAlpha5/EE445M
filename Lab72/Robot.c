@@ -125,10 +125,7 @@ void SW2Push(void){
 
 }
 
-uint32_t ADC2millimeter(uint32_t adcSample){
-  if(adcSample<494) return 799; // maximum distance 80cm
-  return (268130/(adcSample-159));  
-}
+
 
 #ifndef MOTOR_BOARD
 char* IRStrings[NUM_IR] = {"IR LF: ", "IR FR: ", "IR FL: ", "IR RF: "};
@@ -149,7 +146,7 @@ void IRSend(void){
 	}
 }
 
-char* USONICStrings[NUM_IR] = {"IR LF: ", "IR FR: ", "IR FL: ", "IR RF: "};
+char* USONICStrings[3] = {"US 0: ", "US 1: ", "US 2: "};
 uint32_t USONICValues[NUM_USONIC];
 void USONICSend(void){
 	uint8_t message[8];
@@ -169,6 +166,12 @@ void USONICSend(void){
 #endif
 
 #ifdef MOTOR_BOARD
+
+uint16_t min(uint16_t x, uint16_t y){
+	if(x<y) return x;
+	return y;
+}
+
 uint8_t SensorData[NUMMSGS*NUM_SENSORBOARDS][MSGLENGTH];
 uint8_t IRData[NUMMSGS*NUM_SENSORBOARDS][MSGLENGTH];
 void MotorController(void){
@@ -178,12 +181,12 @@ void MotorController(void){
 			uint16_t RF, FR, FL, LF;
 			int8_t angle, speed;
 			uint16_t rightMin, leftMin, frontMin;
-			LF = ((SensorData[0][3]&0x0F)<<8) + SensorData[0][2];
-			FR= ((SensorData[0][4]&0xFF)<<4) + ((SensorData[0][3]&0x0F0)>>4);
-			FL = ((SensorData[0][6]&0x0F)<<8) + SensorData[0][5];
-			RF = ((SensorData[0][7]&0xFF)<<4) + ((SensorData[0][6]&0xF0)>>4);
-			speed = MAXSPEED;
-			if(FR > 1700 && FL > 1700){
+			LF = ((SensorData[0][1]&0x00FF)<<8) + SensorData[0][0];
+			FR = ((SensorData[0][3]&0x00FF)<<8) + SensorData[0][2];
+			FL = ((SensorData[0][5]&0x00FF)<<8) + SensorData[0][4];
+			RF = ((SensorData[0][7]&0x00FF)<<8) + SensorData[0][6];
+			speed = MAXSPEED/2;
+			/*if(FR <200 && FL < 200){
 				if(RF > LF){
 					angle = -90;
 				}
@@ -191,16 +194,16 @@ void MotorController(void){
 					angle = 90;
 				}
 			}
-			else if(FR < FL - 500){
-				if(RF < 2500){
+			else if(FR > FL - 100){
+				if(RF > 100){
 					angle = 45;
 				}
 				else{
 					angle = 0;
 				}
 			}
-			else if(FL < FR - 500){
-				if(LF < 2500){
+			else if(FL > FR - 100){
+				if(LF > 100){
 					angle = -45;
 				}
 				else{
@@ -209,7 +212,23 @@ void MotorController(void){
 			}
 			else{
 				angle = 0;
+			}*/
+			leftMin = min(FL, LF);
+			rightMin = min(FR, RF);
+			frontMin = min(FL, FR);
+			if (leftMin < rightMin){
+        angle = 45;
 			}
+			else{
+        angle = -45 ;
+			}				
+			if (frontMin < 100){
+        speed *= -1;
+			}
+
+			if (speed < 0){
+        angle *= -1;
+      }
 			Drive(speed, angle);
 		
 	}

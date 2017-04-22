@@ -41,6 +41,7 @@
 #include "tm4c123gh6pm.h"
 #include "os.h"
 #include "usonic.h"
+#include "Filter.h"
 
 
 // TIMER0 is Trigger PB7, echo PB6
@@ -446,9 +447,11 @@ uint32_t Cycles2millimeter(uint32_t cycles){
   return (cycles*170)/BUS;  
 }
 
+AddFilter(USONIC)
 void USONIC_GetData(uint32_t data[NUM_USONIC]){
 	OS_Wait(&usonicDataReady);
-	for(int i = 0; i<NUM_USONIC; i++){
-		data[i] = USONICValues[i];
-	}
+	data[0] = FilterUSONIC(Cycles2millimeter(USONICValues[0]));
+	/*for(int i = 0; i<NUM_USONIC; i++){
+		data[i] = Cycles2millimeter(USONICValues[i]);
+	}*/
 }

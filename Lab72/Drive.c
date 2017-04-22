@@ -42,10 +42,10 @@ void Drive_WheelDirection(int8_t dir){
 void Drive_DifferentialTurn(int8_t dir){	
 	Drive_WheelDirection(dir);
 	if(dir < 0){
-		Left_Duty(power/2, 1 -direction);
+		Left_Duty(power/4, direction);
 	}
 	else{
-		Right_DutyB(power/2,1 - direction);
+		Right_DutyB(power/4,direction);
 	}
 	
 }
@@ -53,31 +53,36 @@ void Drive_DifferentialTurn(int8_t dir){
 void Drive_SteepDifferentialTurn(int8_t dir){
 	Drive_WheelDirection(dir);
 	if(dir < 0){
-		Left_Duty(power/4, direction);
+		Left_Duty(power/2, 1 - direction);
 	}
 	else{
-		Right_DutyB(power/4, direction);
+		Right_DutyB(power/1, 1 - direction);
 	}
 }
 
 //takes in a speed from -MAXSPEED to MAXSPEED
 void Drive_Speed(int8_t speed){
-	int8_t newSpeed = speed;
+	int8_t newSpeed;
 	uint32_t newDuty;
 	if(speed < 0){
 		direction = 1;
 		newSpeed = speed*-1;
 	}
+	else{
+		direction = 0;
+		newSpeed = speed;
+	}
 	if(newSpeed > MAXSPEED){
 		newSpeed = MAXSPEED;
 	}
-	if(speed == 0){
-		speed = 1;
-	}
 	newDuty = newSpeed*POWERMAX/MAXSPEED;
+	if(newDuty < POWERMIN){
+		newDuty = POWERMIN;
+	}
 	power = newDuty;
-	Right_DutyB(newDuty, direction);
 	Left_Duty(newDuty, direction);
+	Right_DutyB(newDuty, direction);
+	
 }
 
 void Drive(int8_t speed, int8_t dir){

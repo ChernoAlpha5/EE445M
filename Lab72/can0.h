@@ -27,7 +27,7 @@
  */
 
 #ifndef __CAN0_H__
-#define __CAN0_H__
+#define __CAN0_H__ 1
 #define CAN_BITRATE             1000000
 
 #define MSGLENGTH 8
@@ -47,7 +47,7 @@
 	#define SENSOR_BOARD_NUMBER 1
 #endif
 
-#define XMT_MSG_NUM SENSOR_BOARD_NUMBER*NUMMSGS+ID+1
+#define XMT_MSG_NUM SENSOR_BOARD_NUMBER*NUMMSGS+ID
 
 
 // Initialize CAN port

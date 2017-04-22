@@ -3,3 +3,4 @@
 .\adc.o: tm4c123gh6pm.h
 .\adc.o: ADC.h
 .\adc.o: OS.h
+.\adc.o: Filter.h

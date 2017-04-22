@@ -25,6 +25,7 @@
 #include "tm4c123gh6pm.h"
 #include "ADC.h"
 #include "OS.h"
+#include "Filter.h"
 
 #define NVIC_EN0_INT17          0x00020000  // Interrupt 17 enable
 
@@ -168,17 +169,22 @@ void ADC0_SS2_4Channels_TimerTriggered_Init(uint32_t period){
 	OS_InitSemaphore(&adcDataReady, 0);
 }
 
+uint32_t ADC2millimeter(uint32_t adcSample){
+  if(adcSample<494) return 799; // maximum distance 80cm
+  return (268130/(adcSample-159));  
+}
+
 uint16_t static ADCValues[NUM_IR];
-AddADCFilter(0)
-AddADCFilter(1)
-AddADCFilter(2)
-AddADCFilter(3)
+AddFilter(0)
+AddFilter(1)
+AddFilter(2)
+AddFilter(3)
 void ADC0Seq2_Handler(void){
   ADC0_ISC_R = 0x0004;            	// acknowledge completion
-	ADCValues[0] = ADCFilter0(ADC0_SSFIFO2_R&0xFFF);
-	ADCValues[1] = ADCFilter1(ADC0_SSFIFO2_R&0xFFF);
-	ADCValues[2] = ADCFilter2(ADC0_SSFIFO2_R&0xFFF);
-	ADCValues[3] = ADCFilter3(ADC0_SSFIFO2_R&0xFFF);
+	ADCValues[0] = ADC2millimeter(Filter0(ADC0_SSFIFO2_R&0xFFF));
+	ADCValues[1] = ADC2millimeter(Filter1(ADC0_SSFIFO2_R&0xFFF));
+	ADCValues[2] = ADC2millimeter(Filter2(ADC0_SSFIFO2_R&0xFFF));
+	ADCValues[3] = ADC2millimeter(Filter3(ADC0_SSFIFO2_R&0xFFF));
 	OS_bSignal(&adcDataReady);
 }
 
