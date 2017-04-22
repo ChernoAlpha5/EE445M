@@ -29,50 +29,40 @@
 #ifndef __CAN0_H__
 #define __CAN0_H__
 #define CAN_BITRATE             1000000
-#define MESSAGE_LENGTH	8
 
-#define MOTOR_BOARD_CAN_ID 2
-#define SENSOR_BOARD_1_CAN_ID 4
-#define SENSOR_BOARD_2_CAN_ID 8
+#define MSGLENGTH 8
+#define NUM_SENSORBOARDS 1
 
-// reverse these IDs on the other microcontroller
-#ifdef MOTOR_BOARD
-  #define RCV_ID_1 SENSOR_BOARD_1_CAN_ID
-	#define RCV_ID_2 SENSOR_BOARD_2_CAN_ID
-  #define XMT_ID MOTOR_BOARD_CAN_ID    // this shouldn't matter because the Motor board shouldn't be sending
-#endif
+#define IR_ID 0
+#define NUM_IRMSGS 1
+#define USONIC_ID IR_ID+NUM_IRMSGS
+#define NUM_USONICMSGS 1
+
+#define NUMMSGS NUM_IRMSGS+NUM_USONICMSGS
+
 #ifdef SENSOR_BOARD_1
-  #define RCV_ID_1 MOTOR_BOARD_CAN_ID
-	#define RCV_ID_2 MOTOR_BOARD_CAN_ID
-  #define XMT_ID SENSOR_BOARD_1_CAN_ID
+	#define SENSOR_BOARD_NUMBER 0
 #endif
 #ifdef SENSOR_BOARD_2
-  #define RCV_ID_1 MOTOR_BOARD_CAN_ID
-	#define RCV_ID_2 MOTOR_BOARD_CAN_ID
-  #define XMT_ID SENSOR_BOARD_2_CAN_ID
+	#define SENSOR_BOARD_NUMBER 1
 #endif
 
-// Returns true if receive data is available
-//         false if no receive data ready
-int CAN0_CheckMail1(uint8_t messageNumber);
-int CAN0_CheckMail2(uint8_t messageNumber);
+#define XMT_MSG_NUM SENSOR_BOARD_NUMBER*NUMMSGS+ID+1
 
-// if receive data is ready, gets the data and returns true
-// if no receive data is ready, returns false
-int CAN0_GetMailNonBlock1(uint8_t data[MESSAGE_LENGTH], uint8_t messageNumber);
-int CAN0_GetMailNonBlock2(uint8_t data[MESSAGE_LENGTH], uint8_t messageNumber);
-
-// if receive data is ready, gets the data 
-// if no receive data is ready, it waits until it is ready
-void CAN0_GetMail1(uint8_t data[MESSAGE_LENGTH], uint8_t messageNumber);
-void CAN0_GetMail2(uint8_t data[MESSAGE_LENGTH], uint8_t messageNumber);
 
 // Initialize CAN port
 void CAN0_Open(void);
 
-// send 4 bytes of data to other microcontroller 
-void CAN0_SendData(uint8_t data[MESSAGE_LENGTH]);
+#ifdef MOTOR_BOARD
+// if receive data is ready, gets the data 
+// if no receive data is ready, it waits until it is ready
+void CAN0_GetMail(uint8_t data[NUMMSGS*NUM_SENSORBOARDS][MSGLENGTH]);
+#endif
 
+#ifndef MOTOR_BOARD
+// send 4 bytes of data to other microcontroller 
+void CAN0_SendData(uint8_t data[MSGLENGTH], uint8_t ID);
+#endif
 
 
 #endif //  __CAN0_H__

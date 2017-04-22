@@ -40,6 +40,8 @@
 #include <stdint.h>
 #include "tm4c123gh6pm.h"
 #include "os.h"
+#include "usonic.h"
+
 
 // TIMER0 is Trigger PB7, echo PB6
 #define TRIGGER0    (*((volatile uint32_t *)0x40005200))
@@ -57,12 +59,9 @@
 #define ECHO3       (*((volatile uint32_t *)0x40005010))
 #define ECHO3HIGH 0x04
 
-#define USE3USONIC 1
-//#define USE2USONIC 1
-//#define USE1USONIC 1
 
 Sema4Type usonicDataReady;
-uint32_t USValues[3];
+uint32_t static USONICValues[NUM_USONIC];
 
 //---------------------Timer0----------------------------
 uint32_t Timer0First,Timer0Done,Timer0Pulse;
@@ -173,7 +172,7 @@ void Timer0A_Handler(void){
   if(ECHO0 == ECHO0HIGH){ // first
     Timer0First = TIMER0_TAR_R;
   }else{
-    USValues[0] = (Timer0First - TIMER0_TAR_R)&0xFFFFFF;// 24 bits, 12.5ns resolution
+    USONICValues[0] = (Timer0First - TIMER0_TAR_R)&0xFFFFFF;// 24 bits, 12.5ns resolution
     Timer0Done = 1;
 		#ifdef USE3USONIC
 			if(Timer1Done && Timer3Done){
@@ -191,6 +190,7 @@ void Timer0A_Handler(void){
   }
 }
 
+#ifndef USE1USONIC
 //------------Timer1_Init------------
 // Initialize Timer1A in edge time mode to request interrupts on
 // the both edges of PB4 (T1CCP0).  The interrupt service routine
@@ -271,7 +271,7 @@ void Timer1A_Handler(void){
   if(ECHO1 == ECHO1HIGH){ // first
     Timer1First = TIMER1_TAR_R;
   }else{
-    USValues[1] = (Timer1First - TIMER1_TAR_R)&0xFFFFFF;// 24 bits, 12.5ns resolution
+    USONICValues[1] = (Timer1First - TIMER1_TAR_R)&0xFFFFFF;// 24 bits, 12.5ns resolution
     Timer1Done = 1;
 		#ifdef USE3USONIC
 			if(Timer0Done && Timer3Done){
@@ -285,9 +285,9 @@ void Timer1A_Handler(void){
 		#endif
   }
 }
+#endif
 
-
-
+#ifdef USE3USONIC
 //------------Timer3_Init------------
 // Initialize Timer3A in edge time mode to request interrupts on
 // the both edges of PB2 (T3CCP0).  The interrupt service routine
@@ -369,7 +369,7 @@ void Timer3A_Handler(void){
   if(ECHO3 == ECHO3HIGH){ // first
     Timer3First = TIMER3_TAR_R;
   }else{
-    USValues[2] = (Timer3First - TIMER3_TAR_R)&0xFFFFFF;// 24 bits, 12.5ns resolution
+    USONICValues[2] = (Timer3First - TIMER3_TAR_R)&0xFFFFFF;// 24 bits, 12.5ns resolution
     Timer3Done = 1;
 		#ifdef USE3USONIC
 			if(Timer1Done && Timer0Done){
@@ -378,6 +378,7 @@ void Timer3A_Handler(void){
 		#endif
   }
 }
+#endif
 
 void USONIC_Init(void){
 	OS_InitSemaphore(&usonicDataReady, 0);
@@ -443,4 +444,11 @@ uint32_t Cycles2milliInch(uint32_t cycles){
 uint32_t Cycles2millimeter(uint32_t cycles){
 // (x cycles)*(1 sec/80,000,000 cycles)*(340.29 m/sec)*(1,000 mm/1 m)*(0.5 round trip) =
   return (cycles*170)/BUS;  
+}
+
+void USONIC_GetData(uint32_t data[NUM_USONIC]){
+	OS_Wait(&usonicDataReady);
+	for(int i = 0; i<NUM_USONIC; i++){
+		data[i] = USONICValues[i];
+	}
 }

@@ -159,7 +159,7 @@ void ADC0_SS2_4Channels_TimerTriggered_Init(uint32_t period){
   ADC0_SAC_R = ADC_SAC_AVG_64X;
   ADC0_SSMUX2_R = 0x0123;
 	                     
-  ADC0_SSCTL2_R = 0x06;          // set flag and end                       
+  ADC0_SSCTL2_R = 0x6000;          // set flag and end                       
                  
   ADC0_IM_R |= 0x04;             // enable SS2 interrupts
   ADC0_ACTSS_R |= 0x04;              // enable sample sequencer 2
@@ -168,7 +168,7 @@ void ADC0_SS2_4Channels_TimerTriggered_Init(uint32_t period){
 	OS_InitSemaphore(&adcDataReady, 0);
 }
 
-uint16_t ADCValues[4];
+uint16_t static ADCValues[NUM_IR];
 AddADCFilter(0)
 AddADCFilter(1)
 AddADCFilter(2)
@@ -180,4 +180,11 @@ void ADC0Seq2_Handler(void){
 	ADCValues[2] = ADCFilter2(ADC0_SSFIFO2_R&0xFFF);
 	ADCValues[3] = ADCFilter3(ADC0_SSFIFO2_R&0xFFF);
 	OS_bSignal(&adcDataReady);
+}
+
+void ADC_GetData(uint16_t data[NUM_IR]){
+	OS_Wait(&adcDataReady);
+	for(int i = 0; i<NUM_IR; i++){
+		data[i] = ADCValues[i];
+	}
 }

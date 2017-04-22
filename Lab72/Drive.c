@@ -10,10 +10,14 @@
 #define POWERMAX 12400
 #define SERVOMID 1875
 
+uint16_t power, direction;
+
 void Drive_Init(void){
 	Left_Init(12500, POWERMIN, 0);          // initialize PWM0, 100 Hz
   Right_InitB(12500, POWERMIN, 0);   // initialize PWM0, 100 Hz
   Servo_Init(25000, SERVOMID);
+	direction = 0; //going straight
+	power = POWERMIN;
 }
 
 
@@ -31,15 +35,34 @@ void Drive_WheelDirection(int8_t dir){
 	else{
 		newDir = dir;
 	}
-	duty = ((newDir + 45) * 125)/9 + 1250;
+	duty = ((45  - newDir) * 125)/9 + 1250;
 	Servo_Duty(duty);
 }
 
+void Drive_DifferentialTurn(int8_t dir){	
+	Drive_WheelDirection(dir);
+	if(dir < 0){
+		Left_Duty(power/2, 1 -direction);
+	}
+	else{
+		Right_DutyB(power/2,1 - direction);
+	}
+	
+}
+
+void Drive_SteepDifferentialTurn(int8_t dir){
+	Drive_WheelDirection(dir);
+	if(dir < 0){
+		Left_Duty(power/4, direction);
+	}
+	else{
+		Right_DutyB(power/4, direction);
+	}
+}
 
 //takes in a speed from -MAXSPEED to MAXSPEED
 void Drive_Speed(int8_t speed){
-	int8_t newSpeed;
-	uint8_t direction = 0;
+	int8_t newSpeed = speed;
 	uint32_t newDuty;
 	if(speed < 0){
 		direction = 1;
@@ -52,12 +75,18 @@ void Drive_Speed(int8_t speed){
 		speed = 1;
 	}
 	newDuty = newSpeed*POWERMAX/MAXSPEED;
+	power = newDuty;
 	Right_DutyB(newDuty, direction);
 	Left_Duty(newDuty, direction);
 }
 
 void Drive(int8_t speed, int8_t dir){
 	Drive_Speed(speed);
-	Drive_WheelDirection(dir);
+	if(dir > 45 || dir < -45){
+		Drive_SteepDifferentialTurn(dir);
+	}
+	else{
+		Drive_DifferentialTurn(dir);
+	}
 }
 

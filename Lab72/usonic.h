@@ -38,6 +38,24 @@
 // J12Y Trigger/Echo3 to PF4 T2CCP0
 
 
+#ifndef __USONIC_H
+#define __USONIC_H  1
+
+#define USE3USONIC 1
+//#define USE2USONIC 1
+//#define USE1USONIC 1
+
+#ifdef USE1USONIC
+	#define NUM_USONIC 1
+#endif
+#ifdef USE2USONIC
+	#define NUM_USONIC 2
+#endif
+#ifdef USE3USONIC
+	#define NUM_USONIC 3
+#endif
+
+
 // Subroutine to wait 10 usec
 // Inputs: None
 // Outputs: None
@@ -89,3 +107,7 @@ uint32_t Cycles2milliInch(uint32_t cycles);
 // Input: cycles 
 // Output: distance in mm
 uint32_t Cycles2millimeter(uint32_t cycles); 
+
+void USONIC_GetData(uint32_t data[NUM_USONIC]);
+
+#endif

@@ -5,8 +5,7 @@
 // is complete.
 // Daniel Valvano
 // May 2, 2015
-
-void ADC0_SS2_4Channels_TimerTriggered_Init(uint32_t period);
+#define NUM_IR 4
 
 #define AddADCFilter(NAME) \
 uint16_t ADCFilter ## NAME(uint16_t data){ \
@@ -20,4 +19,9 @@ static unsigned long n ## NAME=3; \
   y ## NAME[n ## NAME-3] = y ## NAME[n ## NAME];    \
   return y ## NAME[n ## NAME]; \
 } \
+
+void ADC0_SS2_4Channels_TimerTriggered_Init(uint32_t period);
+
+void ADC_GetData(uint16_t data[NUM_IR]);
+
 

@@ -41,32 +41,27 @@
 #include "can.h"
 #include "debug.h"
 #include "interrupt.h"
+#include "os.h"
+
 #include "can0.h"
-#include "tm4c123gh6pm.h"
-#include "OS.h"
+#include "../inc/tm4c123gh6pm.h"
+
 
 #define NULL 0
-#define NUM_MESSAGES 2
-// reverse these IDs on the other microcontroller
-
-// Mailbox linkage from background to foreground
-uint8_t static SensorBoard1Messages[NUM_MESSAGES][MESSAGE_LENGTH];
-int static SensorBoard1MessagesMailFlag[NUM_MESSAGES] = {false, false};
-
-uint8_t static SensorBoard2Messages[NUM_MESSAGES][MESSAGE_LENGTH];
-int static SensorBoard2MessagesMailFlag[NUM_MESSAGES] = {false, false};
 
 
+#ifdef MOTOR_BOARD
+uint8_t static SensorData[NUMMSGS*NUM_SENSORBOARDS][MSGLENGTH];
+uint8_t static MailFlag = 0;
+Sema4Type SensorDataReady;
 //*****************************************************************************
 //
 // The CAN controller interrupt handler.
 //
 //*****************************************************************************
-int DataLost = 0;
-void CAN0_Handler(void){ uint8_t data[MESSAGE_LENGTH];
+void CAN0_Handler(void){ uint8_t data[MSGLENGTH];
   uint32_t ulIntStatus, ulIDStatus;
-  int i,j;
-	uint8_t messageNumber;
+  int i;
   tCANMsgObject xTempMsgObject;
   xTempMsgObject.pucMsgData = data;
   ulIntStatus = CANIntStatus(CAN0_BASE, CAN_INT_STS_CAUSE); // cause?
@@ -75,30 +70,32 @@ void CAN0_Handler(void){ uint8_t data[MESSAGE_LENGTH];
     for(i = 0; i < 32; i++){    //test every bit of the mask
       if( (0x1 << i) & ulIDStatus){  // if active, get data
         CANMessageGet(CAN0_BASE, (i+1), &xTempMsgObject, true);
-        if(xTempMsgObject.ulMsgID == RCV_ID_1){
-					messageNumber = data[0];
-					if(messageNumber > 1){
-					  while(1){}	// ERROR !!!
-          } 
-					for(j=0; j<MESSAGE_LENGTH; j+=1){
-						SensorBoard1Messages[messageNumber][j] = data[j];
+					for(int j=0; j<MSGLENGTH; j++){
+						SensorData[i][j] = data[j];
 					}
-          SensorBoard1MessagesMailFlag[messageNumber] = true;   // new mail
-        } else if ( xTempMsgObject.ulMsgID == RCV_ID_2){
-					messageNumber = data[0];
-					if(messageNumber > 1){
-					  while(1){}	// ERROR !!!
-          } 
-					for(j=0; j<MESSAGE_LENGTH; j+=1){
-						SensorBoard2Messages[messageNumber][j] = data[j];
+					MailFlag |= (1<< i);   // new mail
+					if(MailFlag == ((1<<(NUMMSGS*NUM_SENSORBOARDS)) - 1)){
+						OS_bSignal(&SensorDataReady);
+						MailFlag = 0;
 					}
-          SensorBoard2MessagesMailFlag[messageNumber] = true;   // new mail					
-				}
       }
     }
   }
   CANIntClear(CAN0_BASE, ulIntStatus);  // acknowledge
 }
+
+// if receive data is ready, gets the data 
+// if no receive data is ready, it waits until it is ready
+void CAN0_GetMail(uint8_t data[NUMMSGS*NUM_SENSORBOARDS][MSGLENGTH]){
+	OS_Wait(&SensorDataReady);
+	for(int j=0; j<NUMMSGS*NUM_SENSORBOARDS; j++){
+		for(int k=0; k<MSGLENGTH; k++){
+			data[j][k] = SensorData[j][k];
+		}
+	}
+}
+
+#endif
 
 //Set up a message object.  Can be a TX object or an RX object.
 void static CAN0_Setup_Message_Object( uint32_t MessageID, \
@@ -115,7 +112,7 @@ void static CAN0_Setup_Message_Object( uint32_t MessageID, \
   CANMessageSet(CAN0_BASE, ObjectID, &xTempObject, eMsgType);
 }
 // Initialize CAN port
-void CAN0_Open(void){uint32_t volatile delay, i; 
+void CAN0_Open(void){uint32_t volatile delay; 
   SYSCTL_RCGCCAN_R |= 0x00000001;  // CAN0 enable bit 0
   SYSCTL_RCGCGPIO_R |= 0x00000010;  // RCGC2 portE bit 4
   for(delay=0; delay<10; delay++){};
@@ -128,71 +125,27 @@ void CAN0_Open(void){uint32_t volatile delay, i;
   CANInit(CAN0_BASE);
   CANBitRateSet(CAN0_BASE, 80000000, CAN_BITRATE);
   CANEnable(CAN0_BASE);
-// make sure to enable STATUS interrupts
-  CANIntEnable(CAN0_BASE, CAN_INT_MASTER | CAN_INT_ERROR | CAN_INT_STATUS);
-// Set up filter to receive these IDs
-// in this case there is just one type, but you could accept multiple ID types
-  CAN0_Setup_Message_Object(RCV_ID_1, MSG_OBJ_RX_INT_ENABLE, MESSAGE_LENGTH, NULL, RCV_ID_1, MSG_OBJ_TYPE_RX);
-  CAN0_Setup_Message_Object(RCV_ID_2, MSG_OBJ_RX_INT_ENABLE, MESSAGE_LENGTH, NULL, RCV_ID_2, MSG_OBJ_TYPE_RX);		
-  NVIC_EN1_R = (1 << (INT_CAN0 - 48)); //IntEnable(INT_CAN0);
+	#ifdef MOTOR_BOARD
+		OS_InitSemaphore(&SensorDataReady, 0);
+		// make sure to enable STATUS interrupts
+		CANIntEnable(CAN0_BASE, CAN_INT_MASTER | CAN_INT_ERROR | CAN_INT_STATUS);
+		// Set up filter to receive these IDs
+		// in this case there is just one type, but you could accept multiple ID types
+		for(int i = 0; i<NUM_SENSORBOARDS; i++){
+			for(int j = 1; j<=NUMMSGS; j++){
+				CAN0_Setup_Message_Object((i*NUMMSGS)+j, MSG_OBJ_RX_INT_ENABLE, MSGLENGTH, NULL, (i*NUMMSGS)+j, MSG_OBJ_TYPE_RX);
+			}
+		}
+		NVIC_EN1_R = (1 << (INT_CAN0 - 48)); //IntEnable(INT_CAN0);
+	#endif
   return;
 }
 
-// send MESSAGE_LENGTH bytes of data to other microcontroller 
-void CAN0_SendData(uint8_t data[MESSAGE_LENGTH]){
+#ifndef MOTOR_BOARD
+// send 4 bytes of data to other microcontroller 
+void CAN0_SendData(uint8_t data[MSGLENGTH], uint8_t ID){
 // in this case there is just one type, but you could accept multiple ID types
-  CAN0_Setup_Message_Object(XMT_ID, NULL, MESSAGE_LENGTH, data, XMT_ID, MSG_OBJ_TYPE_TX);
+  CAN0_Setup_Message_Object(XMT_MSG_NUM, NULL, MSGLENGTH, data, XMT_MSG_NUM, MSG_OBJ_TYPE_TX);
 }
-
-// Returns true if receive data is available
-//         false if no receive data ready
-int CAN0_CheckMail1(uint8_t messageNumber){
-  return SensorBoard1MessagesMailFlag[messageNumber];
-}
-int CAN0_CheckMail2(uint8_t messageNumber){
-  return SensorBoard2MessagesMailFlag[messageNumber];
-}
-
-
-// if receive data is ready, gets the data and returns true
-// if no receive data is ready, returns false
-int CAN0_GetMailNonBlock1(uint8_t data[MESSAGE_LENGTH], uint8_t messageNumber){ int i;
-  if(SensorBoard1MessagesMailFlag[messageNumber]){
-		for(i = 0 ; i<MESSAGE_LENGTH; i+=1){
-      data[i] = SensorBoard1Messages[messageNumber][i];
-		}
-    SensorBoard1MessagesMailFlag[messageNumber] = false;
-    return true;
-  }
-  return false;
-}
-
-int CAN0_GetMailNonBlock2(uint8_t data[MESSAGE_LENGTH], uint8_t messageNumber){ int i;
-  if(SensorBoard2MessagesMailFlag[messageNumber]){
-		for(i = 0 ; i<MESSAGE_LENGTH; i+=1){
-      data[i] = SensorBoard2Messages[messageNumber][i];
-		}
-    SensorBoard1MessagesMailFlag[messageNumber] = false;
-    return true;
-  }
-  return false;
-}
-
-// if receive data is ready, gets the data 
-// if no receive data is ready, it waits until it is ready
-void CAN0_GetMail1(uint8_t data[MESSAGE_LENGTH], uint8_t messageNumber){ int i;
-  //if(SensorBoard1MessagesMailFlag[messageNumber]==false){return;};
-	for(i=0; i<MESSAGE_LENGTH; i+=1){
-    data[i] = SensorBoard1Messages[messageNumber][i];
-	}
-  SensorBoard1MessagesMailFlag[messageNumber] = false;
-}
-
-void CAN0_GetMail2(uint8_t data[MESSAGE_LENGTH], uint8_t messageNumber){ int i;
-  //if(SensorBoard1MessagesMailFlag[messageNumber]==false){return;};
-	for(i=0; i<MESSAGE_LENGTH; i+=1){
-    data[i] = SensorBoard2Messages[messageNumber][i];
-	}
-  SensorBoard2MessagesMailFlag[messageNumber] = false;
-}
+#endif
 

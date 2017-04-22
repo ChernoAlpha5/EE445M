@@ -7,6 +7,6 @@
 .\can0.o: can.h
 .\can0.o: debug.h
 .\can0.o: interrupt.h
+.\can0.o: os.h
 .\can0.o: can0.h
-.\can0.o: tm4c123gh6pm.h
-.\can0.o: OS.h
+.\can0.o: ../inc/tm4c123gh6pm.h

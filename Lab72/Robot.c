@@ -125,66 +125,96 @@ void SW2Push(void){
 
 }
 
-
-extern Sema4Type adcDataReady;
-extern uint16_t ADCValues[4];
-char* Strings[8] = {"Data 0:", "Data 1:", "Data 2:", "Data 3:", "Data 4:", "Data 5:", "Data 6:", "Data 7:"};
-
 uint32_t ADC2millimeter(uint32_t adcSample){
   if(adcSample<494) return 799; // maximum distance 80cm
   return (268130/(adcSample-159));  
 }
 
+#ifndef MOTOR_BOARD
+char* IRStrings[NUM_IR] = {"IR LF: ", "IR FR: ", "IR FL: ", "IR RF: "};
+uint16_t ADCValues[NUM_IR];
 void IRSend(void){
 	uint8_t message[8];
 	ADC0_SS2_4Channels_TimerTriggered_Init(BUSCLK/20);	//20 Hz data collection
 	while(1){
 		//GPIO_PORTF_DATA_R ^= 0x04;
-		OS_Wait(&adcDataReady);
+		ADC_GetData(ADCValues);
 		// Message Format: MESSAGE_NUMBER, RESERVED, 6 bytes of ADC data
-		message[0] = 0;
-		message[1] = 42;
-		message[2] = ((ADCValues[0]&0x00FF));
-		message[3] = (((ADCValues[0]&0x0F00)>>8) + ((ADCValues[1]&0x0F)<<4));
-		message[4] = ((ADCValues[1]&0x00FF0)>>4);
-		message[5] = ((ADCValues[2]&0x00000FF));
-		message[6] = ((ADCValues[2]&0x0F00)>>8) + ((ADCValues[3]&0x0F)<<4);
-		message[7] = ((ADCValues[3]&0x0FF0)>>4);
-		ST7735_Message(DISPLAY_NUMBER_1, 0, "ADC0: ", ADCValues[0]);
-		ST7735_Message(DISPLAY_NUMBER_1, 1, "ADC1: ", ADCValues[1]);
-		ST7735_Message(DISPLAY_NUMBER_1, 2, "ADC2: ", ADCValues[2]);
-		ST7735_Message(DISPLAY_NUMBER_1, 3, "ADC3: ", ADCValues[3]);
-		CAN0_SendData(message);
+		for(int i=0; i<NUM_IR; i++){
+			message[2*i] = (ADCValues[i]&0x00FF);
+			message[2*i+1] = ((ADCValues[i]&0xFF00)>>8);
+			ST7735_Message(DISPLAY_NUMBER_1, i, IRStrings[i], ADCValues[i]);
+		}
+		CAN0_SendData(message, IR_ID);
 	}
 }
-extern Sema4Type usonicDataReady;
-extern uint32_t USValues[3];
+
+char* USONICStrings[NUM_IR] = {"IR LF: ", "IR FR: ", "IR FL: ", "IR RF: "};
+uint32_t USONICValues[NUM_USONIC];
 void USONICSend(void){
 	uint8_t message[8];
 	USONIC_Init();
 	OS_AddPeriodicThread(&USONIC_StartHCSR04, BUSCLK/20, 0); //20 Hz data Collection
 	while(1){
 		//PF1 ^= 0x02;
-		OS_Wait(&usonicDataReady);
-		// Message Format: MESSAGE_NUMBER, RESERVED, 6 bytes of ADC data
-		message[0] = 0;
-		message[1] = 42;
-		message[2] = ((USValues[0]&0x00FF));
-		message[3] = (((USValues[0]&0x0F00)>>8) + ((USValues[1]&0x0F)<<4));
-		message[4] = ((USValues[1]&0x00FF0)>>4);
-		message[5] = ((USValues[2]&0x00000FF));
-		message[6] = ((USValues[2]&0x0F00)>>8);
-		message[7] = 0;
-		ST7735_Message(DISPLAY_NUMBER_2, 0, "US0: ", USValues[0]);
-		ST7735_Message(DISPLAY_NUMBER_2, 1, "US1: ", USValues[1]);
-		ST7735_Message(DISPLAY_NUMBER_2, 2, "US2: ", USValues[2]);
-	  CAN0_SendData(message);
+		USONIC_GetData(USONICValues);
+		for(int i=0; i<NUM_USONIC; i++){
+			message[2*i] = (USONICValues[i]&0x00FF);
+			message[2*i+1] = ((USONICValues[i]&0xFF00)>>8);
+			ST7735_Message(DISPLAY_NUMBER_2, i, USONICStrings[i], USONICValues[i]);
+		}
+	  CAN0_SendData(message, USONIC_ID);
 	}
 }
+#endif
 
+#ifdef MOTOR_BOARD
+uint8_t SensorData[NUMMSGS*NUM_SENSORBOARDS][MSGLENGTH];
+uint8_t IRData[NUMMSGS*NUM_SENSORBOARDS][MSGLENGTH];
 void MotorController(void){
-	
+	Drive_Init();
+	while(1){
+			CAN0_GetMail(SensorData);
+			uint16_t RF, FR, FL, LF;
+			int8_t angle, speed;
+			uint16_t rightMin, leftMin, frontMin;
+			LF = ((SensorData[0][3]&0x0F)<<8) + SensorData[0][2];
+			FR= ((SensorData[0][4]&0xFF)<<4) + ((SensorData[0][3]&0x0F0)>>4);
+			FL = ((SensorData[0][6]&0x0F)<<8) + SensorData[0][5];
+			RF = ((SensorData[0][7]&0xFF)<<4) + ((SensorData[0][6]&0xF0)>>4);
+			speed = MAXSPEED;
+			if(FR > 1700 && FL > 1700){
+				if(RF > LF){
+					angle = -90;
+				}
+				else{
+					angle = 90;
+				}
+			}
+			else if(FR < FL - 500){
+				if(RF < 2500){
+					angle = 45;
+				}
+				else{
+					angle = 0;
+				}
+			}
+			else if(FL < FR - 500){
+				if(LF < 2500){
+					angle = -45;
+				}
+				else{
+					angle = 0;
+				}
+			}
+			else{
+				angle = 0;
+			}
+			Drive(speed, angle);
+		
+	}
 }
+#endif
 
 //******** IdleTask  *************** 
 // foreground thread, runs when no other work needed
