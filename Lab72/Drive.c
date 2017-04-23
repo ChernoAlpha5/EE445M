@@ -6,18 +6,18 @@
 #include "PWM.h"
 #include "Drive.h"
 
-#define POWERMIN 400
+#define POWERMIN 100
 #define POWERMAX 12400
 #define SERVOMID 1875
 
 uint16_t power, direction;
 
 void Drive_Init(void){
-	Left_Init(12500, POWERMIN, 0);          // initialize PWM0, 100 Hz
-  Right_InitB(12500, POWERMIN, 0);   // initialize PWM0, 100 Hz
-  Servo_Init(25000, SERVOMID);
 	direction = 0; //going straight
 	power = POWERMIN;
+	Left_Init(12500, power, direction);          // initialize PWM0, 100 Hz
+  Right_InitB(12500, power, direction);   // initialize PWM0, 100 Hz
+  Servo_Init(25000, SERVOMID);
 }
 
 
@@ -83,6 +83,45 @@ void Drive_Speed(int8_t speed){
 	Left_Duty(newDuty, direction);
 	Right_DutyB(newDuty, direction);
 	
+}
+
+
+#define IMAX  4000
+#define IMIN	-2000
+
+#define UMAX POWERMAX
+#define UMIN POWERMIN
+
+#define EKIdT  (E*100)/646
+#define EKP    (E*100)/20
+
+void Drive_PIControlDirection(int32_t E){
+	static int32_t IL = 0;
+	static int32_t IR = 0;
+	int32_t P = EKP;
+	IL -= EKIdT;
+	IR += EKIdT;
+	if(IL<IMIN) IL = IMIN;
+	if(IL>IMAX) IL = IMAX;
+	if(IR<IMIN) IR = IMIN;
+	if(IR>IMAX) IR = IMAX;
+	
+	int32_t UL = IL - P;
+	int32_t UR = IR + P;
+	
+	uint8_t dirL = UL < 0;
+	uint8_t dirR = UR < 0;
+	
+	if(dirL) UL*=-1;
+	if(dirR) UR*=-1;
+	
+	if(UL<UMIN) UL = UMIN;
+	if(UR<UMIN) UR = UMIN;
+	if(UL>UMAX) UL = UMAX;
+	if(UR>UMAX) UR = UMAX;
+	
+	Left_Duty(UL, dirL);
+	Right_DutyB(UR, dirR);
 }
 
 void Drive(int8_t speed, int8_t dir){
