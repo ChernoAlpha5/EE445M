@@ -1,0 +1,13 @@
+.\robot.o: Robot.c
+.\robot.o: C:\Keil\ARM\ARMCC\bin\..\include\string.h
+.\robot.o: C:\Keil\ARM\ARMCC\bin\..\include\stdio.h
+.\robot.o: C:\Keil\ARM\ARMCC\bin\..\include\stdint.h
+.\robot.o: OS.h
+.\robot.o: tm4c123gh6pm.h
+.\robot.o: can0.h
+.\robot.o: ff.h
+.\robot.o: integer.h
+.\robot.o: ffconf.h
+.\robot.o: wavfile.h
+.\robot.o: DAC.h
+.\robot.o: diskio.h
